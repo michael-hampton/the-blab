@@ -1,0 +1,58 @@
+<?php
+
+if ( !empty ($arrLikes) )
+{
+
+    echo '<div class="full-height-scroll" style="overflow: auto; width: auto; height: 600px; margin-top: 20px;
+    float: left;
+    width: 100%;
+    margin-left:16px;
+}">';
+
+    $strMessages = '';
+    $strComments = '';
+
+    foreach ($arrLikes as $arrLike) {
+
+        if ( $arrLike['type'] == "message" )
+        {
+            $strMessages .= '<div class="col-lg-2" style="border: 1px solid #CCC; height:200px; padding:10px;">';
+
+
+            $strMessages .= '<a href="#">' . $arrLike['message'] . '</a>';
+            $strMessages .= '<br/><small>' . $arrLike['created'] . '</small>';
+
+
+            $strMessages .= '</div>';
+        }
+        else
+        {
+            $strComments .= '<div class="col-lg-2" style="border: 1px solid #CCC; height:200px; padding:10px;">';
+
+
+            $strComments .= '<a href="#">' . $arrLike['message'] . '</a>';
+            $strComments .= '<br/><small>' . $arrLike['created'] . '</small>';
+
+
+            $strComments .= '</div>';
+        }
+    }
+
+    if ( trim ($strComments) !== "" )
+    {
+        echo '<div class="col-lg-12 pull-left">';
+        echo '<h2>Comments</h2>';
+        echo $strComments;
+        echo '</div>';
+    }
+
+    if ( trim ($strMessages) !== "" )
+    {
+        echo '<div class="col-lg-12 pull-left">';
+        echo '<h2>Messages</h2>';
+        echo $strMessages;
+        echo '</div>';
+    }
+
+    echo '</div>';
+}

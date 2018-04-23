@@ -1,0 +1,270 @@
+<?php
+
+/**
+ * 
+ * @param type $id
+ * @param type $selectedValue
+ */
+function buildSelectList ($id, $selectedValue = '')
+{
+    $arrOptions = array("private", "public", "friends");
+
+    echo '<select class="form-control" id="' . $id . '" name="' . $id . '">';
+
+    foreach ($arrOptions as $option) {
+
+        $selected = trim ($selectedValue) == trim ($option) ? 'selected="selected"' : '';
+
+        echo '<option value="' . $option . '" ' . $selected . '>' . ucfirst ($option) . '</option>';
+    }
+
+    echo '</select>';
+}
+
+/**
+ * 
+ * @param type $id
+ * @param type $selectedValue
+ */
+function buildYesOrNo ($id, $selectedValue = "")
+{
+    $arrOptions = array("yes", "no");
+
+    echo '<select class="form-control" id="' . $id . '" name="' . $id . '">';
+
+    foreach ($arrOptions as $option) {
+
+        $selected = trim ($selectedValue) == trim ($option) ? 'selected="selected"' : '';
+
+        echo '<option value="' . $option . '" ' . $selected . '>' . ucfirst ($option) . '</option>';
+    }
+
+    echo '</select>';
+}
+?>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+
+        <div class="tabs-container">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#tab-1">Profile</a></li>
+                <li class=""><a data-toggle="tab" href="#tab-2">News Feed</a></li>
+                <li class=""><a data-toggle="tab" href="#tab-3">Notifications</a></li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            <div id="tab-1" class="tab-pane active">
+                <div class="panel-body">
+                    <div class = "col-lg-12">
+                        <div class = "ibox float-e-margins">
+                            <div class = "ibox-title">
+                                <h5>What can people see on your profile</h5>
+
+                            </div>
+                            <div class = "ibox-content">
+                                <form class = "form-horizontal" name="privacyForm" id="privacyForm">
+
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Birthday</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildSelectList ('birthday', $objUserSettings->getProfileBirthday()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Telephone Number</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildSelectList ('telephone', $objUserSettings->getProfileTelephone()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Birthday</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildSelectList ('email', $objUserSettings->getProfileEmail()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Likes</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildSelectList ('likes', $objUserSettings->getProfileLikes()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Pages</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildSelectList ('pages', $objUserSettings->getProfilePage()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Events</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildSelectList ('events', $objUserSettings->getProfileEvent()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Groups</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildSelectList ('groups', $objUserSettings->getProfileGroup()) ?>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary SaveChanges">Save</button>
+
+                </div>
+            </div>
+
+            <div id="tab-2" class="tab-pane">
+                <div class="panel-body">
+                    <div class = "col-lg-12">
+                        <div class = "ibox float-e-margins">
+                            <div class = "ibox-title">
+                                <h5>What do you want to see on your news feed</h5>
+
+                            </div>
+                            <div class = "ibox-content">
+                                <form class = "form-horizontal" name="newsFeedForm" id="newsFeedForm">
+
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Pages</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('feed-pages', $objUserSettings->getFeedPage()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Groups</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('feed-groups', $objUserSettings->getFeedGroup()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Events</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('feed-events', $objUserSettings->getFeedEvent()) ?>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary SaveChanges">Save</button>
+                </div>
+
+
+            </div>
+
+            <div id="tab-3" class="tab-pane">
+                <div class="panel-body">
+                    <div class = "col-lg-12">
+                        <div class = "ibox float-e-margins">
+                            <div class = "ibox-title">
+                                <h5>What Notifications do you want to receive</h5>
+
+                            </div>
+                            <div class = "ibox-content">
+                                <form class = "form-horizontal" name="notificationForm" id="notificationForm">
+
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Pages</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('notification-pages', $objUserSettings->getNotificationPage()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Groups</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('notification-groups', $objUserSettings->getNotificationGroup()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Events</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('notification-events', $objUserSettings->getNotificationEvent()) ?>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary SaveChanges">Save</button>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $ (document).ready (function ()
+    {
+        $ (".SaveChanges").on ("click", function ()
+        {
+            var dataString = $ ("#privacyForm, #newsFeedForm, #notificationForm").serialize ();
+
+            $.post ('/blab/terms/saveSettings', dataString, function (response)
+            {
+                alert (response);
+
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 0)
+                    {
+                        alert (objResponse.message)
+                        return false;
+                    }
+                    else
+                    {
+
+                    }
+                } catch (error) {
+
+                    alert ("Error");
+                }
+            }).fail (function (error_response)
+            {
+                alert ("Error");
+            });
+        });
+    });
+</script>
+
+

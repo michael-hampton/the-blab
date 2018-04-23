@@ -1,0 +1,65 @@
+<script src="/blab/public/js/carousel.js" type="text/javascript"></script>
+<link href="/blab/public/css/carousel.css" type="text/css" rel="stylesheet">
+
+<style>
+    .carousel-inner > .item > img,
+    .carousel-inner > .item > a > img {
+        max-height: 300px;    /* Set slide height here */
+
+    }
+</style>
+
+<?php
+if ( !empty ($arrAdverts) && trim ($advertCount) !== "" && !empty ($arrAdverts[$advertCount]) )
+{
+
+    $arrBanners = $arrAdverts[$advertCount]->getArrBanners ();
+
+    if ( !empty ($arrBanners) )
+    {
+        ?>
+<div id="myCarousel" class="carousel slide" data-ride="carousel" style="margin-bottom:20px;">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+
+                <?php foreach ($arrBanners as $key => $arrBanner) { ?>
+
+                    <li data-target="#myCarousel" data-slide-to="<?= $key ?>" class="active"></li>
+
+                <?php } ?>
+            </ol>
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+
+                <?php
+                foreach ($arrBanners as $key => $arrBanner) {
+
+                    $class = $key === 0 ? 'active' : '';
+                    ?>
+
+                    <div class="item <?= $class ?>">
+                        <img style="width:100%;" class="img-responsive" src="<?= $arrBanner->getImageLocation () ?>" alt="<?= $arrBanner->getCaption () ?>">
+                        <div class="carousel-caption">
+                            <h3><?= $arrBanner->getCaption () ?></h3>
+                        </div>
+                    </div>
+                <?php } ?>
+
+            </div>
+
+            <!-- Left and right controls -->
+            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+
+        <?php
+    }
+}
+

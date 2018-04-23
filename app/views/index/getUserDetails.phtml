@@ -1,0 +1,804 @@
+<?php
+
+function buildYearDropdown ($id, $selectedValue)
+{
+    echo '<select id="' . $id . '" name="' . $id . '" style="min-width: 90%; text-align: center; float: left; " tabindex="-1" title="">';
+    echo '<option>Select Option</option>';
+    $starting_year = date ('Y', strtotime ('-100 year'));
+    $ending_year = date ('Y');
+
+    for ($starting_year; $starting_year <= $ending_year; $starting_year++) {
+
+        $selected = $starting_year == $selectedValue ? 'selected="selected"' : '';
+
+        echo '<option value="' . $starting_year . '" ' . $selected . '>' . $starting_year . '</option>';
+    }
+    echo '</select>';
+}
+
+function formMonth ($id, $selectedValue)
+{
+
+    echo '<select id="' . $id . '" name="' . $id . '" style="min-width: 90%; text-align: center; float: left; " tabindex="-1" title="">';
+    for ($i = 1; $i <= 12; $i++) {
+
+        $selected = $selectedValue == $i ? 'selected="selected"' : '';
+
+        $dateObj = DateTime::createFromFormat ('!m', $i);
+        $monthName = $dateObj->format ('F'); // March
+        echo '<option ' . $selected . '  value="' . $i . '">' . $monthName . '</option>';
+    }
+    echo "</select>";
+}
+
+function buildDay ($id, $selectedValue)
+{
+
+    echo '<select id="' . $id . '" name="' . $id . '" style="min-width: 90%; text-align: center; float: left; " tabindex="-1" title="">';
+    for ($i = 1; $i <= 31; $i++) {
+
+        $selected = $selectedValue == $i ? 'selected="selected"' : '';
+
+        echo '<option ' . $selected . '  value="' . $i . '">' . $i . '</option>';
+    }
+    echo "</select>";
+}
+?>
+
+<?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ):
+    ?>
+    <div class="vprofile_about_detail" id="page_fullname_text" style="min-width:100%;display:inline-block;">
+        <div class="vmiddle_about_title">Fullname</div>
+        <div class="vprofile_about_desc">
+            <?= $objUser->getFirstname () . ' ' . $objUser->getLastname () ?>         </div>
+    </div>
+<?php endif; ?>
+
+<?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+    <div id="page_fullname_html" style="min-width:100%;">
+        <span class="input-group-addon vprofile_about_detail_addon">Fullname</span>
+        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="epage_firstname" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getFirstname () ?>">
+        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="epage_lastname" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getLastname () ?>">
+        <div style="clear:both;"></div>
+    </div>
+<?php endif; ?>
+<br clear="all"><br clear="all">
+
+<?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+    <div id="page_email_html" style="min-width:100%;">
+        <span class="input-group-addon vprofile_about_detail_addon">Email Address</span>
+        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="epage_email" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getEmail () ?>">
+
+        <br clear="all"><br clear="all">
+    </div>
+    <div style="clear:both;"></div>
+<?php endif; ?>
+
+
+<?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+    <div class="vprofile_about_detail" id="about_us_text" style="display:inline-block;min-width:100% !important;width:100% !important;">
+        <div class="vmiddle_about_title">About <?= $objUser->getFirstname () ?></div>
+        <div class="vprofile_about_desc">
+            <?= $objUser->getAbout () ?>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+    <div id="about_us_html" style="">
+        <span class="input-group-addon vprofile_about_detail_addon"><label style="margin:0px; padding:0px; line-height: normal; font-weight:normal; cursor:pointer;font-weight:bold" for="eabout_us">Who are you?</label></span>
+        <textarea style="border-radius: 0px 0px 0px 0px;" class="form-control" id="eabout_us" placeholder="Write brief introduction about your self..." autocomplete="off" autocorrect="off" autocapitalize="off"><?= $objUser->getAbout () ?></textarea>
+    </div>
+<?php endif; ?>
+<br clear="all"><br clear="all">
+
+<script type="text/javascript">$ ("#eabout_us").expanding ();</script>
+
+
+<?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+    <div class="vprofile_about_detail" id="favorite_quotes_text" style="display:inline-block;min-width:100% !important;width:100% !important;">
+        <div class="vmiddle_about_title">Favorite Quotes</div>
+        <div class="vprofile_about_desc">
+            <?= $objUser->getFavorite () ?>   
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+    <div id="favorite_quotes_html" style="">
+        <span class="input-group-addon vprofile_about_detail_addon"><label style="margin:0px; padding:0px; line-height: normal; font-weight:normal; cursor:pointer;font-weight:bold" for="efavorite_quotes">What are your favorite quotes?</label></span>
+        <textarea style="border-radius: 0px 0px 0px 0px;" class="form-control" id="efavorite_quotes" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off"><?= $objUser->getFavorite () ?></textarea>
+    </div>
+<?php endif; ?>
+<br clear="all"><br clear="all">
+
+<script type="text/javascript">$ ("#efavorite_quotes").expanding ();</script>
+
+<?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+    <div class="vprofile_about_detail" id="marital_status_text" style="min-width:100%;display:inline-block;">
+        <div class="vmiddle_about_title">Relationship Status</div>
+        <div class="vprofile_about_desc">
+            <?= $objUser->getMarried () ?>          
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php
+$arrRelationship = array("Single", "In a relationship", "Engaged", "Its complicated", "Married", "In a civil union", "Separated", "Divorced", "Widowed", "In a domestic partnership", "In an open relationship");
+
+if ( $_SESSION['user']['user_id'] === $objUser->getId () ):
+    ?>
+    <div id="marital_status_html" style="min-width:100%;">
+        <span class="input-group-addon vprofile_about_detail_addon">Relationship Status</span>
+
+        <div class="select2-container" id="s2id_emarital_status" style="min-width:100%; text-align:left; float:left;">
+            <select id="emarital_status" style="min-width: 100%; text-align: left; float: left; " tabindex="-1" title="">
+                <option value="">Select an option</option>
+                <?php
+                foreach ($arrRelationship as $relationship) {
+
+
+
+                    echo '<option value="' . $relationship . '" ' . $objUser->getMarried () == $relationship ? 'selected="selected"' : '' . '>' . $relationship . '</option>';
+                }
+                ?>
+            </select>
+
+            <div style = "clear:both;"></div>
+        </div>
+    <?php endif;
+    ?>
+    <br clear="all"><br clear="all">
+
+    <script type="text/javascript">
+        $ ("#emarital_status").select2 ();
+    </script>
+
+
+
+    <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+        <div class="vprofile_about_detail" id="address_text" style="display:inline-block;min-width:100% !important;width:100% !important;">
+            <div class="vmiddle_about_title">Address</div>
+            <div class="vprofile_about_desc" style="display:none;">
+                <?= $objUser->getAddress () ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+        <div id="address_html" style="">
+            <span class="input-group-addon vprofile_about_detail_addon"><label style="margin:0px; padding:0px; line-height: normal; font-weight:normal; cursor:pointer;font-weight:bold" for="eaddress">What's your address?</label></span>
+            <textarea style="border-radius: 0px 0px 0px 0px;" class="form-control" id="eaddress" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off"><?= $objUser->getAddress () ?></textarea>
+        </div>
+    <?php endif; ?>
+    <br clear="all"><br clear="all">
+
+
+    <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+        <div class="vprofile_about_detail" id="phone_text" style="min-width:100%;display:inline-block;">
+            <div class="vmiddle_about_title">Phone Number(s)</div>
+            <div class="vprofile_about_desc">
+                <font style="color:#999;"><?= trim ($objUser->getTelephone1 ()) !== "" ? $objUser->getTelephone1 () : 'No information provided yet' ?></font>            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+        <div id="phone_html" style="min-width:100%;">
+            <span class="input-group-addon vprofile_about_detail_addon">What are your phone number(s)?</span>
+            <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="ephone" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getTelephone1 () ?>">
+            <div style="clear:both;"></div>
+        </div>
+    <?php endif; ?>
+    <br clear="all"><br clear="all">
+
+
+
+    <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+        <div class="vprofile_about_detail" id="gender_text" style="min-width:100%;display:inline-block;">
+            <div class="vmiddle_about_title">Gender</div>
+            <div class="vprofile_about_desc">
+                <?= $objUser->getGender () ?>            
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+        <div id="gender_html" style="min-width:100%;">
+            <span class="input-group-addon vprofile_about_detail_addon">Gender</span>
+
+            <?php
+            $arrGenders = ['Male', 'Female'];
+            ?>
+
+
+            <div class="select2-container" id="s2id_egender" style="min-width:100%; text-align:left; float:left;">
+                <select id="egender" style="min-width: 100%; text-align: left; float: left; " tabindex="-1" title="">
+                    <option value="">Select an option</option>
+                    <?php
+                    foreach ($arrGenders as $arrGender) {
+                        echo '<option value="' . $arrGender . '" ' . $objUser->getGender () == $arrGender ? 'selected="selected"' : '' . '>' . $arrGender . '</option>';
+                    }
+                    ?>
+                </select>
+
+                <div style="clear:both;"></div>
+            </div>
+        <?php endif; ?>
+        <br clear="all"><br clear="all">
+
+        <script type="text/javascript">
+            $ ("#egender").select2 ();
+        </script>
+
+
+
+        <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+            <div class="vprofile_about_detail" id="interested_in_text" style="min-width:100%;display:inline-block;">
+                <div class="vmiddle_about_title">Interested in</div>
+                <div class="vprofile_about_desc">
+                    <?= $objUser->getInerested () ?>         
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+            <div id="interested_in_html" style="min-width:100%;">
+                <span class="input-group-addon vprofile_about_detail_addon">Interested in</span>
+
+                <?php
+                $arrInterested = array("Men", "Women", "Men and Women");
+                ?>
+
+                <div class="select2-container" id="s2id_einterested_in" style="min-width:100%; text-align:left; float:left;">
+                    <select id="einterested_in" style="min-width: 100%; text-align: left; float: left;">
+                        <option value="">Select an option</option>
+                        <?php
+                        foreach ($arrInterested as $interested) {
+                            echo '<option value="' . $interested . '" ' . $objUser->getInerested () == $interested ? 'selected="selected"' : '' . '>' . $interested . '</option>';
+                        }
+                        ?>
+                    </select>
+
+                    <div style="clear:both;"></div>
+                </div>
+            <?php endif; ?>
+            <br clear="all"><br clear="all">
+
+            <script type="text/javascript">
+                $ ("#einterested_in").select2 ();
+            </script>
+
+
+
+            <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                <div class="vprofile_about_detail" id="birth_date_text" style="min-width:100%;display:inline-block;">
+                    <div class="vmiddle_about_title">Birthday</div>
+                    <div class="vprofile_about_desc">
+                        <?= $objUser->getDay () . " - " . $objUser->getMonth () . " - " . $objUser->getYear (); ?>  
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                <div id="birth_date_html" style="min-width:100%;">
+                    <span class="input-group-addon vprofile_about_detail_addon">What is your date of birth?</span>
+
+                    <div class="select2-container" id="s2id_eday" style="min-width:30%; text-align:center; float:left;"> 
+
+                        <?= buildDay ('eday', $objUser->getDay ()) ?>
+                    </div>
+
+                    <div class="select2-container" id="s2id_emonth" style="min-width:30%;text-align:center; float:left;">
+                        <?= formMonth ('emonth', $objUser->getMonth ()) ?>
+                    </div>
+
+
+                    <div class="select2-container" id="s2id_eyear" style="min-width:30%;text-align:center; float:left;">
+                        <?= buildYearDropdown ('eyear', $objUser->getYear ()) ?>
+                    </div>
+
+                    <div style="clear:both;"></div><br>
+
+                    <span class="input-group-addon vprofile_about_detail_addon">Privacy Settings</span>
+
+                    <div class="select2-container" id="s2id_ebirth_date_privacy" style="min-width:100%; text-align:left; float:left; margin-bottom:10px;">
+                        <select id="ebirth_date_privacy" style="min-width: 100%; text-align: left; float: left; margin-bottom: 10px; " tabindex="-1" title="">
+                            <option value="">Select an option</option>
+                            <option value="full">Show my complete date of birth</option>
+                            <option value="half" selected="">Show only day and month</option>
+                        </select>
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+                <script type="text/javascript">
+                    $ ("#eday").select2 ();
+                    $ ("#emonth").select2 ();
+                    $ ("#eyear").select2 ();
+                    $ ("#ebirth_date_privacy").select2 ();
+                </script>
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="company_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Works at</div>
+                        <div class="vprofile_about_desc">
+
+                            <?= (trim ($objUser->getCompany ()) === "" ? ' <font style="color:#999;">No information provided yet</font> ' : $objUser->getCompany ()) ?>
+
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="company_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">Where do you currently work?</span>
+                        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="ecompany" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getCompany () ?>">
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="job_position_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Job Position</div>
+                        <div class="vprofile_about_desc">
+                            <font style="color:#999;"><?= trim ($objUser->getJobTitle ()) !== "" ? $objUser->getJobTitle () : 'No information provided yet' ?></font>            </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="job_position_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">What is your current job position?</span>
+                        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="ejob_position" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getJobTitle () ?>">
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="professional_skill_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Professional Skill(s)</div>
+                        <div class="vprofile_about_desc">
+                            <?= (trim ($objUser->getSkill ()) === "" ? ' <font style="color:#999;">No information provided yet</font> ' : $objUser->getSkill ()) ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="professional_skill_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">What professional skills do you have?</span>
+                        <textarea style="border-radius: 0px 0px 0px 0px;" class="form-control" id="eprofessional_skill" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off"><?= $objUser->getSkill () ?></textarea>
+                    </div>
+                <?php endif; ?>
+
+                <script type="text/javascript">$ ("#eprofessional_skill").expanding ();</script>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="high_school_name_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">High School</div>
+                        <div class="vprofile_about_desc">
+                            <?= (trim ($objUser->getSchool ()) === "" ? ' <font style="color:#999;">No information provided yet</font> ' : $objUser->getSchool ()) ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="high_school_name_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">Add a High School</span>
+                        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="ehigh_school_name" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getSchool () ?>">
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="started_high_school_from_date_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Date stated High School</div>
+                        <div class="vprofile_about_desc">
+                            <font style="color:#999;"><?= (trim ($objUser->getStartedSchool ()) !== "" ? $objUser->getStartedSchool () : 'No information provided yet') ?> </font>            </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php
+                $startedSchol = $objUser->getStartedSchool ();
+
+                $endedSchool = $objUser->getEndedSchool ();
+
+
+                $arrStarted = explode ("-", $startedSchol);
+                $arrEnded = explode ("-", $endedSchool);
+
+                if ( $_SESSION['user']['user_id'] === $objUser->getId () ):
+                    ?>
+                    <div id="started_high_school_from_date_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">Add the date you started your high school</span>
+
+                        <div class="select2-container" id="s2id_hs_started_day" style="min-width:30%; text-align:center; float:left;">
+
+                            <?php
+                            $started1 = isset ($arrStarted[0]) ? $arrStarted[0] : '';
+                            echo buildDay ('hs_started_day', $started1);
+                            ?>
+                        </div>
+
+                        <div class="select2-container" id="s2id_hs_started_month" style="min-width:30%;text-align:center; float:left;">
+
+                            <?php
+                            $started2 = isset ($arrStarted[1]) ? $arrStarted[1] : '';
+                            echo formMonth ('hs_started_month', $started2)
+                            ?>
+                        </div>
+
+                        <div class="select2-container" id="s2id_hs_started_year" style="min-width:40%;text-align:center; float:left;">
+
+                            <?php
+                            $started3 = isset ($arrStarted[2]) ? $arrStarted[2] : '';
+                            echo buildYearDropdown ('hs_started_year', $started3)
+                            ?>
+                        </div>
+
+
+                        <div style="clear:both;"></div><br>
+
+                        <script type="text/javascript">
+                            $ ("#hs_started_day").select2 ();
+                            $ ("#hs_started_month").select2 ();
+                            $ ("#hs_started_year").select2 ();
+                        </script>
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="ended_high_school_at_date_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Date ended High School</div>
+                        <div class="vprofile_about_desc">
+                            <font style="color:#999;"><?= (trim ($endedSchool) !== "" ? $endedSchool : 'No information provided yet'); ?></font>            </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="ended_high_school_at_date_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">Add the date you ended your high school</span>
+                        <div class="select2-container" id="s2id_hs_ended_day" style="min-width:30%; text-align:center; float:left;">
+
+                            <?php
+                            $ended1 = isset ($arrEnded[0]) ? $arrEnded[0] : '';
+                            echo buildDay ('hs_ended_day', $ended1)
+                            ?>
+                        </div>
+
+                        <div class="select2-container" id="s2id_hs_ended_month" style="min-width:30%;text-align:center; float:left;">
+
+                            <?php
+                            $ended2 = isset ($arrEnded[1]) ? $arrEnded[1] : '';
+                            echo formMonth ('hs_ended_month', $ended2);
+                            ?>
+                        </div>
+
+                        <div class="select2-container" id="s2id_hs_ended_year" style="min-width:40%;text-align:center; float:left;">
+
+                            <?php
+                            $ended3 = isset ($arrEnded[2]) ? $arrEnded[2] : '';
+                            echo buildYearDropdown ('hs_ended_year', $ended3)
+                            ?>
+                        </div>
+
+                        <div style="clear:both;"></div><br>
+
+                        <script type="text/javascript">
+                            $ ("#hs_ended_day").select2 ();
+                            $ ("#hs_ended_month").select2 ();
+                            $ ("#hs_ended_year").select2 ();
+                        </script>
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="college_field_of_study_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Field of Study</div>
+                        <div class="vprofile_about_desc">
+                            <?= (trim ($objUser->getStudied ()) === "" ? ' <font style="color:#999;">No information provided yet</font> ' : $objUser->getStudied ()) ?>    
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="college_field_of_study_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">What's your field of study?</span>
+                        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="ecollege_field_of_study" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getStudied () ?>">
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="college_name_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">College</div>
+                        <div class="vprofile_about_desc">
+                            <?= (trim ($objUser->getCollege ()) === "" ? ' <font style="color:#999;">No information provided yet</font> ' : $objUser->getCollege ()) ?>               
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="college_name_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">What's the name of your college?</span>
+                        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="ecollege_name" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getCollege () ?>">
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="started_college_from_date_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Date stated College</div>
+                        <div class="vprofile_about_desc">
+                            <font style="color:#999;"><?= (trim ($objUser->getStartedCollege ()) !== "" ? $objUser->getStartedCollege () : 'No information provided yet') ?></font>            </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php
+                if ( $_SESSION['user']['user_id'] === $objUser->getId () ):
+                    $arrStartedSchool = explode ("-", $objUser->getStartedCollege ());
+                    $arrEndedSchool = explode ("-", $objUser->getEndedCollege ());
+                    ?>
+                    <div id="started_college_from_date_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">Add the date you started your college</span>
+
+                        <div class="select2-container" id="s2id_c_started_day" style="min-width:30%; text-align:center; float:left;"> 
+
+                            <?php
+                            $day = isset ($arrStartedSchool[0]) ? $arrStartedSchool[0] : '';
+                            echo buildDay ('c_started_day', $day)
+                            ?>
+                        </div>
+
+                        <div class="select2-container" id="s2id_c_started_month" style="min-width:30%;text-align:center; float:left;">
+
+                            <?php
+                            $month = isset ($arrStartedSchool[1]) ? $arrStartedSchool[1] : '';
+                            echo formMonth ('c_started_month', $month)
+                            ?>
+                        </div>
+
+
+
+                        <div class="select2-container" id="s2id_c_started_year" style="min-width:40%;text-align:center; float:left;">    
+
+                            <?php
+                            $year = isset ($arrStartedSchool[2]) ? $arrStartedSchool[2] : '';
+                            echo buildYearDropdown ('c_started_year', $year)
+                            ?>
+                        </div>
+
+
+                        <div style="clear:both;"></div><br>
+
+                        <script type="text/javascript">
+                            $ ("#c_started_day").select2 ();
+                            $ ("#c_started_month").select2 ();
+                            $ ("#c_started_year").select2 ();
+                        </script>
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="ended_college_at_date_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Date ended College</div>
+                        <div class="vprofile_about_desc">
+                            <font style="color:#999;"><?= (trim ($objUser->getStartedCollege ()) !== "" ? $objUser->getStartedCollege () : 'No information provided yet') ?></font>            </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="ended_college_at_date_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">Add the date you ended your college</span>
+                        <div class="select2-container" id="s2id_c_ended_day" style="min-width:30%; text-align:center; float:left;">
+
+                            <?php
+                            $day = isset ($arrEndedSchool[0]) ? $arrEndedSchool[0] : '';
+                            echo buildDay ('c_ended_day', $day)
+                            ?>
+
+                        </div>
+
+
+                        <div class="select2-container" id="s2id_c_ended_month" style="min-width:30%;text-align:center; float:left;">
+
+                            <?php
+                            $month = isset ($arrEndedSchool[1]) ? $arrEndedSchool[1] : '';
+                            echo formMonth ('c_ended_month', $month)
+                            ?>
+                        </div>
+
+                        <div class="select2-container" id="s2id_c_ended_year" style="min-width:40%;text-align:center; float:left;">
+
+                            <?php
+                            $year = isset ($arrEndedSchool[2]) ? $arrEndedSchool[2] : '';
+                            echo buildYearDropdown ('c_ended_year', $year)
+                            ?>
+                        </div>
+
+                        <div style="clear:both;"></div><br>
+
+                        <script type="text/javascript">
+                            $ ("#c_ended_day").select2 ();
+                            $ ("#c_ended_month").select2 ();
+                            $ ("#c_ended_year").select2 ();
+                        </script>
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="from_city_name_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">From</div>
+                        <div class="vprofile_about_desc">
+                            <font style="color:#999;">No information provided yet</font>            </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="from_city_name_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">Which city are you from?</span>
+                        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="efrom_city_name" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="">
+                        <div style="clear:both;"></div>
+                    </div>
+                <?php endif; ?>
+                <br clear="all"><br clear="all">
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="lives_in_city_name_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Lives in</div>
+                        <div class="vprofile_about_desc">
+                            <font style="color:#999;"><?= trim ($objUser->getTown ()) !== "" ? $objUser->getTown () : 'No information provided yet' ?></font>            </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="lives_in_city_name_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">In which city do you currently live?</span>
+                        <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="elives_in_city_name" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="">
+                        <div style="clear:both;"></div>
+                    </div>
+                    <br clear="all"><br clear="all">
+                <?php endif; ?>
+
+
+
+                <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                    <div class="vprofile_about_detail" id="language_text" style="min-width:100%;display:inline-block;">
+                        <div class="vmiddle_about_title">Primary Language</div>
+                        <div class="vprofile_about_desc">
+                            <font style="color:#999;">No information provided yet</font>            </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                    <div id="language_html" style="min-width:100%;">
+                        <span class="input-group-addon vprofile_about_detail_addon">What language do you speak?</span>
+
+                        <div class="select2-container" id="s2id_elanguage" style="min-width:100%;">
+                            <select id="elanguage" style="min-width: 100%; " tabindex="-1" title="">
+                                <option value="">Select your language</option>
+                                <?php foreach ($arrLanguages as $arrLanguage):
+                                    $selected = trim($arrLanguage['value']) == trim($objUser->getLanguage()) ? 'selected="selected"' : '';
+                                    ?>
+                                    <option value="<?= $arrLanguage['value'] ?>" <?= $selected ?>><?= $arrLanguage['value'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div style="clear:both;"></div>
+                        </div>
+                    <?php endif; ?>
+                    <br clear="all"><br clear="all">
+                    <script type="text/javascript">
+                        $ ("#elanguage").select2 ();
+                    </script>
+
+
+                    <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                        <div class="vprofile_about_detail" id="religion_text" style="min-width:100%;display:inline-block;">
+                            <div class="vmiddle_about_title">Religious Views</div>
+                            <div class="vprofile_about_desc">
+                                <?= (trim ($objUser->getReligion ()) === "" ? ' <font style="color:#999;">No information provided yet</font> ' : $objUser->getReligion ()) ?>                           
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                        <div id="religion_html" style="min-width:100%;">
+                            <span class="input-group-addon vprofile_about_detail_addon">What's your Religious Views?</span>
+                            <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="ereligion" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getReligion () ?>">
+                            <div style="clear:both;"></div>
+                        </div>
+                        <br clear="all"><br clear="all">
+                    <?php endif; ?>
+
+
+                    <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                        <div class="vprofile_about_detail" id="politicl_view_text" style="min-width:100%;display:inline-block;">
+                            <div class="vmiddle_about_title">Political Views</div>
+                            <div class="vprofile_about_desc">
+                                <?= (trim ($objUser->getPolitics ()) === "" ? ' <font style="color:#999;">No information provided yet</font> ' : $objUser->getPolitics ()) ?>                                     
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                        <div id="politicl_view_html" style="min-width:100%;">
+                            <span class="input-group-addon vprofile_about_detail_addon">What are your Political Views?</span>
+                            <input style="border-radius: 0px 0px 0px 0px;" type="text" class="form-control" id="epoliticl_view" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objUser->getPolitics () ?>">
+                            <div style="clear:both;"></div>
+                        </div>
+                        <br clear="all"><br clear="all">
+                    <?php endif; ?>
+
+                    <?php if ( $_SESSION['user']['user_id'] !== $objUser->getId () ): ?>
+                        <div class="vprofile_about_detail" id="page_country_text" style="min-width:100%;display:inline-block;">
+                            <div class="vmiddle_about_title">Country</div>
+                            <div class="vprofile_about_desc">
+                                Malaysia            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                        <div id="page_country_html" style="min-width:100%;">
+                            <span class="input-group-addon vprofile_about_detail_addon">What country are you from?</span>
+                            <div class="select2-container" id="s2id_ecountry" style="min-width:100%;">
+                                <select id="ecountry" style="min-width: 100%; " tabindex="-1" title="">
+                                    <option value="">Select your country</option>
+
+                                    <?php
+                                    foreach ($arrCountries as $arrCountry):
+                                        $selected = trim ($objUser->getCountry ()) == trim ($arrCountry['IC_NAME']) ? 'selected="selected"' : '';
+                                        ?>
+                                        <option value="<?= $arrCountry['IC_NAME'] ?>" <?= $selected ?>><?= $arrCountry['IC_NAME'] ?></option>
+                                    <?php endforeach ?>
+                                </select>
+                                <script type="text/javascript">
+                                    $ ("#ecountry").select2 ();
+                                </script>
+                                <div style="clear:both;"></div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ( $_SESSION['user']['user_id'] === $objUser->getId () ): ?>
+                            <div class="modal-footer" style="padding-top:20px; padding-bottom:20px; border:1px solid #E6E6E6; border-left:0px solid;border-right:0px solid; text-align:center; border-bottom:0px solid !important;">
+                                <div id="update_acct_wait" style="margin:0 auto;" align="center">
+                                    <span class="btn btn-default btn btn-success btn-wall-continue" style=" font-size:16px;padding-top:8px; padding-bottom:10px;" onclick="vpb_save_profile_details ();">Save changes</span>
+
+                                    <span class="btn btn-default" style=" margin-top:0px; margin-left:30px;padding-top:8px; padding-bottom:10px;" onclick="vpb_show_status_updates ();">Cancel</span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+

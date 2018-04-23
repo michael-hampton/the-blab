@@ -1,0 +1,44 @@
+<div class="col-lg-8" >
+    <div class="col-lg-8">
+        <div class="vasplus_pb_Search pull-left col-lg-12" style="margin-top:20px;">
+            <form>
+                <input style="border-radius: 8px; border: 1px solid #CCC" type="text" name="vpv_search_box" class="form-control" id="vpv_search_box" placeholder="Search for people or pages">
+                <a href="javascript:void(0);" id="vpv_search_button" onclick="vpb_auto_search_people_and_pages ();"></a>
+            </form>
+            <div class="vpb_search_results" style="display: block;">
+                <ul>
+                    <div id="response_brought">  </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4" style="margin-top:32px;">
+        <a href="#">Home</a>
+        <a href="#">News Feed</a>
+
+        <ul class="nav navbar-nav navbar-right" style="margin-top: -14px;">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="label label-pill label-danger count" style="border-radius:10px;"></span> <span class="glyphicon glyphicon-envelope" style="font-size:18px;"></span></a>
+                <ul class="dropdown-menu"></ul>
+            </li>
+
+            <li class="dropdown" id="friendRequests">
+                <span id="counter">0</span>
+                <div id="friendRequests_bar">
+                    <div id="arrowUp"></div>
+                    <div id="friendRequests_bar_header"><p>  Friend Requests</p></div>  
+
+                    <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                        <span class="vpb_hover_b" onclick="vpb_show_find_new_friends_box ('michaelhampton');">Find Friend</span>
+                    </div>
+
+                    <div id="midContent" style="height:250px; overflow: auto;">
+
+                    </div>
+                    <div id="friendRequests_bar_footer"><a href="#">See All</a></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

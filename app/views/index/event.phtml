@@ -1,0 +1,118 @@
+<!--<link href="/facebook/public/css/bootstrap.css" rel="stylesheet">
+<link href="/facebook/public/css/style.css" rel="stylesheet">
+<link href="/facebook/public/css/animate.css" rel="stylesheet">
+<link href="/facebook/public/css/newsFeed.css" rel="stylesheet">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="/facebook/public/css/jquery.mentions.css">
+<link href="/facebook/public/css/sweetalert.css" rel="stylesheet">
+<link href="/facebook/public/css/datetime.css" rel="stylesheet">
+<link href="/facebook/public/css/fonts.css" rel="stylesheet">
+<link href="/facebook/public/css/clockpicker.css" rel="stylesheet">
+<link href="/facebook/public/css/icheck.css" rel="stylesheet">-->
+
+<div class="wrapper wrapper-content animated fadeInUp">
+
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="text-center m-t-md">
+                <h2><?= $objEvent->getEventName () ?></h2>
+                <!-- timeline profile picture -->
+                <a href="#" id="timelineProfilePic">
+                    <img class="currentImage" src="<?= $objEvent->getImageLocation () ?>">
+                    <br>Click to upload
+
+                </a>
+
+                <div style="display:none;">
+                    <form id="groupImage" method="post" enctype="multipart/form-data">
+                        <div class="uploadFile2">
+                            <input type="file" class="custom-file-upload" name="userImage" id="profileimgaa">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="uploadedImage">
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom: 12px;">
+        <div class="col-md-3">
+            <button type="button" status="1" class="btn btn-primary btn-sm btn-block eventResponse"><i class="fa fa-envelope"></i> Going
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button type="button" status="2" class="btn btn-danger btn-sm btn-block eventResponse"><i class="fa fa-coffee"></i> Not Going
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button type="button" status="3" class="btn btn-success btn-sm btn-block eventResponse"><i class="fa fa-coffee"></i> Interested
+            </button>
+        </div>
+    </div>
+
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <div class="col-lg-6 pull-left">
+                        <dl class="dl-horizontal">
+
+                            <dt>Location:</dt>
+                            <dd><?= $objEvent->getLocation () ?></dd>
+                            <dt>Event Date:</dt>
+                            <dd> <?= $objEvent->getEventDate () ?></dd>
+                            <dt>Event Time:</dt>
+                            <dd><?= $objEvent->getEventTime () ?></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="col-md-4">
+                            <h5><strong class="going"><?= $objEvent->getGoingCount() ?></strong> Going</h5>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h5><strong class="not_going"><?= $objEvent->getNotGoingCount() ?></strong> Not Going</h5>
+
+                        </div>
+
+                        <div class="col-md-4">
+                            <h5><strong class="interested"><?= $objEvent->getInterestedCount() ?></strong> Interested</h5>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="/facebook/public/js/jquery-2.1.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="/facebook/public/js/bootstrap.js"></script>
+<script src="/facebook/public/js/slimscroll.js"></script>
+<script src="/facebook/public/js/pagination.js"></script>
+<script src="/facebook/public/js/search.js"></script>
+<script src="/facebook/public/js/sweetalert.js"></script>-->
+<!--<script src="/facebook/public/js/newsFeed.js"></script>-->
+<script src="/facebook/public/js/event.js" type="text/javascript"></script>
+
+<script>
+
+    var groupId = <?= $objEvent->getId () ?>;
+    var groupName = '<?= $objEvent->getEventName () ?>';
+
+    var selectedImageType = "event";
+    var selectedImageId = groupId;
+
+   
+</script>

@@ -1,0 +1,34 @@
+<div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
+
+    <strong>List</strong>
+
+    <ul class="list-group clear-list">
+
+        <?php
+        if ( !empty ($arrList) )
+        {
+            foreach ($arrList as $list) {
+                ?>
+
+                <li class="list-group-item fist-item">
+                    <span class="pull-right"> <span class="label <?= $class ?>"><?= $label ?></span></span>
+                        <?php
+                        $arrUser = $list->getEventMember ();
+                        echo $arrUser->getFirstName () . ' ' . $arrUser->getLastName ();
+                        ?>
+                </li>
+
+                <?php
+            }
+        }
+        else
+        {
+            echo '<h2>There are no me,bers with this status</h2>';
+        }
+        ?>
+
+
+
+    </ul>
+
+</div>

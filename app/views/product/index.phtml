@@ -1,0 +1,647 @@
+<link rel="stylesheet" type="text/css" href="/blab/public/css/product.css">
+<link rel="stylesheet" type="text/css" href="/blab/public/css/photoScroller.css">
+
+<div id="vas-main-body">
+    <section id="" style="width:90%; min-height:400px; border-left:1px solid #E6E6E6;border-right:1px solid #E6E6E6; margin:0 auto;background-color:#FFF !important; margin-bottom:0px !important; padding-bottom:0px !important;">
+
+        <div class="vasplus_containers">
+            <br clear="all">
+            <div class="the_row">
+                <br clear="all">
+
+                <!-- The Search Box -->
+                <div id="vcart_search_box" style="margin:0 auto; padding:0px; display:none;" align="center">
+
+                    <div class="vback_ground enable_this_box" style="border-left:0px solid;border-right:0px solid; border-radius:0px;">
+                        <div class="input-group">
+                            <input type="text" class="search-form-control" id="products_search_term" placeholder="Search product name...">
+                            <span class="input-group-addon" id="search-input-group-addon" onclick="vpb_search_products ();"><i style="color:#FFF;" class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+
+                    <br clear="all"><br clear="all">
+
+
+                </div>
+
+
+                <!-- OUTER BOX STARTS-->
+                <div class="vpb_vcart_body_wrapers">
+
+
+                    <!-- LEFT BOX STARTS -->
+                    <div class="vpb_vcart_body_bleft">
+                        <div class="left_inners">
+
+                            <div class="vcart_o_detail" style="border-bottom:0px solid;">
+                                <div class="vcart_o_title" style="font-weight:bold !important; background-color:#60a83a !important; color:#FFF;">
+                                    <div style="float:left;"><i class="fa fa-desktop" aria-hidden="true"></i> Category</div>
+                                    <div style="float:right;"><i style="cursor:pointer;" class="fa fa-reply vasplus_tooltip_popup" title="Back" aria-hidden="true" onClick="vpb_load_shopping_cart_products ('1', 'default', '');"></i></div>
+                                    <div style="clear:both;"></div>
+                                </div>
+
+                                <?php foreach ($arrCategories as $arrCategory): ?>
+
+
+                                    <div  id="category_<?= $arrCategory->getId () ?>" class="admin_cp_menu" onClick="vpb_load_shopping_cart_products ('1', '<?= $arrCategory->getName () ?>', '<?= $arrCategory->getId () ?>');">
+
+                                        <div style="float:left;">
+                                            <i id="end_<?= $arrCategory->getId () ?>" class="fa fa-angle-double-right vcart_end" aria-hidden="true" style="display:none;"></i>
+                                            <i id="start_<?= $arrCategory->getId () ?>" class="fa fa-angle-right vcart_started" aria-hidden="true"></i> <?= $arrCategory->getName () ?></div>
+
+                                        <div style="float:right;"><?= $arrCategory->getCount () ?></div>
+
+                                        <div style="clear:both;"></div>
+                                    </div>
+
+                                <?php endforeach; ?>
+
+
+                                <br clear="all"><br clear="all"> 
+
+                                <a href="/blab/product/admin"><a href="/blab/product/admin"><i class="fa fa-plus-square-o"></i></a>Sell</a>
+
+                                <br clear="all"> <br clear="all"> 
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- LEFT BOX ENDS -->
+
+
+
+
+                    <!-- CENTER BOX STARTS -->
+                    <div class="vpb_vcartl_body_bcenter">
+                        <div class="inner_center">
+
+                            <!-- Display Group Details -->
+                            <div class="vcart_o_detail" style="border-bottom:0px solid !important;">
+                                <div class="vcart_o_title vcartTitle" style="padding:0px;">
+                                    <div style="float:left; padding:10px; font-weight:bold;">
+                                        Products <span id="vpb_display_page_name"></span>
+                                    </div>
+                                    <div style="float:right; padding:10px;">
+
+                                        <span id="vpb_display_timw"></span> 
+                                        <span class="cbtn" style="display:inline-block;  margin-top:-11px;padding:5px; padding-left:10px; padding-right:10px; margin:-8px; margin-top:-10px;margin-left:30px;" onClick="vpb_toggle_search_box ();"><i class="fa fa-search-minus" aria-hidden="true" style="color:#60a83a !important; display:none;"></i><i class="fa fa-search-plus" aria-hidden="true" style="color:#60a83a !important;"></i></span>
+
+                                    </div><div style="clear:both;"></div></div>
+                                <div style="clear:both;"></div>
+                            </div>
+                            <div style="clear:both;"></div>
+
+                            <div style="width:100%; margin:0 auto; text-align:center; display:table;" align="center">
+                                <center><div style="width:100%; margin:0 auto;" id="vpb_loading_data_in_the_system"></div></center>
+                            </div>
+
+
+                        </div>
+
+                        <div style="clear:both;"></div>
+
+                    </div>
+                    <!-- CENTER BOX ENDS -->
+
+
+                </div>
+                <!-- OUTER BOX ENDS -->
+
+            </div>
+            <div style="clear:both;"></div>
+
+        </div>
+    </section>
+</div>
+<input type='hidden' id='v_loading_btn' value='<div title="Please wait..." class="btn_loading">Please wait<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>'>
+
+<input type='hidden' id='v_loadings_btn' value='<div title="Please wait..." class="btn_loadings">Please wait<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>'>
+
+<input type='hidden' id='v_sending_btn' value='<div title="Please wait..." class="btn_loading">Please wait<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>'>
+
+<input type='hidden' id='v_removing_btn' value='<div title="Removing..." class="btn_loading">Removing<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>'>
+
+<input type="hidden" id="vpb_loading_image_gif" value='<br clear="all" /><center><div onMouseDown="return false;" onMouseMove="return false;" onMouseUp="return false;" onselectstart="return false;" class="vpb_loading_rounds" align="center"><img src="http://www.shopping-cart.vasplus.info/img/loadings.gif" alt="Loading...." align="absmiddle" title="Loading...."/><br><div align="center" style="margin-top:15px;">Please wait</div></div></center>' />
+
+<input type="hidden" id="vpb_loading_c_image_gif" value='<center><div onMouseDown="return false;" onMouseMove="return false;" onMouseUp="return false;" onselectstart="return false;" class="vpb_loading_c_rounds" align="center"><img src="http://www.shopping-cart.vasplus.info/img/loadings.gif" alt="Loading...." align="absmiddle" title="Loading...."/><br><div align="center" style="margin-top:15px;">Loading</div></div></center>' />
+
+<input type="hidden" id="general_system_error" value="Sorry, there was an error while trying to complete your request.<br />Please try again or contact us to report the issue should the problem persist.">
+
+<input type="hidden" id="session_uid" value="">
+
+<input type="hidden" id="current_user_password_field_blank_text" value="Please enter your current password in the required field to proceed.">
+<input type="hidden" id="new_user_password_field_blank_text" value="Please enter a new password of your choice in the required field to continue." />
+<input type="hidden" id="verify_new_user_password_field_blank_text" value="Please verity your provided new password in the field specified to go.">
+<input type="hidden" id="verify_and_new_user_password_field_not_match_text" value="Passwords did not match. Please be sure that the new password and verify password field entries are the same and try again.">
+
+<input type="hidden" id="no_more_item_in_shopping_cart_text_label" value="There is no more item in your shopping cart">
+
+
+<input type="hidden" id="the_remote_address" value="86.147.122.74">
+<input type="hidden" id="the_website_link" value="http://www.shopping-cart.vasplus.info">
+<input type="hidden" id="the_website_logo_link" value="http://www.shopping-cart.vasplus.info/logo/logo-vasplus-blog.png">
+<input type="hidden" id="the_website_name" value="Vasplus Programming Blog">
+<input type="hidden" id="currency_symbol" value="$">
+<input type="hidden" id="currency_code" value="USD">
+<input type="hidden" id="country_code" value="US">
+<input type="hidden" id="payment_notifier_link" value="http://www.shopping-cart.vasplus.info/notifications.php">
+<input type="hidden" id="the_website_email" value="vasplus.payment@gmail.com">
+
+<input type="hidden" id="product_price_text_label" value="Price">
+<input type="hidden" id="remove_item_from_cart_text_label" value="Remove">
+
+<input type="hidden" id="return_to_site_text_label" value="Return to ">
+<input type="hidden" id="empty_shopping_cart_text_label" value="You have not added any item to your shopping cart at the moment.">
+
+<input type="hidden" id="admin_ban_user_account_text" value="Are you sure that you really want to ban the account of ">
+<input type="hidden" id="admin_unban_user_account_text" value="Are you sure that you really want to un-ban the account of ">
+<input type="hidden" id="admin_delete_user_account_text" value="Are you sure that you really want to delete the account of ">
+
+<input type="hidden" id="admin_delete_product_text" value="Are you sure that you really want to delete the product: ">
+
+<input type="hidden" id="admin_users_management_text" value="Users Management">
+<input type="hidden" id="admin_settings_text" value="Settings">
+<input type="hidden" id="admin_website_save_deails_empty_fields_text" value="Please enter site name, email address, short description and keywords to save your changes.">
+
+
+<input type="hidden" id="account_no_fullname_text" value="Please enter your fullname in the field provided to proceed.">
+<input type="hidden" id="account_no_email_text" value="Please enter your email address in the required field to proceed.">
+<input type="hidden" id="account_email_exist_text" value="Sorry, the email address you have provided is already in use with another account.">
+
+
+
+<input type="hidden" id="admin_create_manage_categories_text" value="Create or Manage Categories">
+<input type="hidden" id="admin_category_name_placeholder_text" value="Type the name of the category here...">
+<input type="hidden" id="admin_enter_category_name_text" value="Please enter the name of the category that you intend to add to proceed.">
+
+<input type="hidden" id="admin_add_products_text" value="Add Products to Shop">
+
+<input type="hidden" id="admin_manage_products_in_shop_text" value="Manage Products in Shop">
+<input type="hidden" id="admin_manage_purchases_in_shop_text" value="Manage Purchases">
+
+<input type="hidden" id="admin_readonly_text" value="<div style='line-height:28px;'>Sorry, this is a demo version and this feature has been disabled in this version.<br />You will be able to perform all operations when you purchase the script.<br />Thank you!</div>">
+
+<input type="hidden" id="pname_text" value="Please enter the name of the product in the required field to proceed.">
+<input type="hidden" id="pprice_text" value="Please enter the price of the product in the required field to proceed.">
+<input type="hidden" id="pcode_text" value="Please enter the code of the product in the required field to proceed.">
+<input type="hidden" id="pcolor_text" value="Please select an option for product color from the given options.">
+<input type="hidden" id="psize_text" value="Please select an option for product size from the given options.">
+<input type="hidden" id="pcategory_text" value="Please select an option for product category from the given options.">
+<input type="hidden" id="pdescription_text" value="Please enter the description of the product in the required field to proceed.">
+<input type="hidden" id="invalid_file_attachment" value="Sorry, you added an invalid file type.<br>The extension of files allowed are jpg, jpeg, gif and png image files.">
+
+
+
+<!-- Update Account Password Modal -->
+<div class="modal fade" id="update-password" tabindex="-1" role="dialog" aria-labelledby="updatepassword" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="updatepassword">Update Password</h4>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                    <input type="password" class="form-control" id="oldpasswd"  data-placement="top" placeholder="Current Password" autocomplete="off" required>
+                </div>
+                <br clear="all">
+
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                    <input type="password" class="form-control" id="newpasswd"  data-placement="top" placeholder="New Password" autocomplete="off" required>
+                </div>
+                <br clear="all">
+
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                    <input type="password" class="form-control" id="verifynewpasswd"  data-placement="top" placeholder="Verify New Password" autocomplete="off" required>
+                </div>
+
+                <div id="update_passwd_status" style="margin:0 auto;" align="center"></div>
+
+            </div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span class="cbtn" data-dismiss="modal" style=" margin-top:0px; margin-right:20px;">Close</span>
+                <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="vpb_update_passwd ('');">Save changes</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Default Photo Enlargement Modal -->
+<div class="modal fade" style="z-index:999999999999;" id="vpb_photo_viewer_display_box" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="photo_viewer_box_title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fa fa-file-image-o"></i> <span id="photo_viewer_box_title"></span></h4>
+            </div>
+            <div class="modal-body" style="margin:0 auto !important; text-align:center;" align="center"><span id="photo_viewed_contents"></span></div>
+            <div class="modal-footer">
+                <span class="btn btn-default" data-dismiss="modal">Close</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Information Modal -->
+<div id="v-cart-alert-box" data-backdrop="static" data-toggle="modal" data-target="#v-wall-information-alert" style="display:none;"></div>
+<div class="modal fade" style="z-index:999999999999;" id="v-wall-information-alert" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="v-wall-info" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="v-wall-info">Information</h4>
+            </div>
+            <div class="modal-body" style="margin:0 auto !important; text-align:center;" align="center">
+                <span id="v-cart-message"></span>
+            </div>
+            <div class="modal-footer">
+
+                <span id="vclose_info_box_button" class="btn btn-default" data-dismiss="modal">Close</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="logout-confirmation" tabindex="-1" role="dialog" aria-labelledby="logoutconfirmation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="logoutconfirmation">Confirmation</h4>
+            </div>
+
+            <div class="modal-body">Are you really sure that you want to log out from the system?</div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span class="cbtn" data-dismiss="modal" style=" margin-top:0px; margin-right:20px;">No</span>
+                <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="vpb_log_user_off ('http://www.shopping-cart.vasplus.info/logout.php');">Yes</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Items in shopping cart -->
+<div class="modal fade" style="z-index:999999999;" id="vpb_items_in_cart" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="items_in_cart" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fa fa-shopping-cart"></i> <span id="items_in_cart">Your Shopping Cart</span></h4>
+            </div>
+            <div class="modal-body" style="margin:0 auto !important; text-align:center; max-height:400px; overflow-y:auto;" align="center">
+                <div class="vcart_items_wrap">
+                    <div class="vcart_items_wrap_a">
+                        <div class="vcart_items_wrap_b">
+                            Product Details         </div>
+                        <div class="vcart_items_wrap_c">
+                            Price (USD)
+                        </div>
+                        <div style="clear:both;"></div>
+                    </div>
+
+                    <div id="vcart_added_items_in_cart"></div>
+                </div>
+            </div>
+            <div class="vcart_items_wrap_g">
+                <div class="vcart_items_wrap_h">Grand Total: $<span id="vcart_grand_total">0.00</span> USD</div>
+                <div style="clear:both;"></div>
+            </div>
+
+            <div class="modal-footer">
+                <div style="float:left; padding-top:6px;"><span id="clearing_status"></span></div>
+
+                <div id="clear_cart_button" style="float:right;">
+                    <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="document.getElementById ('clearing_status').innerHTML = document.getElementById ('v_loading_btn').value;document.getElementById ('clear_cart_button').style.display = 'none';$ ('.vcart_remove_btn').hide ();document.getElementById ('ppcheckoutbtn').click ();">Check-out</span>
+
+                    <span class="btn btn-danger" onclick="vpb_remove_item_from_cart ('', 'clear-all')">Clear Cart</span>
+
+                    <span class="btn btn-info" data-dismiss="modal">Continue Shopping</span>
+                </div>
+                <div style="clear:both;"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Photo Enlargement Modal -->
+<span id="vpb_clicked_enlarge_photos" style="display:none;" data-backdrop="static" data-toggle="modal" data-target="#vpb_enlarge_photos"></span>
+<!-- Modal -->
+<div class="modal fade" id="vpb_enlarge_photos" tabindex="-1" role="dialog" aria-labelledby="vpb_enlarge_photosLabel" aria-hidden="true">
+    <div class="modal-dialog vfullscreen">
+        <div class="modal-content vfullscreen_content">
+            <div class="modal-header">
+                <button type="button" class="close vasplus_tooltip_photo_e" data-dismiss="modal" aria-hidden="true" title="Close" style="position:absolute;top:13px; right:10px;">&times;</button>
+
+                <span class="vp_photo_scrol_counter" style="position:absolute;top:13px; left:49%;"><span id="vp_photo_scrol_counter"><span id="vp_curnt"></span> of <span id="vp_total_phtos"></span></span></span>
+
+                <h4 class="modal-title" id="vpb_enlarge_photosLabel"><i class="fa fa-file-image-o"></i> Product Photo Enlargement</h4>
+            </div>
+            <div class="modal-body vpb_modal_body">
+                <div style="vertical-align: middle !important;height:100% !important;text-align:center; margin:0 auto;">
+                    <div class="input-group" style="height:100%;">
+                        <span class="input-group-addon vpb_left_and_right_box">
+                            &nbsp;
+                        </span>
+                        <span id="_popupText"></span>
+                        <span class="vpb_wall_fullscreen_left_view">
+
+                            <span class="vholder"></span>
+                        </span>
+
+                        <span class="input-group-addon vpb_left_and_right_box">
+                            &nbsp;
+                        </span>
+                        <input type="hidden" id="total_photos_to_scroll" value="0">
+                        <input type="hidden" id="current_scrolled_photo" value="0">
+                        <input type="hidden" id="current_status_id" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Update Account Password Modal -->
+<div class="modal fade" id="edit-account" tabindex="-1" role="dialog" aria-labelledby="editaccount" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editaccount">Account Information</h4>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                    <input type="text" class="form-control" id="vfullname"  data-placement="top" placeholder="Fullname" value="" autocomplete="off" required>
+                </div>
+                <br clear="all">
+
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                    <input type="text" class="form-control" id="vemail_address"  data-placement="top" placeholder="Email Address" value="" autocomplete="off" required>
+                </div>
+                <br clear="all">
+
+                <div id="account_setting_status" style="margin:0 auto;" align="center"></div>
+
+            </div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span class="cbtn" data-dismiss="modal" style=" margin-top:0px; margin-right:20px;">Close</span>
+                <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="vpb_update_account ('');">Save changes</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="deletion-account-confirmation" tabindex="-1" role="dialog" aria-labelledby="deletionaccountconfirmation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="deletionaccountconfirmation">Confirmation</h4>
+            </div>
+
+            <div class="modal-body"><span id="delete_account_question"></span></div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span class="cbtn" data-dismiss="modal" style=" margin-top:0px; margin-right:20px;">No</span>
+                <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="vpblog_user_account_confirmation_action ('yes');">Yes</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="deletion-product-confirmation" tabindex="-1" role="dialog" aria-labelledby="deletionproductconfirmation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="deletionproductconfirmation">Confirmation</h4>
+            </div>
+
+            <div class="modal-body"><span id="delete_product_question"></span></div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span class="cbtn" data-dismiss="modal" style=" margin-top:0px; margin-right:20px;">No</span>
+                <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="vpblog_product_confirmation_action ('yes');">Yes</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="deletion-purchased-confirmation" tabindex="-1" role="dialog" aria-labelledby="deletionpurchasedconfirmation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="deletionpurchasedconfirmation">Confirmation</h4>
+            </div>
+
+            <div class="modal-body"><span id="delete_purchased_question"></span></div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span class="cbtn" data-dismiss="modal" style=" margin-top:0px; margin-right:20px;">No</span>
+                <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="vpblog_purchased_confirmation_action ('yes');">Yes</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="add-session" tabindex="-1" role="dialog" aria-labelledby="addsession" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="addsession">Add New Category</h4>
+            </div>
+
+            <div class="modal-body">
+                To add a new category, please enter the name of the category in the field specified and click on the submit button.<br><br>
+                <div class="input-group">
+                    <span class="input-group-addon">Category Name</span>
+                    <input type="text" class="form-control" id="category_name"  data-placement="top" placeholder="Type the name of the category here..." autocomplete="off" required>
+                </div>
+                <br clear="all">
+
+                <div id="add_category_status" style="margin:0 auto;" align="center"></div>
+
+            </div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span class="cbtn" data-dismiss="modal" onClick="document.getElementById ('add_category_status').innerHTML = '';" style=" margin-top:0px; margin-right:20px;">Close</span>
+                <span class="sbtn sbtn-success" style="padding-top:8px; padding-bottom:10px;" onClick="vpb_add_category ('add');">Submit</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="delete-category" tabindex="-1" role="dialog" aria-labelledby="deletesession" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="deletesession">Confirmation</h4>
+            </div>
+
+            <div class="modal-body">Do you really mean to delete: <span style="font-weight:bold;" id="category_to_delete"></span>?</div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span class="cbtn" data-dismiss="modal" style=" margin-top:0px; margin-right:20px;">No</span>
+                <span class="sbtn sbtn-success" style="padding-top:8px; padding-bottom:10px;" onClick="vpb_delete_this_category ();">Yes</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="show_product_details" tabindex="-1" role="dialog" aria-labelledby="showproductdetails" aria-hidden="true">
+    <div class="modal-dialog" style=" min-width:98%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="showproductdetails"><span id="vcart_prodname"></span></h4>
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="vcart_photo_scrol_left_box">
+
+                    <div id="vcart_next_or_prev" style="display:none;">
+                        <span id="vcart_next" class="cbtn">Next</span>
+                        <span id="vcart_prev" class="cbtn">Previous</span><br /><br />
+                    </div>
+
+                    <div class="vasplus_scroller_wrapper">
+                        <div class="vasplus_scroller_wrap">
+                            <span id="vcartCurrentPicx"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="vcart_photo_scrol_right_box">
+                    <div style="padding:18px; padding-top:0px; width:100%; text-align:left; font-family:arial; font-size:14px; line-height:26px;word-wrap: break-word; max-height:400px; overflow-y:auto;">
+                        <div id="vcart_item_description"></div>
+
+
+                        <div class="ibox-content">
+                            <h3>Private message</h3>
+                            
+                            <input type="hidden" id="seller" name="seller">
+                             <input type="hidden" id="productId" name="productId">
+
+                            <p class="small" id="sellersName">
+                                Send private message to Alex Smith
+                            </p>
+
+                            <!--                            <div class="form-group">
+                                                            <label>Subject</label>
+                                                            <input type="email" class="form-control" placeholder="Message subject">
+                                                        </div>-->
+                            <div class="form-group">
+                                <label>Message</label>
+                                <textarea class="form-control" id="theMessage" placeholder="Your message" rows="8"></textarea>
+                            </div>
+                            <button class="btn btn-primary btn-block" onclick="sendMessageToSeller ()">Send</button>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div style="clear:both;"></div>
+
+
+
+            </div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+
+                <span class="cbtn" data-dismiss="modal" onClick="document.getElementById ('add_category_status').innerHTML = '';" style=" margin-top:0px;">Close</span>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="vcart_check_uses"></div>
+<input type="hidden" id="vasplus_programming_blog_hidden_item_id" />
+<input type="hidden" id="vasplus_data_id" /><!-- Footer -->
+
+
+<!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+<div id="vpb-scrol-to-top" class="scroll-top">
+    <span id="vas-scroll-to-top" class="btn btn-primary">
+        <i class="fa fa-chevron-up"></i>
+    </span>
+</div>
+
+
+<script src="/blab/public/js/product.js" type="text/javascript"></script>
+<script src="/blab/public/js/productPhotos.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+                    $ (function ()
+                    {
+                        vpb_load_shopping_cart_products ('1', 'default', '');
+
+                        vpb_admin_time ();
+//	var currentLink = window.location.href;
+//	if(vpb_getcookie('last_visited_url') == currentLink) {}
+//	else { vpb_setcookie('last_visited_url', currentLink, 90); }
+//	
+//	vpb_removecookie('paymentCode');
+//	setTimeout(function() {
+//		vpb_setcookie('paymentCode', vpb_generte_random(), 30);
+//	},800);
+                    });
+
+
+                    var width_of_tracking_system = "300px"; /* Set the width of the tracking system. Examples: 100%, 80%, 60%, 300px, 200px, etc */
+
+                    var header_background_color = "#b60002"; /* You can change the background color of the header if you wish */
+                    var header_text_color = "#FFF"; /* You can change the text color of the header if you wish */
+                    var header_img_icon = ""; /* You can provide a URL to an icon on your server to replace the existing header green icon if you wish. Size: width="18px", height="18px"  */
+                    var show_header_img_icon = "1"; /* To show/hide the header icon image. Ex: 1 or 0  */
+
+                    var countries_total_visibility = "1"; /* To show/hide the scrolling countries at the top. Ex: 1 or 0 */
+                    var countries_report_visibility = "1"; /* To show/hide the scrolling countries at the bottom. Ex: 1 or 0 */
+
+                    var top_visible_reports_to_display = "4"; /* You can set the number of visible reports to show in the top scroller. Ex: 2, 3, 4, 5, 6 etc */
+                    var bottom_visible_reports_to_display = "3"; /* You can set the number of visible reports to show in bottom scroller. Ex: 2, 3, 4, 5 etc */
+                    var vpb_track_code = "6MGCHQS9O78"; /* This is your tracking code or client ID, you don't have to touch it */
+
+</script>
+
+

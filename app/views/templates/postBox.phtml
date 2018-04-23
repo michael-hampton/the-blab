@@ -1,0 +1,323 @@
+<?php $form = !isset ($form) ? 'commentform' : $form ?>
+
+<div id="vpb_status_update_wraps" class="pull-left col-lg-12" style="max-width: 100%; padding: 0px;">
+    <div id="v_status_update_box" class="modal-dialog v_wrapper">
+        <div class="modal-content vasplus_a enable_this_box" id="vpb_status_update_box">
+ 
+            <div class="modal-header heading">
+                <div class="vasplus_aa" onclick="vpb_update_status_clicked ();"><i class="fa fa-pencil-square vasplus_aaa"></i> Update Status</div>
+
+                <button id="vpb_close_post_box" type="button" class="close vasplus_tooltip_notify" style="position:absolute;top:10px; right:15px; cursor:pointer; display:none;" original-title="Close" onclick="vpb_close_post_box ();">×</button>
+
+                <div class="vasplus_bb">&nbsp;</div>
+                <div class="vasplus_aa StartUpload" onclick="vpb_hide_other_boxes ();document.getElementById ('tagged_list').style.display = 'none';document.getElementById ('user_selected_this_location').style.display = 'none';"><i class="fa fa-file-image-o vasplus_aab"></i> Add Photo</div>
+            </div>
+
+            <div class="modal-body">
+                <div class="vasplus_c">
+
+                    <div class="textarea_top_arrow-a"></div>
+                    <div class="textarea_top_arrow-b"></div>
+
+                    <!-- Status Update Textarea Box -->
+                    <div class="input-group" style="vertical-align:top;">
+                        <span class="input-group-addon stay-up" style="">
+                            <a href="/blab/index/profile/<?= $_SESSION['user']['username'] ?>">
+                                <span id="vp_profile_wall_photo">
+                                    <img src="/blab/public/uploads/profile/<?= $_SESSION['user']['username'] ?>.jpg" width="40" height="40" border="0">
+                                </span>
+                            </a>
+                        </span>
+                        <div class="expanding-wrapper" style="position:relative">
+                            <form id="<?= $form ?>" name="<?= $form ?>">
+                                <textarea id="comment" class="form-control vpb-textarea" placeholder="What's on your mind?" onclick="vpb_show_post_bg ();vpb_hide_other_boxes ();vpb_show_added_details ();" onkeyup="vpb_show_added_details ();" style="margin: 0px; box-sizing: border-box; width: 100%; position: absolute; top: 0px; left: 0px; height: 100%; resize: none; overflow: auto;"></textarea>
+                            </form>
+
+                            <pre class="expanding-clone" style="margin: 0px; box-sizing: border-box; width: 100%; display: block; border: 0px solid; visibility: hidden; min-height: 55px; white-space: pre-wrap; line-height: 20px; text-decoration: none solid rgb(34, 34, 34); font-size: 14px; font-family: arial; text-align: start; padding: 15px 0px 0px;">
+<span>
+    
+</span>
+<br>
+                            </pre>
+                        </div>
+                    </div>
+
+
+                    <!-- Display Fetched URL contents -->
+                    <div class="input-group vpb-tagged-list-wrap" id="url_content_wrapper">
+                        <span id="fetched_url_content"></span>
+                    </div>
+                    <input type="hidden" id="vpb_link_to_fetch" value="">
+
+
+
+                </div>
+            </div>
+
+
+
+
+
+            <!-- Tagging Box starts -->
+
+            <!-- Tag people in post input box -->
+            <div class="vpb-wall-options-wrap" id="start_typing_name">
+                <div class="input-group" style="">
+                    <span class="input-group-addon vpb_wall_left_text_label">With</span>
+                    <input onkeyup="vpb_friends_suggestion (this.value);" onclick="vpb_friends_suggestion (this.value);" type="text" id="vpb-tag" class="form-control vpb-wall-input-top-box" style="padding-top:5px !important;" placeholder="Who are you with?">
+                    <input type="hidden" id="friend-username-to-remove-from-tagged-list" value="">
+                    <input type="hidden" id="friend-fullname-to-remove-from-tagged-list" value="">
+                </div>
+            </div>
+
+
+            <!-- Display suggested friends for tagging purpose -->
+            <span id="vpb-tagged-people-in-post-server-response"></span>
+
+            <!-- Display friends in tagged list -->
+            <div class="input-group vpb-tagged-list-wrap" style="" id="tagged_list">
+                <div><span class="v_wall_tag_with">With: </span><span id="the_tagged_friends"><span id="new_tags"></span></span></div><span id="new_tags_loading"></span>
+            </div>
+            <!-- Tagging Box ends --><div style="clear:both;"></div>
+
+
+            <!-- Added Location Starts -->
+            <!-- Location input box -->
+            <div class="vpb-wall-options-wrap" id="user_is_at_this_location">
+                <div class="input-group">
+                    <span class="input-group-addon vpb_wall_left_text_label">At</span>
+                    <input onkeyup="vpb_location_suggestions (this.value);" onclick="vpb_location_suggestions (this.value);" type="text" id="vpb-location" class="form-control vpb-wall-input-top-box" style="padding-top:5px !important;" placeholder="Where are you?">
+                </div>
+            </div>
+
+            <span id="vpb-location-server-response"></span>
+
+
+            <!-- Display selected Location by a user -->
+            <div class="vpb-wall-options-wrap" id="user_selected_this_location">
+                <input type="hidden" id="vpb-selected-location" value="">
+                <div class="input-group">
+                    <span class="input-group-addon vpb_wall_left_text_label">
+                        <span class="v_wall_position_info_left">At <span id="the_selected_location"></span></span> 
+                        <span class="v_wall_position_info_right" onclick="vpb_wall_location_box ('remove');" data-toggle="tooltip" original-title="Remove">x</span><div style="clear:both;"></div>
+
+                    </span>
+                </div>
+            </div>
+            <!-- Add Location Ends --><div style="clear:both;"></div>
+
+
+
+
+
+
+
+            <!-- Photo Preview -->
+            <div id="vpb_added_photos" class="vasinfo"><div class="row"><span id="vpb_photos"></span></div>
+                <div id="all_added_photos_button" class="vhover vhide" onclick="vpb_show_added_photos ();">See all added photos</div>
+                <div id="part_added_photos_button" class="vhover vhide" onclick="vpb_hide_part_added_photos ();">Collapse</div>
+            </div>
+
+            <!-- Video Preview -->
+            <div id="vpb_added_videos" class="vasinfo"><div class="row vpb_ninety_eight_percent"><span id="vpb_video"></span></div></div>
+
+            <!-- Links Preview -->
+            <div id="vpb_added_link" class="vasinfo"></div>
+
+            <div class="modal-footer vfooter">
+
+                <span id="add_a_photo_button" class="vfooter_wraper vasplus_tooltip_icons StartUpload"  original-title="Add photos to your post"><i class="fa fa-camera vfooter_icon"></i></span>
+
+                <span id="add_a_video_button" class="vfooter_wraper vasplus_tooltip_icons" onclick="vpb_hide_other_boxes ();document.getElementById ('v-add-videos-box').click ();document.getElementById ('tagged_list').style.display = 'none';document.getElementById ('user_selected_this_location').style.display = 'none';document.getElementById ('wall_video_action').value = 'popup';" original-title="Add video to your post"><i class="fa fa-youtube-play vfooter_icon"></i></span>
+
+                <span class="vfooter_wraper vasplus_tooltip_icons" id="tag_people_button" onclick="vpb_tag_people_in_post ();" original-title="Tag people in your post"><i class="fa fa-user-plus vfooter_icon"></i></span>
+
+                <span class="vfooter_wraper vasplus_tooltip_icons" id="add_smile_button" onclick="vpb_wall_smiley_box ();" original-title="Add what you're doing or how you're feeling"><i class="fa fa-smile-o vfooter_icon"></i></span>
+
+                <span class="vfooter_wraper vasplus_tooltip_icons" id="add_location_button" onclick="vpb_wall_location_box ('none');" original-title="Add a location to your post"><i class="fa fa-map-marker vfooter_icon"></i></span>
+
+<!--<span data-toggle="tooltip" data-placement="top" title="Set date and time of your post" class="vfooter_wraper"><i class="fa fa-clock-o vfooter_icon"></i></span>-->
+
+                <div class="vpb_top_line"></div>
+
+                <ul class="dropdown-menu" id="vpb_the_wall_smiley_box" style="border-radius:0px !important;">
+                    <li class="dropdown-header vpb_wall_li_bottom_border">
+                        <span class="v_wall_position_info_left">What is your current mood?</span> <span class="v_wall_position_info_right" onclick="vpb_wall_smiley_box ();">x</span><div style="clear:both;"></div></li>
+                    <li><span id="vpb_smiley_box"><div class="vpb_wall_smiley_box_wrapper"><div class="vpb_smiley_inner_box"><span class="smiley_a" title="Smile" onclick="vpb_add_smiley_to_wall_status (':)');"></span><span class="smiley_b" title="Frown, Sad" onclick="vpb_add_smiley_to_wall_status (':(');"></span><span class="smiley_c" title="Blushing angel" onclick="vpb_add_smiley_to_wall_status (':blushing-angel:');"></span><span class="smiley_d" title="Cat face" onclick="vpb_add_smiley_to_wall_status (':cat-face:');"></span><span class="smiley_e" title="Confused" onclick="vpb_add_smiley_to_wall_status ('o.O');"></span><span class="smiley_f" title="Cry" onclick="vpb_add_smiley_to_wall_status (':cry:');"></span><span class="smiley_g" title="Laughing devil" onclick="vpb_add_smiley_to_wall_status (':laughing-devil:');"></span><span class="smiley_h" title="Shocked and surprised" onclick="vpb_add_smiley_to_wall_status (':O');"></span><span class="smiley_i" title="Glasses" onclick="vpb_add_smiley_to_wall_status ('B)');"></span><span class="smiley_j" title="Grin, Big Smile" onclick="vpb_add_smiley_to_wall_status (':D');"></span><span class="smiley_k" title="Upset and angry" onclick="vpb_add_smiley_to_wall_status (':grumpy:');"></span><span class="smiley_l" title="Heart" onclick="vpb_add_smiley_to_wall_status (':heart:');"></span><span class="smiley_m" title="Kekeke happy" onclick="vpb_add_smiley_to_wall_status ('^_^');"></span><span class="smiley_n" title="Kiss" onclick="vpb_add_smiley_to_wall_status (':kiss:');"></span><span class="smiley_o" title="Pacman" onclick="vpb_add_smiley_to_wall_status (':v');"></span><span class="smiley_p" title="Penguin" onclick="vpb_add_smiley_to_wall_status (':penguin:');"></span><span class="smiley_q" title="Unsure" onclick="vpb_add_smiley_to_wall_status (':unsure:');"></span><span class="smiley_r" title="Cool" onclick="vpb_add_smiley_to_wall_status ('B|');"></span><span class="smiley_s" title="Annoyed, sighing or bored" onclick="vpb_add_smiley_to_wall_status ('-_-');"></span><span class="smiley_t" title="Love" onclick="vpb_add_smiley_to_wall_status (':lve:');"></span><span class="smiley_u" title="Christopher Putnam" onclick="vpb_add_smiley_to_wall_status (':putnam:');"></span><span class="smiley_zb" title="Shark" onclick="vpb_add_smiley_to_wall_status ('(wink)');"></span><span class="smiley_v" title="Wink" onclick="vpb_add_smiley_to_wall_status ('(wink)');"></span><span class="smiley_w" title="No idea" onclick="vpb_add_smiley_to_wall_status ('(off)');"></span><span class="smiley_x" title="Got an idea" onclick="vpb_add_smiley_to_wall_status ('(on)');"></span><span class="smiley_y" title="Cup of tea" onclick="vpb_add_smiley_to_wall_status (':tea-cup:');"></span><span class="smiley_z" title="No, thumb down" onclick="vpb_add_smiley_to_wall_status ('(n)');"></span><span class="smiley_za" title="Yes, thumb up" onclick="vpb_add_smiley_to_wall_status ('(y)');"></span><div style="clear:both;"></div></div></div><div style="clear: both;"></div></span></li>
+                </ul>
+
+                <div class="btn-group vfooter_wraper_b">
+                    <button type="button" class="btn btn-success btn-wall-post" onclick="submitFunction ()">Post</button>
+                </div>
+
+                <script>
+                    function submitFunction() {
+                       $("#<?= trim($form) ?>").submit();
+                    }
+                </script>
+
+                <div class="dropdown btn-group vfooter_wraper_b" id="selected_option_with_title" data-toggle="tooltip" data-placement="top" original-title="Public">
+
+                    <button type="button" class="btn btn-default dropdown-toggle btn-wall-post-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="vpb_hide_popup ();">
+                        <span id="selected_option_">
+                            <i class="fa fa-certificate"></i> Public <span class="caret"></span>
+                        </span>
+                    </button>
+
+                    <input type="hidden" id="selected_security_option_" value="public">
+
+
+                    <ul class="dropdown-menu" style="border-radius:0px !important;">
+                        <li class="dropdown-header">Who should see this?</li>
+                        <li>
+                            <a onclick="vpb_selected_security_option ('Public', 'public_', 'public', 'fa-certificate');">
+                                <span class="vpb_option_icons_space"> <i id="public_" class="fa fa-check  vasplus_ticker"></i> </span>
+                                <span class="vpb_option_icons_space"> <i class="fa fa-certificate"></i> </span> <b>Public</b><br>
+                                <span class="vpb_option_text">Anyone can see it</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a onclick="vpb_selected_security_option ('Friends', 'friends_', 'friends', 'fa-user-plus');">
+                                <span class="vpb_option_icons_space"> <i id="friends_" class="fa fa-check v_hiddens vasplus_ticker"></i> </span>
+                                <span class="vpb_option_icons_space"> <i class="fa fa-user-plus"></i> </span> <b>Friends</b><br>
+                                <span class="vpb_option_text">Only your friend can see it</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a onclick="vpb_selected_security_option ('Private', 'private_', 'private', 'fa-lock');">
+                                <span class="vpb_option_icons_space"> <i id="private_" class="fa fa-check v_hiddens vasplus_ticker"></i> </span>
+                                <span class="vpb_option_icons_space"> <i class="fa fa-lock"></i> </span> <b>Private</b><br>
+                                <span class="vpb_option_text">Only you can see it</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                    <div style="clear:both;"></div>
+                </div>
+
+                <div style="clear:both;"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!--<div class="ibox">
+    <div class="ibox-content">
+        <div class="row">
+
+            <div class="col-md-11">
+                <form id="<?= $form ?>" name="<?= $form ?>">
+                    <textarea class="form-control mentions autoExpand" id="comment" rows="3" placeholder="whats on your mind"></textarea><br>
+
+                    <div class="col-lg-12 pull-left" id="output" style="
+                         margin-left: 21px;
+                         ">
+
+                    </div>
+
+                    <ul class="dropdown-menu" id="vpb_the_wall_smiley_box" style="border-radius: 0px !important;">
+                        <li class="dropdown-header vpb_wall_li_bottom_border">
+                            <span class="v_wall_position_info_left">What is your current mood?</span> <span class="v_wall_position_info_right" onclick="vpb_wall_smiley_box ();">x</span><div style="clear:both;"></div></li>
+                        <li><span id="vpb_smiley_box"><div class="vpb_wall_smiley_box_wrapper"><div class="vpb_smiley_inner_box"><span class="smiley_a" title="Smile" onclick="vpb_add_smiley_to_wall_status (':)');"></span><span class="smiley_b" title="Frown, Sad" onclick="vpb_add_smiley_to_wall_status (':(');"></span><span class="smiley_c" title="Blushing angel" onclick="vpb_add_smiley_to_wall_status (':blushing-angel:');"></span><span class="smiley_d" title="Cat face" onclick="vpb_add_smiley_to_wall_status (':cat-face:');"></span><span class="smiley_e" title="Confused" onclick="vpb_add_smiley_to_wall_status ('o.O');"></span><span class="smiley_f" title="Cry" onclick="vpb_add_smiley_to_wall_status (':cry:');"></span><span class="smiley_g" title="Laughing devil" onclick="vpb_add_smiley_to_wall_status (':laughing-devil:');"></span><span class="smiley_h" title="Shocked and surprised" onclick="vpb_add_smiley_to_wall_status (':O');"></span><span class="smiley_i" title="Glasses" onclick="vpb_add_smiley_to_wall_status ('B)');"></span><span class="smiley_j" title="Grin, Big Smile" onclick="vpb_add_smiley_to_wall_status (':D');"></span><span class="smiley_k" title="Upset and angry" onclick="vpb_add_smiley_to_wall_status (':grumpy:');"></span><span class="smiley_l" title="Heart" onclick="vpb_add_smiley_to_wall_status (':heart:');"></span><span class="smiley_m" title="Kekeke happy" onclick="vpb_add_smiley_to_wall_status ('^_^');"></span><span class="smiley_n" title="Kiss" onclick="vpb_add_smiley_to_wall_status (':kiss:');"></span><span class="smiley_o" title="Pacman" onclick="vpb_add_smiley_to_wall_status (':v');"></span><span class="smiley_p" title="Penguin" onclick="vpb_add_smiley_to_wall_status (':penguin:');"></span><span class="smiley_q" title="Unsure" onclick="vpb_add_smiley_to_wall_status (':unsure:');"></span><span class="smiley_r" title="Cool" onclick="vpb_add_smiley_to_wall_status ('B|');"></span><span class="smiley_s" title="Annoyed, sighing or bored" onclick="vpb_add_smiley_to_wall_status ('-_-');"></span><span class="smiley_t" title="Love" onclick="vpb_add_smiley_to_wall_status (':lve:');"></span><span class="smiley_u" title="Christopher Putnam" onclick="vpb_add_smiley_to_wall_status (':putnam:');"></span><span class="smiley_zb" title="Shark" onclick="vpb_add_smiley_to_wall_status ('(wink)');"></span><span class="smiley_v" title="Wink" onclick="vpb_add_smiley_to_wall_status ('(wink)');"></span><span class="smiley_w" title="No idea" onclick="vpb_add_smiley_to_wall_status ('(off)');"></span><span class="smiley_x" title="Got an idea" onclick="vpb_add_smiley_to_wall_status ('(on)');"></span><span class="smiley_y" title="Cup of tea" onclick="vpb_add_smiley_to_wall_status (':tea-cup:');"></span><span class="smiley_z" title="No, thumb down" onclick="vpb_add_smiley_to_wall_status ('(n)');"></span><span class="smiley_za" title="Yes, thumb up" onclick="vpb_add_smiley_to_wall_status ('(y)');"></span><div style="clear:both;"></div></div></div><div style="clear: both;"></div></span></li>
+                    </ul>
+
+                    <div class="vpb-wall-options-wrap" id="user_is_at_this_location" style="display: none;">
+                        <div class="input-group">
+                            <span class="input-group-addon vpb_wall_left_text_label">At</span>
+                            <input onkeyup="vpb_location_suggestions (this.value);" onclick="vpb_location_suggestions (this.value);" type="text" id="vpb-location" class="form-control vpb-wall-input-top-box" style="padding-top:5px !important;" placeholder="Where are you?">
+                        </div>
+                    </div>
+
+                    <div class="vpb-wall-options-wrap" id="start_typing_name" style="display: none;">
+                        <div class="input-group" style="">
+                            <span class="input-group-addon vpb_wall_left_text_label">With</span>
+                            <input onkeyup="vpb_friends_suggestion (this.value);" onclick="vpb_friends_suggestion (this.value);" type="text" id="vpb-tag" class="form-control vpb-wall-input-top-box" style="padding-top:5px !important;" placeholder="Who are you with?">
+                            <input type="hidden" id="friend-username-to-remove-from-tagged-list" value="">
+                            <input type="hidden" id="friend-fullname-to-remove-from-tagged-list" value="">
+                        </div>
+                    </div>
+
+                     Display suggested friends for tagging purpose 
+                    <span id="vpb-tagged-people-in-post-server-response"></span>
+
+                     Display friends in tagged list 
+                    <div class="input-group vpb-tagged-list-wrap" id="tagged_list">
+                        <div><span class="v_wall_tag_with">With: </span><span id="the_tagged_friends"><span id="new_tags"></span></span></div><span id="new_tags_loading"></span>
+                    </div>
+                     Tagging Box ends <div style="clear:both;"></div>
+
+
+                    <ul class="dropdown-menu" id="vpb_the_wall_smiley_box" style="border-radius:0px !important;">
+                        <li class="dropdown-header vpb_wall_li_bottom_border">
+                            <span class="v_wall_position_info_left">What is your current mood?</span> <span class="v_wall_position_info_right" onclick="vpb_wall_smiley_box ();">x</span><div style="clear:both;"></div></li>
+                        <li><span id="vpb_smiley_box"></span></li>
+                    </ul>
+
+                    <span style="font-size:22px;" id="add_a_photo_button" class="vfooter_wraper vasplus_tooltip_icons StartUpload" original-title="Add photos to your post">
+                        <i class="fa fa-camera vfooter_icon"></i>
+                    </span>
+                    
+                    <span class="vfooter_wraper vasplus_tooltip_icons" id="add_location_button" onclick="vpb_wall_location_box ('none');" original-title="Add a location to your post">
+                        <i style="font-size:22px;" class="fa fa-map-marker vfooter_icon"></i>
+                    </span>
+                    <span id="add_a_video_button" class="vfooter_wraper vasplus_tooltip_icons" onclick="vpb_hide_other_boxes ();document.getElementById ('v-add-videos-box').click ();document.getElementById ('tagged_list').style.display = 'none';document.getElementById ('user_selected_this_location').style.display = 'none';document.getElementById ('wall_video_action').value = 'popup';" original-title="Add video to your post"><i style="font-size:22px;" class="fa fa-youtube-play vfooter_icon"></i></span>
+                    <span class="vfooter_wraper vasplus_tooltip_icons" id="tag_people_button" onclick="vpb_tag_people_in_post ();" original-title="Tag people in your post"><i style="font-size:22px;" class="fa fa-user-plus vfooter_icon"></i></span>
+                    <span class="vfooter_wraper vasplus_tooltip_icons" id="add_smile_button" onclick="vpb_wall_smiley_box ();" original-title="Add what you're doing or how you're feeling"><i style="font-size:22px;" class="fa fa-smile-o vfooter_icon"></i></span>
+
+                     <button type="submit" id="button" class="btn btn-primary btn-sm pull-right">post</button>
+                    
+                    <div class="dropdown btn-group vfooter_wraper_b pull-right" id="selected_option_with_title" data-toggle="tooltip" data-placement="top" original-title="Public">
+
+                        <button type="button" class="btn btn-default dropdown-toggle btn-wall-post-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="vpb_hide_popup ();">
+                            <span id="selected_option_">
+                                <i class="fa fa-certificate"></i> Public <span class="caret"></span>
+                            </span>
+                        </button>
+
+                        <input type="hidden" id="selected_security_option_" value="public">
+
+
+                        <ul class="dropdown-menu" style="border-radius:0px !important;">
+                            <li class="dropdown-header">Who should see this?</li>
+                            <li>
+                                <a onclick="vpb_selected_security_option ('Public', 'public_', 'public', 'fa-certificate');">
+                                    <span class="vpb_option_icons_space"> <i id="public_" class="fa fa-check  vasplus_ticker"></i> </span>
+                                    <span class="vpb_option_icons_space"> <i class="fa fa-certificate"></i> </span> <b>Public</b><br>
+                                    <span class="vpb_option_text">Anyone can see it</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a onclick="vpb_selected_security_option ('Friends', 'friends_', 'friends', 'fa-user-plus');">
+                                    <span class="vpb_option_icons_space"> <i id="friends_" class="fa fa-check v_hiddens vasplus_ticker"></i> </span>
+                                    <span class="vpb_option_icons_space"> <i class="fa fa-user-plus"></i> </span> <b>Friends</b><br>
+                                    <span class="vpb_option_text">Only your friend can see it</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a onclick="vpb_selected_security_option ('Private', 'private_', 'private', 'fa-lock');">
+                                    <span class="vpb_option_icons_space"> <i id="private_" class="fa fa-check v_hiddens vasplus_ticker"></i> </span>
+                                    <span class="vpb_option_icons_space"> <i class="fa fa-lock"></i> </span> <b>Private</b><br>
+                                    <span class="vpb_option_text">Only you can see it</span>
+                                </a>
+                            </li>
+
+                        </ul>
+                        <div style="clear:both;"></div>
+                    </div>
+
+                </form>
+
+                <span id="vpb-location-server-response"></span>
+
+            </div>
+        </div>
+    </div>
+</div>-->

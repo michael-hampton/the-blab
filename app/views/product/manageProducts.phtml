@@ -1,0 +1,177 @@
+<?php
+
+/**
+ * 
+ * @param ProductFactory $objProduct
+ */
+function buildPagination (ProductFactory $objProduct)
+{
+    $vpb_current_page = $objProduct->getPageNo ();
+
+    if ( $vpb_current_page == 0 )
+    {
+        $vpb_current_page = 1;
+        $currentPage = 1;
+    } else {
+        $currentPage = $objProduct->getPageNo () + 1;
+    }
+
+    $vpb_previous_page = $currentPage - 1;    
+    $vpb_next_page = $currentPage + 1;
+    $vpb_last_page = ceil ($objProduct->getTotalCount () / 1);
+    $vpb_lastpaged = $vpb_last_page - 1;
+    $vpb_pagination_system = '';
+
+    if ( $vpb_last_page > 1 )
+    {
+        $vpb_pagination_system .= "<div class='vpb_pagination_system'>";
+
+        // Previous Page
+        if ( $currentPage > 1 )
+        {
+            $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_previous_page\");'>Prev</a>";
+        }
+        else
+        {
+            $vpb_pagination_system.= "<span class='disabled'>Prev</span>";
+        }
+
+        $vpb_pagination_stages = 2;
+
+// Pages	
+        if ( $vpb_last_page < 7 + ($vpb_pagination_stages * 2) ) // Not enough pages to breaking it up
+        {
+            
+            for ($vpb_page_counter = 1; $vpb_page_counter <= $vpb_last_page; $vpb_page_counter++) {
+                if ( $vpb_page_counter == $currentPage )
+                {
+                    $vpb_pagination_system.= "<span class='current'>$vpb_page_counter</span>";
+                }
+                else
+                {
+                    $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_page_counter\");'>$vpb_page_counter</a>";
+                }
+            }
+        }
+        elseif ( $vpb_last_page > 5 + ($vpb_pagination_stages * 2) ) // This hides few pages when the displayed pages are much
+        {
+            //Beginning only hide later pages
+            if ( $currentPage < 1 + ($vpb_pagination_stages * 2) )
+            {
+                for ($vpb_page_counter = 1; $vpb_page_counter < 4 + ($vpb_pagination_stages * 2); $vpb_page_counter++) {
+                    if ( $vpb_page_counter == $currentPage )
+                    {
+                        $vpb_pagination_system.= "<span class='current'>$vpb_page_counter</span>";
+                    }
+                    else
+                    {
+                        $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_page_counter\");'>$vpb_page_counter</a>";
+                    }
+                }
+                $vpb_pagination_system.= "...";
+                $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_lastpaged\");'>$vpb_lastpaged</a>";
+                $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_last_page\");'>$vpb_last_page</a>";
+            }
+            //Middle hide some front and some back
+            elseif ( $vpb_last_page - ($vpb_pagination_stages * 2) > $currentPage && $currentPage > ($vpb_pagination_stages * 2) )
+            {
+                $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"1\");'>1</a>";
+                $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"2\");'>2</a>";
+                $vpb_pagination_system.= "...";
+                for ($vpb_page_counter = $currentPage - $vpb_pagination_stages; $vpb_page_counter <= $currentPage + $vpb_pagination_stages; $vpb_page_counter++) {
+                    if ( $vpb_page_counter == $currentPage )
+                    {
+                        $vpb_pagination_system.= "<span class='current'>$vpb_page_counter</span>";
+                    }
+                    else
+                    {
+                        $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_page_counter\");'>$vpb_page_counter</a>";
+                    }
+                }
+                $vpb_pagination_system.= "...";
+                $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_lastpaged\");'>$vpb_lastpaged</a>";
+                $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_last_page\");'>$vpb_last_page</a>";
+            }
+            //End only hide early pages
+            else
+            {
+                $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"1\");'>1</a>";
+                $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"2\");'>2</a>";
+                $vpb_pagination_system.= "...";
+                for ($vpb_page_counter = $vpb_last_page - (2 + ($vpb_pagination_stages * 2)); $vpb_page_counter <= $vpb_last_page; $vpb_page_counter++) {
+                    if ( $vpb_page_counter == $currentPage )
+                    {
+                        $vpb_pagination_system.= "<span class='current'>$vpb_page_counter</span>";
+                    }
+                    else
+                    {
+                        $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_page_counter\");'>$vpb_page_counter</a>";
+                    }
+                }
+            }
+        }
+
+        //Next Page
+        if ( $currentPage < $vpb_page_counter - 1 )
+        {
+            $vpb_pagination_system.= "<a href='javascript:void(0);' onclick='vpb_manage_shopping_cart_products(\"$vpb_next_page\");'>Next</a>";
+        }
+        else
+        {
+            $vpb_pagination_system.= "<span class='disabled'>Next</span>";
+        }
+        $vpb_pagination_system.= "</div>";
+    }
+
+    return $vpb_pagination_system;
+}
+?>
+
+
+<br clear="all">
+<div style="width:98%; border:0px solid;margin:0 auto;" align="center">
+    <div style="width:20%; float:left;" align="left"><div id="vpb_loading_datas_in_the_system"></div></div>
+    <div style="width:80%; float:right;" align="right">
+        <?=        buildPagination($objProductFactory);?>
+    </div>
+    <div style="clear:both;"></div>
+</div>
+<br clear="all">
+
+<ul class="products-wrp">
+    <?php
+    if ( !empty ($arrProducts) ):
+        foreach ($arrProducts as $arrProduct):
+            ?>
+
+            <li id="vc_product_36">
+                <h4><?= $arrProduct->getName () ?></h4>
+                <div>
+                    <?php
+                    $arrImages = $arrProduct->getArrImages ();
+                    if ( !empty ($arrImages) )
+                    {
+                        echo '<img style="cursor:default;" src="' . $arrImages[0]->getFileLocation () . '" width="200">';
+                    }
+                    ?>
+
+                </div>
+                <div id="delete-this-<?= $arrProduct->getId () ?>" class="vcart_price" style="border-radius:0px;">
+
+                    <span class="cbtn" style="font-size:12px !important;margin-bottom:5px;" onclick="vpb_admin_load_edit_products_box('<?= $arrProduct->getId () ?>');">Edit</span>
+
+
+                    <span class="cbtn" style="font-size:12px !important;margin-bottom:5px;" onclick="vpb_product_deletion('<?= $arrProduct->getId () ?>', '<?= $arrProduct->getName () ?>');">Delete</span>
+                    <div>
+
+                    </div>
+
+                </div>
+            </li>
+
+
+            <?php
+        endforeach;
+    endif;
+    ?>
+</ul>

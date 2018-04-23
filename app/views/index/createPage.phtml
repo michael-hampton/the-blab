@@ -1,0 +1,346 @@
+<link href="/facebook/public/css/bootstrap.css" rel="stylesheet">
+<link href="/facebook/public/css/style.css" rel="stylesheet">
+<link href="/facebook/public/css/animate.css" rel="stylesheet">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link href="/facebook/public/css/sweetalert.css" rel="stylesheet">
+<link href="/facebook/public/css/fonts.css" rel="stylesheet">
+<link href="/facebook/public/css/steps.css" rel="stylesheet">
+
+<style>
+    .selected-type {
+        border: 1px solid #ff5b57 !important;
+    }
+</style>
+
+
+<div class="col-lg-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>Create new Page</h5>
+
+        </div>
+        <div class="ibox-content">
+
+            <div id="wizard">
+                <h1>Initial Setup</h1>
+                <div class="step-content" style="min-height: 600px;">
+                    <div class="text-center m-t-md">
+                        <h2>Page Type</h2>
+                        <div class="col-lg-12 pull-left">
+                            <?php foreach ($arrPageTypes as $arrPageType): ?>
+                                <div typeid="<?= $arrPageType->getId () ?>" class="col-lg-2 pageType" style="height:250px; border: 1px solid #000; padding: 12px; margin-right: 6px; margin-top: 10px;">
+                                    <?= $arrPageType->getName () ?>
+                                </div>
+                            <?php endforeach; ?> 
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <h1>Basic</h1>
+                <div class="step-content">
+                    <div class="text-center m-t-md">
+                        <h2>Basic Information</h2>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Title</label>
+
+                                <div class="col-lg-10">
+                                    <input type="text" id="title" name="title" placeholder="Title" class="form-control"> 
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Description</label>
+
+                                <div class="col-lg-10">
+                                    <input type="text" id="description" name="description" placeholder="Description" class="form-control"> 
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Category</label>
+
+                                <div class="col-lg-10">
+                                    <select class="form-control" id="category" name="category">
+                                        <option value="">Select Category</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <h1>Profile Image</h1>
+                <div class="step-content">
+                    <div class="text-center m-t-md">
+                        <h2>Upload Profile Image</h2>
+                        <!-- timeline profile picture -->
+                        <a href="#" id="timelineProfilePic">Click</a>
+
+                        <div style="display:none;">
+                            <form id="userImage" method="post" enctype="multipart/form-data">
+                                <div class="uploadFile2">
+                                    <input type="file" class="custom-file-upload" name="userImage" id="profileimgaa">
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="uploadedImage">
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <h1>Link</h1>
+                <div class="step-content">
+                    <div class="text-center m-t-md">
+                        <h2>Link</h2>
+
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">Link</label>
+
+                                <div class="col-lg-10">
+                                    <input type="text" placeholder="Link" id="link" name="link" class="form-control"> 
+                                </div>
+                            </div>
+                            
+                             <div class="form-group">
+                                <label class="col-lg-2 control-label">Address</label>
+
+                                <div class="col-lg-10">
+                                    <input type="text" placeholder="Address" id="address" name="address" class="form-control"> 
+                                </div>
+                            </div>
+                            
+                             <div class="form-group">
+                                <label class="col-lg-2 control-label">Postcode</label>
+
+                                <div class="col-lg-10">
+                                    <input type="text" placeholder="Postcode" id="postcode" name="postcode" class="form-control"> 
+                                </div>
+                            </div>
+                            
+                             <div class="form-group">
+                                <label class="col-lg-2 control-label">Telephone Number</label>
+
+                                <div class="col-lg-10">
+                                    <input type="text" placeholder="Telephone Number" id="telephoneNo" name="telephoneNo" class="form-control"> 
+                                </div>
+                            </div>
+                            
+                             <div class="form-group">
+                                <label class="col-lg-2 control-label">Website Url</label>
+
+                                <div class="col-lg-10">
+                                    <input type="text" placeholder="Link" id="websiteUrl" name="websiteUrl" class="form-control"> 
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/facebook/public/js/jquery-2.1.1.js"></script>
+<script src="/facebook/public/js/bootstrap.js"></script>
+<script src="/facebook/public/js/slimscroll.js"></script>
+<script src="/facebook/public/js/sweetalert.js"></script>
+<script src="/facebook/public/js/steps.js"></script>
+
+<script>
+
+    function readURL (input)
+    {
+
+        if (input.files && input.files[0])
+        {
+            var reader = new FileReader ();
+
+            reader.onload = function (e)
+            {
+                alert ('<img src="' + e.target.result + '">');
+                $ ('.uploadedImage').append ('<img src="' + e.target.result + '">');
+
+            };
+
+            reader.readAsDataURL (input.files[0]);
+        }
+    }
+
+    $ (document).ready (function ()
+    {
+        $ (document).off ("change", "#profileimgaa");
+        $ (document).on ('change', '#profileimgaa', function ()
+        {
+
+            readURL (this);
+        });
+
+
+
+        $ (document).off ("click", "#timelineProfilePic");
+        $ (document).on ('click', '#timelineProfilePic', function ()
+        {
+            $ ("#profileimgaa").click ();
+
+        });
+
+        $ (document).off ("click", ".pageType");
+        $ (document).on ('click', '.pageType', function ()
+        {
+            $ (".pageType").removeClass ('selected-type');
+            $ (this).addClass ('selected-type');
+
+        });
+
+        $ (document).off ("submit", "#userImage");
+        $ (document).on ('submit', '#userImage', function ()
+        {
+            //stop submit the form, we will post it manually.
+            event.preventDefault ();
+            // Get form
+            var form = $ ('#userImage')[0];
+            // Create an FormData object
+            var data = new FormData (form);
+            data.append ("title", $ ("#title").val ());
+            data.append ("category", $ ("#category").val ());
+            data.append ("description", $ ("#description").val ());
+            data.append ("pageType", $ (".selected-type").attr ("typeid"));
+            data.append ("link", $ ("#link").val ());
+            data.append ("address", $ ("#address").val ());
+            data.append ("postcode", $ ("#postcode").val ());
+            data.append ("telephoneNo", $ ("#telephoneNo").val ());
+            data.append ("websiteUrl", $ ("#websiteUrl").val ());
+           
+
+            // If you want to add an extra field for the FormData
+            // disabled the submit button
+            $.ajax ({
+                type: "POST",
+                enctype: 'multipart/form-data',
+                url: "/facebook/index/savePage",
+                data: data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (response)
+                {
+
+                    formatResponse(response, 'The page was created successfully.');
+                    return false;
+                },
+                error: function (e)
+                {
+
+
+                }
+            });
+
+            return false;
+        });
+
+        $ ("#wizard").steps ({
+            onStepChanging: function (event, currentIndex, newIndex)
+            {
+                if (newIndex === 1)
+                {
+                    var typeId = $ (".selected-type").attr ("typeid");
+
+                    if (!typeId || $ (".selected-type").length <= 0)
+                    {
+                        alert ("You must select a page type");
+                        return false;
+                    }
+
+                    $.ajax ({
+                        url: '/facebook/index/getPageCategories/' + typeId,
+                        type: 'GET',
+                        success: function (response)
+                        {
+                            $ ("#category").append (response);
+                        }
+                    });
+                }
+
+                if (newIndex === 2)
+                {
+                    if ($ ("#title").val () === "" || $ ("#category").val () === "")
+                    {
+                        alert ("All values must be completed");
+                        return false;
+                    }
+                }
+
+                return true;
+
+            },
+            onFinished: function (event, currentIndex)
+            {
+                var form = $ ("#userImage");
+
+                // Submit form input
+                form.submit ();
+            }
+        });
+    });
+
+    function showErrorMessage (message)
+    {
+        swal ({
+            title: "Error",
+            text: message,
+            type: "error",
+            showCancelButton: false,
+            confirmButtonColor: "#1ab394",
+            confirmButtonText: "Ok",
+            closeOnConfirm: false,
+            html: true
+
+        });
+    }
+
+    function formatResponse (response, message)
+    {
+
+        try {
+            var objResponse = $.parseJSON (response);
+
+            if (objResponse.sucess == 0)
+            {
+                showErrorMessage (objResponse.message);
+            }
+            else
+            {
+                showSuccessMessage (message);
+            }
+        } catch (error) {
+            showErrorMessage ();
+        }
+
+    }
+
+    function showSuccessMessage (message)
+    {
+        message = message || "The action was complete successfully.";
+
+        swal ({
+            title: "Success",
+            text: message,
+            type: "success",
+            showCancelButton: false,
+            confirmButtonColor: "#1ab394",
+            confirmButtonText: "Ok",
+            closeOnConfirm: false
+
+        });
+    }
+</script>

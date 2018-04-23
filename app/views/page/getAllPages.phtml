@@ -1,0 +1,27 @@
+<?php
+
+if ( !empty ($arrPages) )
+{
+
+    echo '<div class="full-height-scroll" style="overflow: auto; width: auto; height: 400px; margin-top: 20px;
+    float: left;
+    width: 100%;
+    margin-left:16px;
+}">';
+
+
+    foreach ($arrPages as $arrPage) {
+        echo '<div class="col-lg-2" style="border: 1px solid #CCC; height:200px; padding:10px;">';
+
+        echo '<img class="img-responsive" src="' . $arrPage->getFileLocation () . '"><br>';
+
+
+        echo '<a href="#">' . $arrPage->getName () . '</a>';
+        echo '<br/><small>' . $arrPage->getDescription () . '<small>';
+
+
+        echo '</div>';
+    }
+
+    echo '</div>';
+}

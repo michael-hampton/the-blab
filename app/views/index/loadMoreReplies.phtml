@@ -1,0 +1,317 @@
+<?php
+
+function parseSmiley ($text)
+{
+    // Smiley to image
+    $smileys = array(
+        ':)' => 'smile.png',
+        ':(' => 'frown.png',
+        ':-(' => 'bad.png'
+    );
+
+    // Now you need find and replace
+    foreach ($smileys as $smiley => $img) {
+        $text = str_replace (
+                $smiley, "<img src='/facebook/public/img/{$img}' />", $text
+        );
+    }
+
+    // Now only return it
+    return $text;
+}
+
+function facebook_time_ago ($timestamp)
+{
+    $time_ago = strtotime ($timestamp);
+    $current_time = time ();
+    $time_difference = $current_time - $time_ago;
+    $seconds = $time_difference;
+    $minutes = round ($seconds / 60);           // value 60 is seconds  
+    $hours = round ($seconds / 3600);           //value 3600 is 60 minutes * 60 sec  
+    $days = round ($seconds / 86400);          //86400 = 24 * 60 * 60;  
+    $weeks = round ($seconds / 604800);          // 7*24*60*60;  
+    $months = round ($seconds / 2629440);     //((365+365+365+365+366)/5/12)*24*60*60  
+    $years = round ($seconds / 31553280);     //(365+365+365+365+366)/5 * 24 * 60 * 60  
+    if ( $seconds <= 60 )
+    {
+        return "Just Now";
+    }
+    else if ( $minutes <= 60 )
+    {
+        if ( $minutes == 1 )
+        {
+            return "one minute ago";
+        }
+        else
+        {
+            return "$minutes minutes ago";
+        }
+    }
+    else if ( $hours <= 24 )
+    {
+        if ( $hours == 1 )
+        {
+            return "an hour ago";
+        }
+        else
+        {
+            return "$hours hrs ago";
+        }
+    }
+    else if ( $days <= 7 )
+    {
+        if ( $days == 1 )
+        {
+            return "yesterday";
+        }
+        else
+        {
+            return "$days days ago";
+        }
+    }
+    else if ( $weeks <= 4.3 ) //4.3 == 52/12  
+    {
+        if ( $weeks == 1 )
+        {
+            return "a week ago";
+        }
+        else
+        {
+            return "$weeks weeks ago";
+        }
+    }
+    else if ( $months <= 12 )
+    {
+        if ( $months == 1 )
+        {
+            return "a month ago";
+        }
+        else
+        {
+            return "$months months ago";
+        }
+    }
+    else
+    {
+        if ( $years == 1 )
+        {
+            return "one year ago";
+        }
+        else
+        {
+            return "$years years ago";
+        }
+    }
+}
+
+if ( !empty ($arrReplies) )
+{
+
+
+    echo '<!-- Loading Comments Gif -->
+					<div class="input-group vpb-the-post-wrap" style="display:none;padding:7px 10px !important;border:0px solid !important;border-top:1px solid #e5e5e5 !important;border-bottom:1px solid #e5e5e5 !important;background-color: #F9F9F9 !important; margin-bottom:8px;" id="vpb_loading_replies_outer_' . $comment->getId () . '">
+					<div id="vpb_loading_replies_' . $comment->getId () . '"></div>
+					</div>
+                    
+                    </div></div>';
+
+
+    echo '<div id="vpb_loaded_replies_' . $comment->getId () . '"></div>';
+
+
+    foreach ($arrReplies as $key => $arrReply) {
+
+
+
+        if ( $key == 0 )
+        {
+            echo '<div style="max-width:100% !important;max-height:100% !important;width:100% !important;margin:0px !important;background-color: #f6f7f8 !important;">
+                    
+                    <div style="margin-left:55px !important;border-left:4px solid #E1E1FF; clear:both;">
+                    
+					<div class="input-group vpb-the-post-wrap" style="border:0px solid !important;border-top:1px solid #e5e5e5 !important;border-bottom:1px solid #e5e5e5 !important;background-color: #F9F9F9 !important; margin-bottom:8px;" id="vpb_load_more_replies_box_' . $comment->getId () . '">';
+
+            echo '<div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_replies(\'' . $comment->getId () . '\');">View previous replies</span></div>';
+
+
+            echo '
+					<div style="clear:both;"></div>
+					</div></div></div>';
+        }
+
+
+
+        echo '<div class="v_wall_wrapper v_hide_show_reply" style="margin:0px !important;" id="vpb_reply_id_' . $arrReply->getId () . '">
+                
+                <div style="margin:0px !important;display: inline-block; max-width:100% !important;max-height:100% !important;width:100% !important;height:100% !important;display:none !important;" id="vpb_hidden_reply_id_' . $arrReply->getId () . '">
+				<div class="vasplus_a">
+				<div class="vasplus_b" style="background-color: #f6f7f8 !important;">
+				<div class="vpb_wall_adjust_c">
+				<div class="input-group vpb_wall_b_contents" style="display: inline-block; padding-left:45px !important;">
+                This reply has been hidden&nbsp;&nbsp;<i class="fa fa-hand-o-right"></i>&nbsp;&nbsp;<span class="vpb_hover" onclick="vpb_unhide_this_wall_item(\'' . $arrReply->getId () . '\', \'michaelhampton\', \'reply\');">Unhide</span>&nbsp;&nbsp;·&nbsp;&nbsp;<span class="vpb_hover" onclick="vpb_show_hidden_item_intro();">Learn more...</span>
+                
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+                
+                <style> .vpb_wrap_replies_icons { display:none; font-size:11px !important; font-weight:normal !important; vertical-align: top !important;text-align:right !important; opacity:0.4; cursor:pointer; } .vpb_wrap_replies_icons:hover { opacity:1; } #vpb_unhidden_reply_id_' . $arrReply->getId () . ':hover .vpb_wrap_replies_icons { display:inline-block !important;} </style>
+                
+                
+				<div style="max-width:100% !important;max-height:100% !important;width:100% !important;height:100% !important;margin:0px !important;display:inline-block !important;" id="vpb_unhidden_reply_id_' . $arrReply->getId () . '">';
+
+        echo '<div class="vasplus_a" style="border-top:0px solid !important;border-bottom:0px solid #E6E6E6 !important;background-color: #f6f7f8 !important;">
+                
+                <div style="margin-left:55px !important;border-left:4px solid #E1E1FF; clear:both;">
+				
+				<div class="vasplus_b" style="background-color: #f6f7f8 !important;">
+				<div class="vpb_wall_adjust_c" style="padding-top: 2px !important;">
+                
+                
+				<div class="input-group vpb_wall_b_contents">
+				
+				<span class="input-group-addon vpb-wall-user-photo" style="cursor:pointer;" onclick="window.location.href=\'/facebook/uploads/profile/' . $arrReply->getUsername () . '.jpg\';">
+				<span class="v_status_pictured_michaelhampton"><img src="/facebook/uploads/profile/' . $arrReply->getUsername () . '.jpg" width="24" height="24" border="0" onmouseover="vpb_get_user_onmouseover_data(\'reply' . $arrReply->getId () . 'michaelhampton\', \'Michael hampton\', \'United Kingdom\', \'/facebook/uploads/profile/' . $arrReply->getUsername () . '\');" onmouseout="vpb_get_user_mouseout_data(\'reply' . $arrReply->getId () . 'michaelhampton\', \'Michael hampton\', \'United Kingdom\', \'/facebook/uploads/profile/' . $arrReply->getUsername () . '.jpg\');"></span>
+				</span>
+				<div class="vpb_wrap_post_contents">
+				
+				<span class="vpb_wrap_post_contents_rr" style="width:100%;">
+				<span class="vpb_wall_reply_fullname" onmouseover="vpb_get_user_onmouseover_data(\'reply' . $arrReply->getId () . 'michaelhampton\', \'' . $arrReply->getAuthor () . '\', \'United Kingdom\', \'/facebook/uploads/profile/' . $arrReply->getUsername () . '.jpg\');" onmouseout="vpb_get_user_mouseout_data(\'reply' . $arrReply->getId () . 'michaelhampton\', \'' . $arrReply->getAuthor () . '\', \'United Kingdom\', \'/facebook/uploads/profile/' . $arrReply->getUsername () . '.jpg\');" onclick="window.location.href=\'/facebook/index/profile/'.$arrReply->getUsername().'\';">' . $arrReply->getAuthor () . '</span>
+               <div style="clear:both;"></div>
+               
+               <!-- Load User Details Starts -->
+				    <div class="dropdown open v_load_user_detail" onmouseover="vpb_get_user_onmouseover_datas();" onmouseout="vpb_get_user_mouseout_datas();" id="vpb_load_user_reply' . $arrReply->getId () . 'michaelhampton" style="text-align: left !important; margin: 0px !important; padding: 0px !important; display: none;"> 
+    
+    <ul class="dropdown-menu bullet" style="border-radius:0px !important; display:block; margin:15px; z-index:9999;text-align:left !important;margin-top:10px;">
+    
+    <div class="dropdown-header" style="padding:10px !important;text-align:left !important; border:0px solid !important;margin:0px !important;">
+    <div class="input-group vpb-wall-load-user-detail-wrap">
+    <span class="input-group-addon vpb-wall-load-user-detail-photo" style="cursor:pointer;" onclick="window.location.href=\'/facebook/index/profile/'.$arrReply->getUsername().'\';">
+    <span id="vpb_load_user_photo_reply' . $arrReply->getId () . 'michaelhampton"><img src="/facebook/public/uploads/profile/'.$arrReply->getUsername().'.jpg" border="0"></span>
+    </span>
+    <div class="vpb-wall-load-user-detail-others">
+    <span class="vpb-wall-load-user-detail-fullname" onclick="window.location.href=\'/facebook/index/profile/'.$arrReply->getUsername().'\';"><span id="vpb_load_user_fullname_reply' . $arrReply->getId () . 'michaelhampton">' . $arrReply->getAuthor () . '</span></span><br>
+   <span style="font-weight:normal !important;" id="vpb_load_user_country_reply' . $arrReply->getId () . '' . $arrReply->getUsername () . '"><i class="fa fa-map-marker" title="Location"></i>&nbsp;United Kingdom</span>
+   
+   <input type="hidden" id="vpb_friendship_uid_reply' . $arrReply->getId () . '' . $arrReply->getUsername () . '" value="' . $arrReply->getUsername () . '">
+   <input type="hidden" id="vpb_friendship_fid_reply' . $arrReply->getId () . '' . $arrReply->getUsername () . '" value="' . $arrReply->getUsername () . '">
+    </div>
+    </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div class="" style="padding:10px !important; background-color:#F6F6F6; margin:0px;">
+    <span id="vpb_load_friendship_reply' . $arrReply->getId () . '' . $arrReply->getUsername () . '"></span>
+    
+    <span style="margin-left:16px !important;" class="cbt_friendship" onclick="window.location.href=\'/facebook/index/profile/' . $arrReply->getUsername () . '\';"><i class="fa fa-user"></i> Profile</span>
+    </div>
+    </ul>
+    </div>
+                    <!-- Load User Details Ends -->
+                    
+<span class="vpb_comment_update_bottom_links pull-left" style="cursor:default;"><span class="vpb_date_time_posted" date="' . $arrReply->getDateCreated () . '">' . facebook_time_ago ($arrReply->getDateCreated ()) . '</span></span>';
+
+        if ( trim ($arrReply->getDateUpdated ()) !== "" )
+        {
+            echo '<span class="pull-left" id="rdotted_id_' . $arrReply->getId () . '"> · </span><span id="redited_id_' . $arrReply->getId () . '" class="vpb_hover vasplus-tooltip-attached pull-left" style="font-size:12px;" onclick="vpb_load_edited_history(\'' . $arrReply->getId () . '\', \'' . $arrReply->getUsername () . '\', \'Edit History\', \'reply\');" original-title="Show edit history">Edited</span><br>';
+        }
+
+        echo '<div class="vpb_wall_comments_description" style="font-size:12px !important; width:100%;">
+				
+                <div style="display:block !important;" class="vpb_default_status_wrapper" id="vpb_default_reply_wrapper_' . $arrReply->getId () . '">
+                <span id="vreplies_' . $arrReply->getId () . '">' . $arrReply->getReply () . '</span><span id="vreplies_large_' . $arrReply->getId () . '" style="display:none !important;"></span>                
+                                <br clear="all">                <div class="vpb_photos_wrapper_medium vasplus-tooltip-attached" id="reply_' . $arrReply->getId () . '" original-title="Click to enlarge">';
+        $arrImages = $arrReply->getArrImages ();
+
+        if ( !empty ($arrImages) )
+        {
+            foreach ($arrImages as $arrImage) {
+                echo '<a class="v_photo_holders" onclick="vpb_popup_photo_box(\'424\', \'1\', \'1\', \'' . $arrImage->getFileLocation () . '\');">
+					  <img src="' . $arrImage->getFileLocation () . '">
+					</a>';
+            }
+        }
+
+
+
+        echo '</div>
+				
+				
+               
+                <div style="clear:both;"></div>
+				 
+				</span>
+                <span class="vpb_wrap_post_contents_b">
+                                    <div class="dropdown">
+                     <i id="menu1' . $arrReply->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_replies_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" original-title="Options"></i>
+                      <ul class="dropdown-menu bullet pull-right" role="menu" aria-labelledby="menu1' . $arrReply->getId () . '" style="right: -15px; left: auto; top:18px;border-radius:0px !important;">
+                                              	<li><a onclick="vpb_show_editable_item(\'' . $arrReply->getId () . '\', \'reply\');">Edit Reply</a></li>
+                        	                            <li><a onclick="vpb_delete_this_wall_item(\'' . $arrReply->getId () . '\', \'reply\');">Delete</a></li>
+                                                  </ul>
+                    </div>
+                                </span>
+				<div style="clear:both;"></div>
+				
+				</div>
+				</div><div style="clear:both;"></div>
+				
+				
+				<div class="vpb_wrap_post_contents_e" style=" margin-left:36px; margin-top:-8px;">';
+
+        $userCommentLikes = [];
+        //$likeCommentCount = 0;
+        //$commentLikes = '';
+        $likeCommentReplyClass = 'inline-block';
+
+        $arrCommentLikes = $arrReply->getArrLikes ();
+
+        if ( !empty ($arrCommentLikes) )
+        {
+
+            $userCommentLikes = array_reduce ($arrCommentLikes, function ($reduced, $current) {
+
+                $fullName = $current->getFirstName () . ' ' . $current->getLastName ();
+
+                $reduced[$current->getUsername ()] = $fullName;
+                return $reduced;
+            });
+
+            $likeCommentReplyClass = !empty ($userCommentLikes) && array_key_exists ($_SESSION['user']['username'], $userCommentLikes) ? 'none' : $likeCommentReplyClass;
+            //$commentLikes = implode (',', array_slice ($userCommentLikes, 0, 2));
+            //$likeCommentCount = count ($usersLikes) - 2;
+        }
+
+        $unlikeDisplay = $likeCommentReplyClass == 'none' ? 'block' : 'none';
+
+        $likeCommentReplyText = trim ($likeCommentReplyClass) === "unlike" ? 'Unlike' : "Like";
+
+        echo '<span class="vpb_comment_liked pull-left" style="display:' . $likeCommentReplyClass . ';" id="rlike_' . $arrReply->getId () . '" onclick="vpb_like_reply_box(\'' . $arrReply->getUsername () . '\', \'' . $arrReply->getId () . '\', \'like\');" title="Like this comment"><span class="like_text">Like</span></span>';
+
+        echo '<span class="vpb_comment_liked pull-left" style="display:' . $unlikeDisplay . ';" id="runlike_' . $arrReply->getId () . '" onclick="vpb_like_reply_box(\'' . $arrReply->getUsername () . '\', \'' . $arrReply->getId () . '\', \'unlike\');" title="Unlike this comment"><span class="like_text">Unlike</span></span>';
+
+        echo '<span class="vpb_comment_update_bottom_links pull-left" title="Leave a reply" onclick="vpb_show_reply_box(\'' . $arrReply->getCommentId () . '\');">Reply</span> ·
+                                
+                <span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="display:none;color: #3b5998; text-decoration:none;" id="vpb_rlike_wrapper_' . $arrReply->getId () . '" onclick="vpb_load_reply_likes(\'' . $arrReply->getId () . '\', \'' . $arrReply->getUsername () . '\', \'People Who Like This\');" original-title="Click to see likes">
+                
+                <i class="fa fa-thumbs-o-up"></i> <span id="vpb_total_rlikes_' . $arrReply->getId () . '">0</span>
+                 · </span> 
+                </div>
+                
+				<div style="clear:both;"></div>
+				</div>
+				</div>
+				</div>
+				</div>';
+
+        echo '<div style="max-width:100% !important;max-height:100% !important;width:100% !important;height:100% !important; display:none !important;" id="vpb_editable_reply_wrapper_' . $arrReply->getId () . '" class="vpb_editable_status_wrapper">
+				<div class="input-group">
+				<textarea id="vpb_wall_reply_editable_data_' . $arrReply->getId () . '" class="form-control vpb_textarea_editable_status_update" placeholder="Write a reply...">' . $arrReply->getReply () . '</textarea>
+				<span class="input-group-addon" style="vertical-align:bottom; background-color:#FFF !important; border-left:0px solid;">
+                <div class="cbtn vpb_cbtn" style="margin-bottom:20px;" onclick="vpb_cancel_editable_item(\'' . $arrReply->getId () . '\', \'reply\');" title="Cancel"><i class="fa fa-times"></i></div><br clear="all">
+                <div class="btn btn-success btn-wall-post" onclick="vpb_save_reply_update(\'' . $arrReply->getId () . '\');">Save</div></span>
+				</div>
+                <div id="save_reply_changes_loading_' . $arrReply->getId () . '"></div>
+			   </div>
+            </div>';
+    }
+}

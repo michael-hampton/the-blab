@@ -1,0 +1,80 @@
+<link href="/blab/public/css/album.css" rel="stylesheet" type="text/css">
+<div class="text-center">
+    <a class="btn btn-primary createNewAlbum" href="#">Create Album</a>
+</div>
+
+<div class="row wrapper border-bottom white-bg page-heading" style="width: 100%;margin-left: 10px;">
+    <div class="col-sm-4">
+        <h2>Photos</h2>
+        <a onclick="vpb_show_photos ('normal', 1)" href="">Photos</a> | <a class="viewAllAlbums" href="">Albums</a>
+    </div>
+</div>
+
+<div class="alert alert-warning" style="margin-top:10px;">
+    You can drag the images into the albums
+</div>
+
+
+<?php
+if ( !empty ($arrAlbums) )
+{
+
+    echo '<div class="albums">';
+
+    foreach ($arrAlbums as $arrAlbum) {
+
+        $albumId = $arrAlbum->getId ();
+
+        echo '<div class="album" id="' . $albumId . '" droppable="true"><h2 class="openAlbum">' . $arrAlbum->getName () . '</h2>';
+
+        if ( !empty ($arrAlbumPhotos[$albumId]) )
+        {
+
+            foreach ($arrAlbumPhotos[$albumId] as $albumPhoto) {
+                echo '<a class="pull-left" id="' . $albumId . '"><img src="' . $albumPhoto->getFileLocation () . '"></a>';
+            }
+        }
+
+        echo '</div>';
+    }
+    echo '</div>
+<div style="clear:both"></div>';
+}
+
+if ( !empty ($arrPhotos) )
+{
+
+    $sPhotos = '<div class="col-lg-12 pull-left">';
+
+    foreach ($arrPhotos as $arrPhoto) {
+
+
+        $sPhotos .= '<div draggable="true" id="' . $arrPhoto->getId () . '"class="photo col-lg-3 pull-left">';
+
+        $sPhotos .= '<div class="dropdown" style="float:right;">
+  <button class="dropbtn" style="position: absolute; top: 0px; right: 0px;"><i class="fa fa-pencil"></i></button>
+  <div class="dropdown-content" style="right: 0px;top: 20px;">
+    <a href="#" class="deletePhoto" id="' . $arrPhoto->getId () . '">Delete Photo</a>
+    <a href="' . $arrPhoto->getFileLocation () . '" download>Download</a>
+  </div>
+</div>';
+
+        $sPhotos .= '<img src="' . str_replace ($_SERVER['DOCUMENT_ROOT'] . '/blab/', '', $arrPhoto->getFileLocation ()) . '" id="' . $arrPhoto->getId () . '" /><p> title item</p><i> description </i></div>';
+    }
+
+    $sPhotos .= '</div>';
+}
+?>
+
+
+<!-- Container with last photos -->
+<div class="col-lg-12">
+    <?php
+    if ( !empty ($sPhotos) )
+    {
+        echo $sPhotos;
+    }
+    ?>
+</div>
+
+<script src="/blab/public/js/album.js" type="text/javascript"></script>

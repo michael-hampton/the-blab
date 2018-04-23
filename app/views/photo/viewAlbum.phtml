@@ -1,0 +1,53 @@
+<link href="/blab/public/css/album.css" rel="stylesheet" type="text/css">
+<!--<div class="text-center">
+    <a class="btn btn-primary createNewAlbum" href="#">Create Album</a>
+
+
+</div>-->
+
+<div class="row wrapper border-bottom white-bg page-heading" style="width: 100%;margin-left: 10px;">
+    <div class="col-sm-4">
+        <h2><?= $objAlbum->getName () ?></h2>
+        <a href="" onclick="vpb_show_photos ('normal', 1)">Photos</a> | <a class="viewAllAlbums" href="">Albums</a>
+    </div>
+</div>
+
+
+<?php
+if ( !empty ($arrPhotos[$albumId]) )
+{
+
+    $sPhotos = '<div class="col-lg-12 pull-left">';
+
+    foreach ($arrPhotos[$albumId] as $arrPhoto) {
+
+
+        $sPhotos .= '<div draggable="true" id="' . $arrPhoto->getId () . '" class="photo col-lg-2 pull-left">';
+        $sPhotos .= '<div class="dropdown" style="float:right;">
+  <button class="dropbtn" style="position: absolute; top: 0px; right: 0px;"><i class="fa fa-pencil"></i></button>
+  <div class="dropdown-content" style="right: 0px;top: 20px;">
+    <a href="#" class="deletePhoto" id="' . $arrPhoto->getId () . '">Delete Photo</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
+  </div>
+</div>';
+        $sPhotos .= '<img src="' . str_replace ($_SERVER['DOCUMENT_ROOT'] . '/blab/', '', $arrPhoto->getFileLocation ()) . '" id="' . $arrPhoto->getId () . '" />';
+
+
+
+        $sPhotos .= '</div>';
+    }
+
+    $sPhotos .= '</div>';
+}
+?>
+
+
+<h2>blab like photo gallery with comments</h2>
+
+<!-- Container with last photos -->
+<div class="col-lg-12">
+    <?= $sPhotos ?>
+</div>
+
+<script src="/blab/public/js/album.js" type="text/javascript"></script>

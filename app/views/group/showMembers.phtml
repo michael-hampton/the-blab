@@ -1,0 +1,18 @@
+<div class="full-height-scroll" style="">
+
+    <strong>Members</strong>
+
+    <ul class="list-group clear-list" style="min-height: 150px !important;">
+        <?php foreach ($arrMembers as $arrMember) { ?>
+
+            <li class="list-group-item fist-item">
+                <span class="pull-left"><img class="img-responsive" style="max-width: 50px;" src="/blab/public/uploads/profile/<?= $arrMember->getUsername () ?>.jpg"> </span>
+
+                <?= $arrMember->getFirstName () . ' ' . $arrMember->getLastName (); ?>
+            </li>
+
+        <?php } ?>
+
+    </ul>
+
+</div>

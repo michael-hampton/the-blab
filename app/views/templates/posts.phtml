@@ -1,0 +1,373 @@
+<?php
+date_default_timezone_set ("Europe/London");
+require_once 'templateFunctions.php';
+
+if ( !isset ($totalCommentsToDisplay) )
+    $totalCommentsToDisplay = 1;
+
+
+if ( empty ($arrPosts) )
+{
+    echo 'Be the first person to post';
+}
+else
+{
+    $bannerCount = 0;
+
+    foreach ($arrPosts as $key => $arrComment) {
+
+        $arrLikes = $arrComment->getArrLikes ();
+
+        $likeClass = 'like';
+
+        if ( !empty ($arrLikes) )
+        {
+            $usersLikes = array_reduce ($arrLikes, function ($reduced, $current) {
+
+                $fullName = $current->getFirstName () . ' ' . $current->getLastName ();
+
+                $reduced[$current->getUsername ()] = $fullName;
+                return $reduced;
+            });
+
+            $likes = implode (',', array_slice ($usersLikes, 0, 2));
+            $likeCount = count ($usersLikes) - 2;
+            $likeClass = !empty ($usersLikes) && array_key_exists ($_SESSION['user']['username'], $usersLikes) ? 'unlike' : $likeClass;
+        }
+
+        // banners
+        if ( ++$key % 3 === 0 && !empty ($arrAdverts[$bannerCount]) )
+        {
+            echo $this->partial ("templates/adverts", ["arrAdverts" => $arrAdverts, "advertCount" => $bannerCount]);
+            $bannerCount++;
+        }
+
+
+        echo '<div style="width: 100%; margin: 0px !important; display: none;" id="vpb_hidden_post_id_' . $arrComment->getId () . '">  
+	<div class="vasplus_a">
+	
+	<div class="vasplus_b">
+	<div class="vpb_wall_adjust_c">
+	<div class="input-group vpb_wall_b_contents" style="display: inline-block;">
+	This post has been hidden&nbsp;&nbsp;<i class="fa fa-hand-o-right"></i>&nbsp;&nbsp;<span class="vpb_hover" onclick="vpb_unhide_this_wall_item(\'' . $arrComment->getId () . '\', \'michaelhampton\', \'post\');">Unhide</span>&nbsp;&nbsp;·&nbsp;&nbsp;<span class="vpb_hover" onclick="vpb_show_hidden_item_intro();">Learn more...</span>
+	</div>
+	</div>
+	</div>
+	</div>
+	 </div>';
+
+        echo '<div class="social-feed-box" postid="' . $arrComment->getId () . '">';
+
+        echo '<div class="pull-right social-action dropdown">
+                                    <button data-toggle="dropdown" class="dropdown-toggle btn-white">
+                                        <i class="fa fa-angle-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu m-t-xs">';
+
+        if ( $arrComment->getUserId () == $_SESSION['user']['user_id'] )
+        {
+            echo '<li><a onclick="vpb_delete_this_wall_item(\'' . $arrComment->getId () . '\', \'post\');">Delete</a></li>';
+        }
+        else
+        {
+            echo '<li><a class="ignorePost" deleteid="' . $arrComment->getId () . '" href="#">Remove Post from feed</a></li>';
+        }
+
+        if ( $arrComment->getUserId () !== $_SESSION['user']['user_id'] )
+        {
+            echo '<li><a data-backdrop="static" data-toggle="modal" data-target="#report-this-post" onclick="vpb_save_the_item_detail(\'' . $arrComment->getId () . '\', \'' . $arrComment->getAuthor () . '\', \'' . $arrComment->getUsername () . '\', \'uanhampton@yahoo.com\', \'Lexieh\');">Report Post</a></li>';
+        }
+
+        if ( $arrComment->getUserId () === $_SESSION['user']['user_id'] )
+        {
+            echo '<li><a onclick="vpb_show_editable_item(\'' . $arrComment->getId () . '\', \'post\');">Edit Post</a></li>';
+        }
+
+
+
+        echo '</ul>
+                                </div>';
+
+        echo ' <div class="social-avatar">';
+
+        if ( trim ($arrComment->getMessageType ()) !== "" && (int) $arrComment->getMessageType () === 2 )
+        {
+            echo '<a href="/blab/page/index/' . $arrComment->getUsername () . '" class="pull-left"><img alt="image" src="/blab/public/uploads/pages/' . str_replace (" ", "_", $arrComment->getAuthor ()) . '.jpg">';
+
+            echo '</a>';
+
+            echo '<div class="media-body">';
+
+            echo '<a href="/blab/page/index/' . $arrComment->getUsername () . '">
+                                            ' . $arrComment->getAuthor () . '
+                                        </a>';
+        }
+        elseif ( trim ($arrComment->getMessageType ()) !== "" && (int) $arrComment->getMessageType () === 6 )
+        {
+            echo '<a href="/blab/index/profile/' . $arrComment->getUsername () . '" class="pull-left"><img alt="image" src="/blab/public/uploads/profile/' . $arrComment->getUsername () . '.jpg">';
+
+            echo '</a>';
+
+            echo '<div class="media-body">';
+        }
+        elseif ( trim ($arrComment->getSharersUsername ()) !== "" && trim ($arrComment->getSharersFullname ()) !== "" )
+        {
+            echo '<a href="/blab/index/profile/' . $arrComment->getSharersUsername () . '" class="pull-left"><img alt="image" src="/blab/public/uploads/profile/' . $arrComment->getSharersUsername () . '.jpg">';
+
+            echo '</a>';
+
+            echo '<div class="media-body">';
+
+            echo '<a onmouseover="vpb_get_user_onmouseover_data(\'' . $arrComment->getSharersUsername () . '\', \'' . $arrComment->getSharersFullname () . '\', \'United Kingdom\', \'/blab/uploads/profile/' . $arrComment->getSharersUsername () . '.jpg\');" href="/blab/index/profile/' . $arrComment->getSharersUsername () . '">
+                                            ' . $arrComment->getSharersFullname () . '
+                                        </a>';
+        }
+        elseif ( trim ($arrComment->getMessageType ()) !== "" && (int) $arrComment->getMessageType () === 1 )
+        {
+
+            $authorsName = isset ($objGroup) ? str_replace ("posted in " . $objGroup->getGroupName (), "", $arrComment->getAuthor ()) : $arrComment->getAuthor ();
+
+            echo '<a href="/blab/index/profile/' . $arrComment->getUsername () . '" class="pull-left"><img alt="image" src="/blab/public/uploads/profile/' . $arrComment->getUsername () . '.jpg">';
+
+            echo '</a>';
+
+            echo '<div class="media-body">';
+
+            echo '<a onmouseover="vpb_get_user_onmouseover_data(\'' . $arrComment->getUsername () . '\', \'' . $arrComment->getAuthor () . '\', \'United Kingdom\', \'/blab/uploads/profile/' . $arrComment->getUsername () . '.jpg\');" href="/blab/index/profile/' . $arrComment->getUsername () . '">
+                                            ' . $authorsName . '
+                                        </a>';
+        }
+        else
+        {
+            echo '<a href="/blab/index/profile/' . $arrComment->getUsername () . '" class="pull-left"><img alt="image" src="/blab/public/uploads/profile/' . $arrComment->getUsername () . '.jpg">';
+
+            echo '</a>';
+
+            echo '<div class="media-body">';
+
+            echo '<a onmouseover="vpb_get_user_onmouseover_data(\'' . $arrComment->getUsername () . '\', \'' . $arrComment->getAuthor () . '\', \'United Kingdom\', \'/blab/uploads/profile/' . $arrComment->getUsername () . '.jpg\');" href="/blab/index/profile/' . $arrComment->getUsername () . '">
+                                            ' . $arrComment->getAuthor () . '
+                                        </a>';
+        }
+
+        buildTags ($arrComment);
+
+        if ( trim ($arrComment->getClonedFromAuthor ()) !== "" )
+        {
+            echo '<small> Shared ' . $arrComment->getClonedFromAuthor () . 's post</small> <br>';
+        }
+        echo '<small date="' . $arrComment->getCreated () . '" class="text-muted timeAgo">' . blab_time_ago ($arrComment->getCreated ()) . '</small>';
+
+        $formattedUsername = trim (str_replace (".", "", $arrComment->getUsername ()));
+
+
+        if ( trim ($arrComment->getLocation ()) !== "" )
+        {
+            echo ' <small>' . $arrComment->getLocation () . '</small>';
+        }
+
+        $arrRatings = $arrComment->getArrRatings ();
+        if ( !empty ($arrRatings) )
+        {
+            echo '<div class="col-lg-12">';
+            $rating = (int) $arrRatings[0]->getRating ();
+
+            for ($x = 1; $x <= $rating; $x++) {
+                echo '<div class="star_' . $x . ' ratings_stars ratings_vote"></div>';
+            }
+
+
+            echo '</div>';
+        }
+
+        buildSharedComment ($arrComment);
+
+        if ( trim ($arrComment->getDateUpdated ()) !== "" && trim ($arrComment->getDateUpdated ()) !== "0000-00-00 00:00:00" )
+        {
+            echo "<br><small date='" . $arrComment->getDateUpdated () . "'>Updated this comment " . blab_time_ago ($arrComment->getDateUpdated ()) . "</small>";
+        }
+
+
+        echo '</div>'; //end media body
+
+
+
+        echo '</div>';
+
+        echo '<div class="dropdown open v_load_user_detail" onmouseover="vpb_get_user_onmouseover_datas();" onmouseout="vpb_get_user_mouseout_datas();" id="vpb_load_user_' . $formattedUsername . '" style="text-align: left !important;margin: 0px !important;padding: 0px !important; display: none;"> 
+    
+    <ul class="dropdown-menu bullet" style="border-radius:0px !important; display:block; margin:15px; z-index:9999;text-align:left !important;margin-top:10px;">
+    
+    <div class="dropdown-header" style="padding:10px !important;text-align:left !important; border:0px solid !important;margin:0px !important;">
+    <div class="input-group vpb-wall-load-user-detail-wrap">
+    <span class="input-group-addon vpb-wall-load-user-detail-photo" style="cursor:pointer;" onclick="window.location.href=\'/blab/index/profile/' . $formattedUsername . '\';">
+    <span id="vpb_load_user_photo_' . $formattedUsername . '"><img src="/blab/public/uploads/profile/' . $formattedUsername . '.jpg" border="0"></span>
+    </span>
+    <div class="vpb-wall-load-user-detail-others">
+    <span class="vpb-wall-load-user-detail-fullname" onclick="window.location.href=\'/blab/index/profile/' . $formattedUsername . '\';"><span id="vpb_load_user_fullname_' . $formattedUsername . '">' . $arrComment->getAuthor () . '</span></span><br>
+   <span style="font-weight:normal !important;" id="vpb_load_user_country_' . $formattedUsername . '"><i class="fa fa-map-marker" title="Location"></i>&nbsp;United Kingdom</span>
+   
+   <input type="hidden" id="vpb_friendship_uid_' . $formattedUsername . '" value="' . $formattedUsername . '">
+   <input type="hidden" id="vpb_friendship_fid_' . $formattedUsername . '" value="' . $formattedUsername . '">
+    </div>
+    </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div class="modal-footer" style="padding:10px !important; background-color:#F6F6F6; margin:0px;">
+    <span id="vpb_load_friendship_michaelhampton4787"></span>
+    
+    <span style="margin-left:16px !important;" class="cbt_friendship" onclick="window.location.href=\'/blab/index/profile/' . $arrComment->getUsername () . '\';"><i class="fa fa-user"></i> Profile</span>
+    </div>
+    </ul>
+    </div>';
+
+        echo '<div id="vpb_editable_status_wrapper_' . $arrComment->getId () . '" class="vpb_editable_status_wrapper" style="display: none;">
+	<div class="input-group">
+	<textarea id="vpb_wall_status_editable_data_' . $arrComment->getId () . '" class="form-control vpb_textarea_editable_status_update" placeholder="Whats on your mind?">' . generateVideoEmbedUrl ($arrComment->getMessage ()) . '</textarea>
+	<span class="input-group-addon" style="vertical-align:bottom; background-color:#FFF !important; border-left:0px solid;">
+	<div class="cbtn vpb_cbtn" style="margin-bottom:20px;" onclick="vpb_cancel_editable_item(\'' . $arrComment->getId () . '\', \'post\');" title="Cancel"><i class="fa fa-times"></i></div><br clear="all">
+	<div class="btn btn-success btn-wall-post" onclick="vpb_save_status_update(\'' . $arrComment->getId () . '\');">Save</div></span>
+	</div>
+	<div id="saving_changes_loading_4675"></div>
+   </div>';
+
+        $len = strlen ($arrComment->getMessage ());
+        $post_Left = '';
+        $max_allowed = 400;
+        if ( $len <= (int) $max_allowed )
+        {
+            $post_Left = $arrComment->getMessage ();
+            $showMore = 'none';
+        }
+        else if ( $len >= (int) $max_allowed )
+        {
+            $post_trimed = substr ($arrComment->getMessage (), 0, (int) $max_allowed);
+            $post_Left = $post_trimed . '...';
+            $showMore = 'inline-block';
+        }
+
+        echo '<div class="social-body" id="vpost_' . $arrComment->getId () . '">
+            <div id="vpb_default_status_wrapper_' . $arrComment->getId () . '" class="">
+                                    <div id="post_box_a_' . $arrComment->getId () . '">
+                                  <p id="vpost_' . $arrComment->getId () . '">
+                                     ' . parseSmiley ($post_Left) . '
+                                  </p>
+                                  </div>
+                                  <span id="show_more_' . $arrComment->getId () . '" style="display:' . $showMore . ';" class="vpb_hover" onclick="vpb_show_full_item(\'' . $arrComment->getId () . '\',\'post\');">See more</span>
+                                  <div style="display:none !important;" id="post_box_b_' . $arrComment->getId () . '"><span id="vpost_large_' . $arrComment->getId () . '">' . parseSmiley ($arrComment->getMessage ()) . '</span></div>
+                                  </div>';
+
+        $arrImages = $arrComment->getArrImages ();
+
+        if ( !empty ($arrImages) )
+        {
+            echo '<div class="photos-frame">';
+
+            foreach ($arrImages as $key => $arrImage) {
+
+                echo '<input type="hidden" id="hidden_photo_link_' . $arrComment->getId () . '_' . ($key + 1) . '" value="' . $arrImage->getFileLocation () . '">';
+
+                echo '<a class="v_photo_holders" onclick="vpb_popup_photo_box(\'' . $arrComment->getId () . '\', \'' . count ($arrImages) . '\', \'' . ($key + 1) . '\', \'' . $arrImage->getFileLocation () . '\');">';
+
+
+                echo '<img style="width:100%;" src="' . $arrImage->getFileLocation () . '" class="img-responsive">';
+
+
+                echo '</a>';
+            }
+
+            echo '</div>';
+        }
+
+        echo '<ul class="feelings-box" style="display:none;" messageid="' . $arrComment->getId () . '"> <!-- feeling buttons container-->
+								<li onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Like\');" class="feeling feeling-like" data-feeling="Like"></li>
+								<li onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Love\');" class="feeling feeling-love" data-feeling="Love"></li>
+								<li onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Haha\' class="feeling feeling-haha" data-feeling="HaHa"></li>
+								<li onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Wow\');" class="feeling feeling-wow" data-feeling="Wow"></li>
+								<li onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Sad\');" class="feeling feeling-sad" data-feeling="Sad"></li>
+								<li onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Angry\');" class="feeling feeling-angry" data-feeling="Angry"></li>
+						  </ul>';
+
+        echo '<div class="vpb_wrap_post_contents_d"></div>';
+
+        echo '<div class="btn-group">
+                                      <button id="' . $arrComment->getId () . '" class="btn btn-white btn-xs ' . $likeClass . ' post"><i class="fa fa-thumbs-up"></i> Like this! </button>
+                                         
+                                      <button class="btn btn-white btn-xs"><i class="fa fa-comments"></i> Comment</button>
+                                      <button class="btn btn-white btn-xs Share" messageid="' . $arrComment->getId () . '"><i class="fa fa-share"></i> Share</button>';
+
+
+        echo '</div>';
+
+        buildReactions ($arrComment);
+
+        if ( count ($arrComment->getArrComments ()) > 0 )
+        {
+            //echo '<div class="col-lg-12 input-group vpb-like-post-wrap">' . count ($arrComment->getArrComments ()) . ' Comment </div><br>';
+        }
+
+
+        echo '</div>';
+
+        echo '<div class="social-footer" id="' . $arrComment->getId () . '">';
+        buildComments ($arrComment, $totalCommentsToDisplay);
+
+        //end social comment
+
+        echo '</div>';
+
+        echo '<div class="social-comment" style="margin-top:0px !important;
+                                            background: #f9f9f9;">
+                                <a href="" class="pull-left">
+                                    <img alt="image" src="/blab/public/img/a3.jpg">
+                                </a>
+                                <div class="media-body">
+                                    <textarea comment-id="' . $arrComment->getId () . '" class="form-control reply-comment" placeholder="Write comment..."></textarea>
+                                        
+
+                                        <div id="vpb_comment_bottom_icons_' . $arrComment->getId () . '" style="margin-bottom:2px !important;float: right;margin-top: 12px;">
+	
+	<span class="vpb_no_radius_c vasplus-tooltip-attached" style="display:none;" id="remove_comment_photo_' . $arrComment->getId () . '" onclick="remove_comment_photo(\'' . $arrComment->getId () . '\');" original-title="Remove photo"><i style="font-size:22px;" class="fa fa-times vfooter_icon"></i></span>
+	
+	<span id="add_file_clicked_' . $arrComment->getId () . '" class="vpb_no_radius_c vasplus-tooltip-attached" onclick="document.getElementById(\'comment_photo_' . $arrComment->getId () . '\').click();" original-title="Attach a photo"><i style="font-size:22px;" class="fa fa-camera vfooter_icon"></i></span>
+	
+	<span class="vpb_no_radius_c vpb_smiley_buttons vasplus-tooltip-attached" id="vpb_show_smiley_button_' . $arrComment->getId () . '" onclick="vpb_comment_smiley_box(\'' . $arrComment->getId () . '\');" original-title="Add smiley"><i style="font-size:22px;" class="fa fa-smile-o vfooter_icon"></i></span>
+            <button comment-id="' . $arrComment->getId () . '" type="button" class="btn btn-primary btn-sm SubmitNewComment" disabled="disabled">Send</button>
+   
+   </div>
+
+                                        </div>';
+
+        echo '<ul class="dropdown-menu comment_smiley_dropdown_menu" id="vpb_the_comment_smiley_box' . $arrComment->getId () . '" style="right: 0px; left: auto; top:auto;border-radius:0px !important;">
+	<li class="dropdown-header vpb_wall_li_bottom_border">
+	<span class="v_wall_position_info_left">What is your current mood?</span> <span class="v_wall_position_info_right" onclick="vpb_hide_comment_smiley_box(\'' . $arrComment->getId () . '\');">x</span><div style="clear:both;"></div></li>
+	<li><span id="vpb_comment_smiley_box_' . $arrComment->getId () . '"></span></li>
+	</ul>';
+
+        echo '<div class="vpb_textarea_photo_box" id="vpb_preview_comment_photo_' . $arrComment->getId () . '">
+	<span id="vpb-display-comment-attachment-preview_' . $arrComment->getId () . '"></span>
+	</div>';
+
+        echo '<div class="vpb_textarea_photo_box" style="text-align:center !important;min-height: 20px !important;" id="vpb_comment_loading_' . $arrComment->getId () . '">
+	<span id="vpb_display_comment_loading_' . $arrComment->getId () . '"></span>
+	</div>';
+
+        echo '<span class="vpb_no_radius_b">
+	<input type="file" id="comment_photo_' . $arrComment->getId () . '" onchange="vpb_add_file_to_comment_clicked(\'' . $arrComment->getId () . '\');vpb_comment_image_preview(this, \'Please click on the continue button below to proceed to your post or click on the Browse photos button above to select a new photo or multiple photos at a time.\', \'Photo Enlargement\', \'' . $arrComment->getId () . '\');" style="display:none;">
+	
+	
+	
+	</span>';
+
+        echo '</div>';
+
+
+        echo '</div>';
+    }
+}
+?>
+
+<!--<div class="loadmore" data-page='2'>
+    <div class="content"></div><div class="loading-bar">Scroll for more or click here</div></div>
+
+</div>-->

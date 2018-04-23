@@ -1,0 +1,398 @@
+<link rel="stylesheet" type="text/css" href="/blab/public/css/pms.css">    
+
+<div class="panel panel-chat" id="<?= $groupId ?>">
+
+
+    <div style="display: none;position: absolute;">
+        <input type="file" id="photoFile" accept="image/*" />
+        <audio src="cdn/message.wav" controls="false" id="notification"></audio>
+    </div>
+
+    <div class="users"></div>
+
+    <div class="panel-heading">
+
+        <div class="pms_right_view_inner">
+
+            <div id="vpb_new_message">
+                <div class="compose_new_message_text">New Message</div>
+                <div style="clear:both;"></div>
+            </div>
+
+
+            <div id="vpb_add_people_in_group">
+
+                <div class="" style="float:left; padding:15px; padding-top:20px; font-size:16px; font-weight:bold;">Add People</div>
+
+                <div class="" style="float:right; padding:15px;padding-top:17px;">
+                    <div class="vpb_pms_social_n_btn" onclick="vpb_exit_compose_new_message ();">Done</div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+
+
+            <div id="vpb_default_message">
+                <div class="pms_right_view_inner_left">
+
+                    <div style="display:table-cell;vertical-align:middle; padding-right:10px;" id="vpb-current-group-name" onmouseover="vpb_get_user_onmouseover_data ('', '', '', '', 'group');" onmouseout="vpb_get_user_mouseout_data ('', '', '', '', 'group');"><span class="vpb_added_users_names">Vasplus</span>, <span class="vpb_added_users_names">Williams</span>, <span class="vpb_added_users_names">Patricia</span> and 3 <span class="vpb_added_users_names">others</span></div>
+
+                    <div id="vpb_add_more_people_button" style="display:table-cell;" class="vasplus_tooltip_icons" original-title="Leave Conversation" data-original-title="Leave Conversation"><div style="display:inline-block;padding-left:0px; vertical-align:middle;"><i class="fa fa-times add_more_people_hover" onclick="vpb_confirm_remove_self_from_group ('grace');"></i></div></div>
+
+                    <div id="vpb_edit_group_name_button" style="display:table-cell;" class="vasplus_tooltip_icons" original-title="Edit Conversation Name"></div>
+
+                </div>
+
+                <div class="pms_right_view_inner_right vp_ul_wrap">
+
+
+                    <span id="vtop_pm_links">
+
+
+
+
+                        <div class="vpb_pms_social_btn" style="border-right:0px solid;" onclick="vpb_compose_new_message ();"><i class="vpb_new_mail_icon"></i> New Message</div>
+
+
+                        <div id="pms_actions_icon" class="vpb_pms_social_n_btn pms_tooltip_bottom" style="margin-left:-5px; border-right:0px solid; padding-left:4px; padding-right:4px;" onclick="vpb_show_actions_menu ();" original-title="Actions"><i class="vpb_actions_icons"></i></div>
+
+                        <ul style="color: #000 !important" id="v_actions_box" class="dropdown-menu pull_pms pull-right vasplus_bosy v_actions_box" aria-labelledby="pms_actions_icon">
+
+                            <li id="vpb_add_people_in_group_link"><a style="color: #000 !important" href="javascript:void(0);" onclick="vpb_add_more_poeple_in_group ();">Add People</a></li>
+
+                            <li><a style="color: #000 !important" href="javascript:void(0);" onclick="vpb_view_all_photos_in_thread ();">View Photos in Thread</a></li>
+
+                            <li id="vpb_edit_group_name_link"><a style="color: #000 !important" href="javascript:void(0);" onclick="vpb_edit_group_name ();">Edit Conversation Name</a></li>
+
+                            <li id="vpb_edit_group_photo_link"><a style="color: #000 !important" href="javascript:void(0);" onclick="vpb_edit_group_name ();">Edit Conversation Photo</a></li>
+
+                            <li style="" id="vpb_leave_the_group_link"><a style="color: #000 !important" href="javascript:void(0);" onclick="vpb_confirm_remove_self_from_group ('grace');">Leave Conversation</a></li>
+
+                            <li><a style="color: #000 !important" href="javascript:void(0);" onclick="vpb_confirm_delete_multiple_messages ('auto');">Delete Conversation</a></li>
+
+                            <li><a style="color: #000 !important" href="javascript:void(0);" onclick="vpb_show_message_deletion_options ();">Delete Messages</a></li>
+
+                            <li><a style="color: #000 !important" href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#report-abuse" onclick="$ ('#v_actions_box').hide ();">Report Spam or Abuse</a></li>
+
+                            <li><a style="color: #000 !important" href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#vfeed-back" onclick="$ ('#v_actions_box').hide ();">Feedback</a></li>
+
+                        </ul>   
+
+                        <div class="vpb_pms_social_btn pms_tooltip_bottom" style="margin-left:-5px;padding-left:4px; padding-right:4px;" onclick="vpb_search_or_toggle_search_box ('normal');" original-title="Search messages in this conversation"><i class="vpb_search_icons"></i></div>
+
+                    </span>
+                    <span id="vtop_search_box" style="display:none;">
+
+                        <input type="text" maxlength="50" class="form-control form-control-plus-pms" name="vpm_data" id="searchMessagesBox" placeholder="Search in this conversation" style="height: 29px !important;padding:3px 10px !important;max-width:200px !important;display: inline-block !important; float:none !important; margin:0px !important;border-right:0px solid !important;" autocomplete="off">
+
+                        <div class="vpb_pms_social_btn" style="margin-left:-5px;padding-left:4px; padding-right:4px;" onclick="vpb_search_or_toggle_search_box ('search');"><i class="vpb_search_icons"></i></div>
+
+                        <div class="vpb_pms_social_btns" title="Cancel" onclick="vpb_search_or_toggle_search_box ('cancel');">&nbsp;&nbsp;<i class="fa fa-times"></i>&nbsp;&nbsp;</div>
+                    </span>
+
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+
+        <div id="v_added_u_sers" class="v_added_u_sers" style="background-color: #FFF; display: none;">
+            <div class="input-group">
+
+                <span class="input-group-addon compose_to_text_outer"><div class="compose_to_text" style="color:#000;">To:</div></span>
+
+                <span class="v_added_u_sers_span">
+                    <span id="vpb_added_users_box" class="vpb-added-users-wraper"></span>
+
+                    <textarea id="vpb_pms_to_data" style="color:#000 !important" class="vpb-input" placeholder="Name" autocomplete="off" onclick="vpb_show_suggested_searched_user ();"></textarea>
+                </span>
+            </div><div style="clear:both;"></div>
+        </div>
+
+        <div style="position: absolute; cursor:default !important;">
+
+            <div style="display: none; background-color:#FFF !important; z-index: 9999999 !important;" class="dropdown open v_load_user_detail v_load_user_detail_inner_a" onmouseover="vpb_get_user_onmouseover_datas ();" onmouseout="vpb_get_user_mouseout_datas ();"> 
+                <ul class="dropdown-menu pull_pms v_load_user_detail_inner_b" style="background-color: #FFF; max-width:280px !important; min-width:280px !important; width:280px !important; margin:0px;">
+                    <div class="dropdown-header v_load_user_detail_inner_c" style="background-color: #FFF; padding:0px !important;padding-top:0px !important;padding-bottom:0px !important;">
+                        <div id="vpb_display_all_users_in_group"></div>
+                        <div style="clear:both;"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                </ul>
+            </div>
+        </div> 
+
+        <input type="hidden" id="current_user_password_field_blank_text" value="Please enter your current password in the required field to proceed.">
+        <input type="hidden" id="new_user_password_field_blank_text" value="Please enter a new password of your choice in the required field to continue." /><input type="hidden" id="conversation_photo_label_text" value="Conversation Photo" />
+        <input type="hidden" id="report_abuse_submission_label" value="Report" />
+        <input type="hidden" id="report_this_desc" value="What is the issue with " />
+        <input type="hidden" id="empty_reporting_field_text" value="Please enter the reason why you want to make a report in the field specified to proceed." />
+        <input type="hidden" id="not_enough_reporting_field_text" value="Sorry, that's not enough reason for making a report.<br />Please enter the reason why you want to make a report to proceed." />
+        <input type="hidden" id="report_send_successfully_message" value="Your report has been sent successfully.<br />We will respond to it as soon as possible.<br />Thank you." />
+        <input type="hidden" id="report_sending_unsuccessful_message" value="Sorry, we were unable to complete your request at this time.<br />Please try again after a while.<br />Thank you." />
+        <input type="hidden" id="report_unstarted_message_label" value="Sorry, you can only make a report after you have started a conversation with someone otherwise, what is the point making a report?" />
+        <input type="hidden" id="edit_group_details_text" value="Edit Conversation Name" />
+        <input type="hidden" id="edit_group_photo_text" value="Edit Conversation Photo" />
+
+
+        <div style="position: absolute; cursor:default !important;">
+            <div style="display:none;" id="vgroup_details_box" class="dropdown open v_load_user_details v_load_user_detail_inner_a enabled_this_box"> 
+                <ul class="dropdown-menu pull_pms v_load_user_detail_inner_b" style="max-width:380px !important; min-width:380px !important; width:380px !important; margin:0px;">
+                    <div class="dropdown-header v_load_user_detail_inner_c" style="padding:0px !important;padding-top:0px !important;padding-bottom:0px !important;">
+
+                        <div style="padding:20px;">
+
+                            <div class="input-group">
+                                <span class="input-group-addon" style="background-color:transparent !important; border:0px solid; padding-left:0px !important; cursor:pointer;" onClick="document.getElementById ('vgroup_name').select ().focus ();">Conversation Name</span>
+                                <input type="text" id="vgroup_name" class="form-control form-control-plus-pms" style="font-weight:normal !important;" placeholder="Group Name">
+                            </div><br clear="all">
+
+
+                            <div class="input-group">
+                                <span class="input-group-addon" style="background-color:transparent !important; border:0px solid; padding-left:0px !important;">Conversation Photo</span>   
+                                <span title="No file is chosen" onClick="document.getElementById ('vgroup_picture').click ();" id="vgrouppicture" class="btn btn-default" style="padding:4px 12px !important;"><i class="fa fa-link"></i> Browse</span>
+                                <input type="file" style="display:none;" onChange="document.getElementById ('vgrouppicture').title = this.value;" id="vgroup_picture" />
+
+                                <div class="vpb_group_photo_wraper"><span id="vpb_display_group_photo"></span></div>
+                            </div> 
+                        </div>
+                        <div style="clear:both;"></div>
+                    </div>
+                    <div id="v_group_details_status" style="padding-bottom:10px;"></div>
+
+                    <div style="clear:both;"></div>
+                    <div class="modal-footer" style="padding:10px !important; background-color:#F6F6F6; margin:0px;">
+                        <span class="btn btn-default" data-dismiss="modal" style=" margin-top:0px;padding:3px 10px !important;" onClick="vpb_edit_group_name ();">Cancel</span>
+
+                        <span class="btn btn-default btn btn-success btn-pms-continue" style="padding:3px 10px !important;margin-left:20px;" onClick="vpb_save_group_details ();">Save</span>
+                    </div>
+                </ul>
+            </div>
+        </div>
+
+        <?php
+        $arrGroups = [];
+        foreach ($arrMessages as $arrMessage) {
+            $arrGroups[$arrMessage->getGroupId ()] = $arrMessage->getGroupId ();
+        }
+        ?>
+
+
+
+        <ul id="v_suggested_users_box" class="dropdown-menu pull_pms pull-center vasplus_bosy v_suggested_to_u_box" aria-labelledby="vpb_pms_to_data"><li class="v_suggested_to_u_inner_box"><div id="vpb_suggested_users_displayer"></div></li>
+        </ul>   
+
+        <input type="hidden" id="vpb_start" value="0"> 
+        <input type="hidden" id="vtotal_group_messages" value="428">
+        <input type="hidden" id="vpb_total_per_load" value="15">
+        <input type="hidden" id="vpb_pusher_status" value="0">
+        <input type="hidden" id="vpb_is_process_running" value="0">
+        <input type="hidden" id="vpb_message_deletion_option_selected" value="0">
+
+        <div id="vpb_vchat_hidden_boxes" class="vchat_hidden_boxes" style="display: none;">		
+            <div onclick="vpb_hide_vchat_hidden_vtop ();" id="vchat_hidden_vtop" style="display: none;" class="btn btn-default btn btn-success btn-pms-continue">See 
+                <span id="d_total_hidden_vchats">0</span> 
+                hidden chat window
+                <span class="add_or_remove_s"></span>
+            </div>		
+            <div id="vchat_hidden_vbottom" class="vchat_hidden_vbottom" style="display: none;">	
+                <div onclick="vpb_hide_vchat_hidden_vbottom ();" id="vchat_hidden_cbutton" class="vchat_hidden_cbutton">
+                    Hide chat window
+                    <span class="add_or_remove_s"></span></div>		
+                <div class="vchat_hidden_header">Chat</div>		
+                <div class="vchat_hidden_wrapper" id="vchats_hidden_wrapper">
+
+                    <?php
+                    foreach ($arrGroups as $groupId => $arrGroup) {
+                        echo '<div onclick="vpb_show_this_vchat_window (\'' . $groupId . '\');" class="vpb_hidden_chats" id="vchat_hidden_' . $groupId . '" style="display: none;"></div>';
+                    }
+                    ?>
+
+                </div>	
+            </div>
+            <input type="hidden" id="vchat_hidden_boxes_status" value="0">		
+        </div>
+
+
+
+        <div id="filter-count"></div>
+        <div class="clearFix"></div>
+
+
+
+
+
+    </div>
+
+    <div class="v_chat_bx_inner" id="vpb_chat_bx_inner_<?= $groupId ?>">
+        <div class="panel-body">
+            <div class="over-body" style="height:200px !important; overflow:auto;">
+                <?php
+                foreach ($arrMessages as $arrMessage):
+
+                    $width = 300;
+                    $height = 300;
+                    $embed = '';
+
+                    $comment = $arrMessage->getMessage ();
+
+                    if ( preg_match ('/https:\/\/(?:www.)?(youtube).com\/watch\\?v=(.*?)/', $comment) )
+                    {
+                        $embed = preg_replace ("/\s*[a-zA-Z\/\/:\.]*youtube.com\/watch\?v=([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i", "<iframe class=\"embed-responsive-item\" width=\"" . $width . "\" height=\"" . $height . "\" src=\"//www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>", $comment);
+                    }
+
+                    if ( preg_match ('/https:\/\/vimeo.com\/(\\d+)/', $comment, $regs) )
+                    {
+                        $embed = '<iframe class="embed-responsive-item" src="http://player.vimeo.com/video/' . $regs[1] . '?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;color=ffffff" width="' . $width . '" height="' . $height . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+                    }
+
+                    if ( $embed != "" )
+                    {
+                        $comment = '<div class="vasplus_a">
+			<div class="vasplus_b">
+			<div class="vasplus_c">
+			<div class="vpb_video_link_a">
+			<div class="vpb_data_size">
+				  ' . $embed . '
+				</div>
+			
+			
+			</div>
+			</div>
+			</div></div>';
+                    }
+
+                    if ( $arrMessage->getSender () == $_SESSION['user']['user_id'] )
+                    {
+                        ?>
+
+                        <div class="chat-message right chatWrappera">
+                            <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
+                            <img class="message-avatar" src="/blab/public/uploads/profile/<?= $arrMessage->getUsername () ?>.jpg" alt="">
+                            <div class="message">
+                                <a class="message-author" href="#">  <?= $arrMessage->getAuthor () ?> </a>
+                                <span class="message-date"> <?= date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())); ?> </span>
+                                <span class="message-content">
+
+                                    <?php
+                                    if ( $arrMessage->getType () == "img" )
+                                    {
+                                        echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
+                                        echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
+                                        echo '</a>';
+                                    }
+                                    elseif ( $arrMessage->getType () == "audio" )
+                                    {
+                                        echo '<audio style="width:100%; float:left;" controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
+                                    }
+                                    elseif ( $arrMessage->getType () == "file" )
+                                    {
+                                        echo '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
+                                    }
+                                    ?>
+
+                                    <?= $comment ?>
+                                </span>
+                            </div>
+                        </div>
+
+
+                        <?php
+                    }
+                    else
+                    {
+                        ?>
+
+                        <div class="chat-message left chatWrappera">
+                            <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
+
+                            <img class="message-avatar" src="/blab/public/uploads/profile/<?= $arrMessage->getUsername () ?>.jpg" alt="">
+                            <div class="message">
+                                <a class="message-author" href="#"> <?= $arrMessage->getAuthor () ?> </a>
+                                <span class="message-date"> <?= date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())); ?>  </span>
+                                <span class="message-content">
+
+                                    <?php
+                                    if ( $arrMessage->getType () == "img" )
+                                    {
+                                        echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
+                                        echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
+                                        echo '</a>';
+                                    }
+                                    elseif ( $arrMessage->getType () == "file" )
+                                    {
+                                        echo '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
+                                    }
+                                    elseif ( $arrMessage->getType () == "audio" )
+                                    {
+                                        echo '<audio controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
+                                    }
+                                    ?>
+
+                                    <?= $comment ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <?php
+                    }
+                    ?>
+
+
+
+                <?php endforeach; ?>
+            </div>
+            <div class="clearFix"></div>
+        </div>
+
+        <div class="dropdown dropup">
+            <ul class="dropdown-menu" id="vpb_the_pms_smiley_box" style="width:260px;border-radius: 0px !important;box-shadow: none!important; background-color: #FFF !important; z-index: 99999999 !important; bottom:0px!important; left:15px !important; ">
+                <li class="dropdown-header vpb_pms_li_bottom_border">
+                    <span class="v_pms_position_info_left">What is your current mood?</span> <span class="v_pms_position_info_right" onclick="vpb_pms_smiley_box ();" title="Close">x</span><div style="clear:both;"></div></li>
+                <li style="background-color: #FFF !important; z-index: 99999999 !important; height: 200px;"><span id="vpb_smiley_box"><div class="vpb_pms_smiley_box_wrapper"><div class="vpb_smiley_inner_box"><span class="smiley_a" title="Smile" onclick="vpb_add_smiley_to_pms_status (':)');"></span><span class="smiley_b" title="Frown, Sad" onclick="vpb_add_smiley_to_pms_status (':(');"></span><span class="smiley_c" title="Blushing angel" onclick="vpb_add_smiley_to_pms_status (':blushing-angel:');"></span><span class="smiley_d" title="Cat face" onclick="vpb_add_smiley_to_pms_status (':cat-face:');"></span><span class="smiley_e" title="Confused" onclick="vpb_add_smiley_to_pms_status ('o.O');"></span><span class="smiley_f" title="Cry" onclick="vpb_add_smiley_to_pms_status (':cry:');"></span><span class="smiley_g" title="Laughing devil" onclick="vpb_add_smiley_to_pms_status (':laughing-devil:');"></span><span class="smiley_h" title="Shocked and surprised" onclick="vpb_add_smiley_to_pms_status (':O');"></span><span class="smiley_i" title="Glasses" onclick="vpb_add_smiley_to_pms_status ('B)');"></span><span class="smiley_j" title="Grin, Big Smile" onclick="vpb_add_smiley_to_pms_status (':D');"></span><span class="smiley_k" title="Upset and angry" onclick="vpb_add_smiley_to_pms_status (':grumpy:');"></span><span class="smiley_l" title="Heart" onclick="vpb_add_smiley_to_pms_status (':heart:');"></span><span class="smiley_m" title="Kekeke happy" onclick="vpb_add_smiley_to_pms_status ('^_^');"></span><span class="smiley_n" title="Kiss" onclick="vpb_add_smiley_to_pms_status (':kiss:');"></span><span class="smiley_o" title="Pacman" onclick="vpb_add_smiley_to_pms_status (':v');"></span><span class="smiley_p" title="Penguin" onclick="vpb_add_smiley_to_pms_status (':penguin:');"></span><span class="smiley_q" title="Unsure" onclick="vpb_add_smiley_to_pms_status (':unsure:');"></span><span class="smiley_r" title="Cool" onclick="vpb_add_smiley_to_pms_status ('B|');"></span><span class="smiley_s" title="Annoyed, sighing or bored" onclick="vpb_add_smiley_to_pms_status ('-_-');"></span><span class="smiley_t" title="Love" onclick="vpb_add_smiley_to_pms_status (':lve:');"></span><span class="smiley_u" title="Christopher Putnam" onclick="vpb_add_smiley_to_pms_status (':putnam:');"></span><span class="smiley_zb" title="Shark" onclick="vpb_add_smiley_to_pms_status ('(wink)');"></span><span class="smiley_v" title="Wink" onclick="vpb_add_smiley_to_pms_status ('(wink)');"></span><span class="smiley_w" title="No idea" onclick="vpb_add_smiley_to_pms_status ('(off)');"></span><span class="smiley_x" title="Got an idea" onclick="vpb_add_smiley_to_pms_status ('(on)');"></span><span class="smiley_y" title="Cup of tea" onclick="vpb_add_smiley_to_pms_status (':tea-cup:');"></span><span class="smiley_z" title="No, thumb down" onclick="vpb_add_smiley_to_pms_status ('(n)');"></span><span class="smiley_za" title="Yes, thumb up" onclick="vpb_add_smiley_to_pms_status ('(y)');"></span><div style="clear:both;"></div></div></div><div style="clear: both;"></div></span></li>
+            </ul>
+        </div>
+
+        <textarea placeholder="Type your message. Press Shift + Enter for newline" user-id="<?= $userId ?>" id="chatMsg" style="margin-top: -5px !important;" name="textMessage" class="form-control"></textarea>
+
+        <div id="vpb_added_photos" class="vasinfo">
+            <span id="vpb_photos"></span><span id="additional_photos"></span><i id="vRemovePhotos" class="fa fa-times vItems_hover" title="Remove" onclick="vpb_remove_photos ();"></i><i id="vRemoveFiles" class="fa fa-times vItems_hover" title="Remove" onclick="vpb_remove_files ();"></i>
+        </div>
+
+        <div id="vpb_added_videos" class="vasinfo"><div class="row vpb_ninety_eight_percent"><span id="vpb_video"></span></div></div>
+
+        <div class="modal-footer vfooter">
+
+            <span id="add_a_file_button" class="vfooter_wraper vasplus_tooltip_icons" onclick="document.getElementById ('add_files').click ();" original-title="Add files to your message"><i class="fa fa-link vfooter_icon"></i></span>
+
+            <span id="photo" class="vfooter_wraper vasplus_tooltip_icons"  original-title="Add photos to your message"><i class="fa fa-camera vfooter_icon"></i></span>
+
+            <span id="add_a_video_button" class="vfooter_wraper vasplus_tooltip_icons" onclick="document.getElementById ('v-add-videos-box').click ();document.getElementById ('pms_video_action').value = 'chat';" original-title="Add video to your message"><i class="fa fa-youtube-play vfooter_icon"></i></span>
+
+            <span id="voice" class="vfooter_wraper vasplus_tooltip_icons" original-title="Add video to your message"><i class="fa fa-microphone vfooter_icon"></i></span>
+
+            <span class="vasplus_tooltip_icons vfooter_wraper" id="add_smile_button" onclick="vpb_pms_smiley_box ();" original-title="Choose a smiley"><i class="fa fa-smile-o vfooter_icon"></i></span>
+
+            <div class="vpb_top_line"></div>
+
+            <div style="display:none;" class="pull-right recording"><h4>Recording</h4></div>
+
+            <div style="display: inline-block; text-align:right; width:230px;">
+
+                <button disabled="disabled" id="vpb_submitBox" style="display:inline-block;float:right;" type="button" class="btn btn-success btn-pms-post" onclick="send_message ('', <?= $userId ?>);">Send</button>
+
+                <div style="float:right; margin-right:20px;">
+                    <div style="float:left;padding:10px;padding-right:0px; padding-bottom:5px;  cursor:pointer; color:#999;" align="left" onclick="document.getElementById ('vpb_press_enter_for_submit').click ();">Press Enter to send</div>
+
+                    <div style="float:left;padding-right:10px; padding:10px;width:20px;" align="left"><span style="float:none;text-align:left;border: 0px solid black;cursor:pointer;" class="vpb_press_enter_for_submit"><input style="visibility: hidden; display:none;" type="checkbox" value="" id="vpb_press_enter_for_submit" name="vpb_press_enter_for_submit"><label for="vpb_press_enter_for_submit"></label>
+                        </span></div>
+                </div>
+
+                <div style="clear:both;"></div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+</div>
+
+<script src="//lab.subinsb.com/projects/Francium/voice/recorder.js"></script>
+<script src="//lab.subinsb.com/projects/Francium/voice/Fr.voice.js"></script>
+<script src="/blab/public/js/chat.js" type="text/javascript"></script>

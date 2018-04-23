@@ -1,0 +1,168 @@
+<div class="modal-dialog">
+    <div class="modal-content animated flipInY">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Create Event</h5>
+
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal" name="eventForm" id="eventForm">
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Event Name</label>
+
+                        <div class="col-lg-10">
+                            <input type="text" placeholder="Event Name" id="eventName" name="eventName" class="form-control"> 
+                        </div>
+
+                       
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Location</label>
+
+                        <div class="col-lg-10">
+                            <input id="geocomplete" type="text" placeholder="Type in an address" />
+                            <input style="display:none;" id="find" type="button" value="find" />
+    <!--                                <input type="text" placeholder="Location" id="geocomplete" name="location" class="form-control"></div>-->
+                        </div>
+                    </div>
+                    
+                     <div class="geo-details">
+
+                        </div>
+
+
+
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Event Date</label>
+
+                        <div class="col-lg-10">
+                            <input type="text" placeholder="Event Date" id="eventDate" name="eventDate" class="form-control"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Event Time</label>
+
+                        <div class="input-group clockpicker col-lg-10" data-autoclose="true">
+                            <input type="text" class="form-control" value="09:30" >
+                            <span class="input-group-addon">
+                                <span class="fa fa-clock-o"></span>
+                            </span>
+                        </div>
+                    </div>
+
+
+
+                    <div style="height: 250px; overflow-y: auto;">
+                        <ul class="list-group clear-list">
+
+                            <?php foreach ($arrFriendList as $friend): ?>
+
+                                <li class="list-group-item fist-item">
+                                    <?= $friend->getFirstName () . ' ' . $friend->getLastName () ?>
+                                    <input class="checkbox-primary event-checkbox" type="checkbox" value="<?= $friend->getId () ?>">
+                                </li>
+
+                            <?php endforeach; ?>
+                        </ul>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-lg-offset-2 col-lg-10">
+                            <button class="btn btn-sm btn-primary saveEvent" type="submit">Create</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $ ('#eventDate').datepicker ({
+        todayBtn: "linked",
+        keyboardNavigation: false,
+        forceParse: false,
+        calendarWeeks: true,
+        autoclose: true
+    });
+    
+    $("#geocomplete").on("keyup", function () {
+        
+        var locationTyped = $(this).val();
+        
+       if (locationTyped.length > 0)
+    {
+        $ (".geo-details").html ('');
+
+        $ (".geo-details").html ('<div class="dropdown"><ul class="dropdown-menu vpb-hundred-percent_loading" style="top:auto;"><li class="dropdown-header vpb_wall_loading_text">' + $ ("#v_loading_btn").val () + '</li></ul></div>');
+
+
+        var dataString = {'location': locationTyped};
+
+        $.post ('/facebook/index/locationSearch/true', dataString, function (response)
+        {
+
+            if (response == "")
+            {
+                $ (".geo-details").html ('');
+            }
+            else
+            {
+                $ (".geo-details").html ('<div class="dropdown"><ul class="dropdown-menu vpb-hundred-percent v_overflow_this_field" id="location_suggestion_box" style="top:auto;">' + response + '</ul></div>');
+            }
+
+
+        }).fail (function (error_response)
+        {
+            setTimeout ("buildLocationResults('" + locationTyped + "');", 10000);
+        });
+    }
+    else
+    {
+        $ (".geo-details").html ('');
+        return false;
+    } 
+    });
+    
+    function buildLocationResults(location)
+    {
+        $("#geocomplete").val(location);
+        $ (".geo-details").html("");
+        
+    }
+
+    $ ('.clockpicker').clockpicker ();
+
+    $ (".saveEvent").off ();
+    $ (".saveEvent").on ("click", function ()
+    {
+        var groupIds = $ (".event-checkbox:checked").map (function ()
+        {
+            return $ (this).val ();
+        }).get ();
+
+        var arrData = {
+            eventName: $ ("#eventName").val (),
+            location: $ ("#geocomplete").val (),
+            eventDate: $ ("#eventDate").val (),
+            eventTime: $ ('.clockpicker > input').val (),
+            groupIds: groupIds
+        };
+
+        $.ajax ({
+            url: '/facebook/index/saveEvent',
+            type: 'POST',
+            data: arrData,
+            success: function (response)
+            {
+                formatResponse (response, 'The event was created successfully.');
+            }
+        });
+
+
+        return false;
+    });
+</script>

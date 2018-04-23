@@ -1,0 +1,38 @@
+<div class="ibox">
+    <div class="ibox-content" style="padding:0px !important;">
+
+        <div class="vprofile_o_title" style="padding:0px;">
+            <div style="float:left; padding:10px;">
+                <i class="fa fa-calendar v_the_iconed"></i> Events
+            </div>
+            
+            <div style="float:right; padding:10px;">
+
+                <span id="view_or_edit_buttonD">
+                    <i class="fa fa-plus-square v_the_iconed"></i> 
+                    <span id="createEvent" class="vpb_hover vview_item"> Create Event</span>
+
+                </span>
+
+            </div><div style="clear:both;"></div>
+                
+        </div>
+
+        <ul class="list-group clear-list" style="padding:10px;">
+            <?php
+            if ( !empty ($arrEvents) ){
+                foreach ($arrEvents as $arrEvent){
+                    ?>
+                    <a href="/blab/event/index/<?= $arrEvent->getId () ?>">
+                        <img title="<?= $arrEvent->getEventName () ?>" src="<?= $arrEvent->getImageLocation () ?>">
+                    </a>
+                    <?php
+                }
+            } else {
+                echo '<h3>You have no events</h3>';
+            }
+            ?>
+
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+<?php
+
+function getOnlineStatusLabel (User $objUser)
+{
+    $onlineLabel = 'text-danger';
+
+    if ( trim ($objUser->getLastLogin ()) !== "" )
+    {
+        $dbdate = strtotime ($objUser->getLastLogin ());
+        if ( time () - $dbdate <= 15 * 60 )
+        {
+            $onlineLabel = 'text-navy';
+        }
+        else
+        {
+            $onlineLabel = 'text-danger';
+        }
+    }
+    else
+    {
+        $onlineLabel = 'text-danger';
+    }
+
+    return $onlineLabel;
+}
+
+echo '<h5>Friends</h5>';
+
+foreach ($arrUsers as $arrUser):
+
+    $onlineLabel = getOnlineStatusLabel ($arrUser);
+
+    if ( $arrUser->getId () !== $_SESSION['user']['user_id'] ):
+        ?>
+        <li><a class="show-chat single" groupname="" groupid="" username="<?= $arrUser->getUsername () ?>" fullname="<?= $arrUser->getFirstName () . '|' . $arrUser->getLastName () ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $arrUser->getId () ?>" href="#"> <i class="fa fa-circle <?= $onlineLabel ?>"></i> <?= $arrUser->getFirstName () . ' ' . $arrUser->getLastName () ?> </a></li>
+
+        <?php
+    endif;
+endforeach;
+
+if ( isset ($arrChatGroups) && !empty ($arrChatGroups) ):
+
+    echo '<h5>Groups</h5>';
+
+    foreach ($arrChatGroups as $arrChatGroup):
+        ?>
+        <li><a class="show-chat group" groupname="<?= $arrChatGroup['name'] ?>" groupid="<?= $arrChatGroup['group_id'] ?>" username="<?= $arrChatGroup['users'] ?>" fullname="<?= $arrChatGroup['fullname'] ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> <i class="fa fa-circle text-danger"></i> <?= $arrChatGroup['name'] ?> </a></li>
+
+        <?php
+    endforeach;
+endif;
+?>

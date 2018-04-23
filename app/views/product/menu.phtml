@@ -1,0 +1,26 @@
+<!-- Display Group Details -->
+
+<div class="vprofile_o_detail" style="border-bottom:0px solid;">
+    <div class="vprofile_o_title" style="font-weight:bold !important;">
+        Admin Menu        </div>
+
+
+<!--    <div id="manage_settings" class="admin_cp_menu" onclick="vpb_admin_load_site_settings ();"><i class="fa fa-cog"></i> Settings</div>-->
+
+    <?php if ( $_SESSION['user']['user_id'] == 1 ): ?>
+        <div id="manage_users" class="admin_cp_menu" onclick="vpb_users_pagination ('1');"><i class="fa fa-users"></i> Users Management</div>
+
+        <div id="create_manage_categories" class="admin_cp_menu" onclick="vpb_load_category_pagination ('1');"><i class="fa fa-tasks"></i> Create or Manage Categories</div>
+
+    <?php endif; ?>
+
+    <div id="add_products" class="admin_cp_menu admin_cp_menu" onclick="vpb_admin_load_add_products_box ();"><i class="fa fa-product-hunt"></i> Add Products to Shop</div>
+
+
+    <div id="manage_products" class="admin_cp_menu" onclick="vpb_manage_shopping_cart_products ('1', 'default', '');"><i class="fa fa-users"></i> Manage Products in Shop</div>
+
+
+<!--    <div id="manage_purchases" class="admin_cp_menu" onclick="vpb_users_payment_history ('1');"><i class="fa fa-users"></i> Manage Purchases</div>-->
+
+    <br clear="all"><br clear="all"> 
+</div>

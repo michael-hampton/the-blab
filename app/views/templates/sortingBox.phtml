@@ -1,0 +1,17 @@
+<div id="v_sorting_box" class="dropdown v_wall_wrapper col-lg-12" style="width: 97% !important; margin: 10px 0px !important; padding-left: 18px !important;display:inline-block;">
+    <div id="sort_wrap" align="right">
+        <span class="vpb_sorted_text" id="vpb_sorted_txt">Default</span>
+        <span id="wrap_both_sort" class="the_sorting_button" onclick="vpb_sorting_box ();">
+            <span class="vpb_sort_icon"><i class="fa fa-angle-down"></i></span>
+            <span id="vpb_sorting_text" class="vpb_sort_text">Sort</span><br clear="all">
+        </span>
+        <br clear="all">
+    </div>
+
+    <ul class="dropdown-menu" id="vpb_sorting_box" style="right: -1px; left: auto; top: 24px; border-radius: 0px !important; display: none;" aria-labelledby="wrap_both_sort">
+        <li><a onclick="vpb_sort_the_status_updates('default', 'Sorted by latest Posts');"><span class="vpb_option_icons_space"> <i id="default_" class="fa fa-check vsorted_checked"></i> </span> Sort by latest Posts</a></li>
+        <li><a onclick="vpb_sort_the_status_updates ('sort_updates_by_latest_comments', 'Sorted by Posts with latest Comments');"><span class="vpb_option_icons_space"></span> Sort by Posts with latest Comments</a></li>
+    </ul>
+    <input type="hidden" id="vpb_sort_option" value="Sorted by latest Posts">
+    <input type="hidden" id="vpb_sorted_option" value="Sorted by Posts with latest Comments">
+</div>

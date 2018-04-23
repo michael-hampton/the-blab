@@ -1,0 +1,147 @@
+<div id="add_new_product_box" style="display:block !important; margin:0 auto;" class="col-lg-12">
+    <div style="width:100%; margin:0 auto;">
+        <div>                  
+            <div class="modal-body" style="line-height:30px;">
+
+                <div style="margin:0 auto; font-size:14px; font-family:arial; line-height:28px;" align="left">This section helps you to add a new product to your shopping cart.<br>To add a new product, simply complete the form given below and click on the submit button.<br>You can use the auto generated code for your <b>product code</b> or remove the auto generated code and enter your desired product code in the field specified below.<br><b>Note</b>: Adding more than one photo for each product is a good choice, you can select multiple product photos at a time if your product has more than one photo. Please enter only numbers for your product price.</div><br>
+
+
+                <div style="100%; text-align:left;">
+                    <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Name</span>
+                    <input type="text" class="forms-controled" id="pname" data-placement="top" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required="">
+
+                </div>
+                <br clear="all">
+
+
+                <div style="100%; text-align:left;">
+                    <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Price</span>
+                    <input type="text" class="forms-controled" id="pprice" data-placement="top" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required="">
+
+                </div>
+                <br clear="all">
+
+
+                <div style="100%; text-align:left;">
+                    <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Code</span>
+                    <input type="text" class="forms-controled" id="pcode" data-placement="top" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required="">
+
+                </div>
+                <br clear="all">
+
+
+
+                <div style="100%; text-align:left;">
+                    <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Color</span>
+                    <select name="pcolor" id="pcolor" style="width: 100%; float: left; text-align: left;" tabindex="-1" title="">
+                        <option value="">Select a product color</option>
+                        <option value="While">While</option><option value="Black">Black</option><option value="Red">Red</option><option value="Orange">Orange</option><option value="Pink">Pink</option><option value="Blue">Blue</option><option value="Grey">Grey</option><option value="Purple">Purple</option><option value="Yellow">Yellow</option><option value="Brown">Brown</option><option value="none">Do not use color for this product</option>             
+                    </select>
+
+                    <br clear="all"><br clear="all">
+
+
+                    <div style="100%; text-align:left;">
+                        <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Size</span>
+                        <select name="psize" id="psize" style="width: 100%; float: left; text-align: left;" tabindex="-1" title="">
+                            <option value="">Select product size</option>
+                            <option value="M">M</option><option value="L">L</option><option value="XL">XL</option><option value="XXL">XXL</option><option value="none">Do not use size for this product</option>             </select>
+                        <br clear="all"><br clear="all">
+
+
+
+
+
+                        <div style="100%; text-align:left;">
+                            <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Category</span>
+                            <select name="pcategory" id="pcategory" style="width: 100%; float: left; text-align: left;" tabindex="-1" title="">
+                                <option value="">Select a category</option>
+                                <?php foreach ($arrCategories as $arrCategory): ?>
+                                    <option value="<?= $arrCategory->getId () ?>"><?= $arrCategory->getName () ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <br clear="all"><br clear="all">
+
+
+
+                            <div style="100%; text-align:left;">
+                                <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Description</span>
+                                <div style="display:block; font-size:12px;border:1px solid #CCC;border-bottom:0px solid; padding:6px;">The description field supports HTML tags such as &lt;h2 style="margin:0px !important;"&gt;Header&lt;/h2&gt;, &lt;b&gt;Bold&lt;/b&gt;</div>
+                                <div class="expanding-wrapper" style="position:relative"><textarea class="forms-controled" id="pdescription" style="min-height: 50px; border-radius: 0px; margin: 0px; box-sizing: border-box; width: 100%; position: absolute; top: 0px; left: 0px; height: 100%; resize: none; overflow: auto;" data-placement="top" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea><pre class="expanding-clone" style="margin: 0px; box-sizing: border-box; width: 100%; display: block; border: 1px solid; visibility: hidden; min-height: 56px; white-space: pre-wrap; line-height: 21.4286px; text-decoration: none solid rgb(34, 34, 34); font-size: 15px; font-family: arial; text-align: start; word-break: normal; padding: 6px 15px;"><span></span><br></pre></div>
+            </div>
+                        </div>
+                    </div>
+            <br clear="all">
+            
+            
+
+            <div class="input-group" style="float:left; text-align:left;">
+            <div style="padding:10px;border:1px solid #E2E2E2; display:inline-block; width:100%;">
+             <div align="left" title="No file is chosen" onclick="document.getElementById ('add_photos').click ();" id="browsedPhotos" class="btn btn-default" style="border-radius:0px;"><i class="fa fa-link"></i> Browse Photo</div>
+             
+             <div id="vpb-display-attachment-preview" style="display:inline-block; margin-left:50px;"></div>
+        
+        	<input onchange="vpb_profile_photo_preview (this);" type="file" id="add_photos" style="display:none;" multiple="">
+            </div>
+            </div>
+            <br clear="all">
+            
+            
+           
+            
+            <div id="vpb_product_added_status" style="margin:0 auto;" align="center"></div>
+          
+          </div>
+                
+                <div class="modal-footer" style="padding-top:10px; padding-bottom:10px; border-bottom:1px solid #E6E6E6; text-align:center;">
+            
+            <span id="rnowait" class="sbtn sbtn-success" style="padding-top:8px; padding-bottom:10px;" onclick="vpb_submit_product_details();">Submit</span>
+            
+          </div>
+                        
+                        <script type="text/javascript">
+                    $ ("textarea").expanding ();
+                    $ ("#psize").select2 ();
+                    $ ("#pcolor").select2 ();
+                    $ ("#pcategory").select2 ();
+
+
+                    $ (function ()
+                    {
+                        var input = document.getElementById ('pprice');
+                        input.onkeypress = function ()
+                        {
+                            if (input.value != "")
+                            {
+                                var newInput = input.value.replace (/[^0-9+.]/g, '');
+                                input.value = newInput;
+                            }
+                            else
+                            {
+                                8
+                            }
+                        }
+                        input.onkeyup = function ()
+                        {
+                            if (input.value != "")
+                            {
+                                var newInput = input.value.replace (/[^0-9+.]/g, '');
+                                input.value = newInput;
+                            }
+                            else
+                            {
+                            }
+                        }
+                        input.onfocusout = function () // Check for lower than 200 amounts
+                        {
+                            if (input.value != "")
+                            {
+                                var newInput = input.value.replace (/[^0-9+.]/g, '');
+                                input.value = newInput;
+                            }
+                            else
+                            {
+                            }
+                        }
+                    });
+                                                                                    </script> 

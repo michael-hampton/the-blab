@@ -1,0 +1,101 @@
+/********************************************************************************
+* Social Network Website
+* Written by Vasplus Programming Blog
+* Website: www.vasplus.info
+* Email: vasplusblog@gmail.com OR info@vasplus.info
+
+*********************************Copyright Info***********************************
+* This is a paid script and must not be sold by any client
+* Please do not remove this copyright information from the top of this page
+* All Copy Rights Reserved by Vasplus Programming Blog
+***********************************************************************************/
+
+.vasplus_drop_down_box
+{
+	display:none !important;
+}
+#vsource{ display:block !important;}
+
+@media(min-width:768px) {
+	.vasplus_drop_down_box
+	{
+		display: block !important;
+	}
+	#vsource{ display:none !important;}
+
+}
+.vasplus_drop_down_box dd, .vasplus_drop_down_box dt, .vasplus_drop_down_box ul 
+{
+	margin:0px; padding:0px; 
+	font-family:Arial, Helvetica, Sans-Serif !important; 
+	font-size:14px !important; 
+	color:#222;
+	font-weight:normal !important;
+	text-align:left;
+	margin-top:12px;
+	margin-right:16px;
+	margin-bottom:-20px !important;
+	display: block;
+}
+
+.vasplus_drop_down_box dd { position:relative !important; margin:0px; padding:0px;margin-bottom:0px !important; }
+
+.vasplus_drop_down_box a, .vasplus_drop_down_box a:visited 
+{
+	color:#816c5b !important; 
+	text-decoration:none !important; 
+	outline:none !important;
+}
+.vasplus_drop_down_box a:hover { color:#000 !important;}
+
+
+.vasplus_drop_down_box dt a 
+{
+	background:#CCC url(../img/arrow.png) no-repeat scroll 96% center !important; 
+	border:1px solid #ccc !important; 
+	width:100% !important; 
+	padding:6px 8px; 
+	-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+	-moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+	margin:0 auto !important;
+	padding-right:26px;
+}
+.vasplus_drop_down_box dt a:hover { background:#fff url(../img/arrow.png) no-repeat scroll 96% center !important; color:#000 !important; border: 1px solid #E5E5E5 !important;}
+
+				
+.vasplus_drop_down_box dt a span 
+{
+	cursor:pointer !important; 
+	display: block !important;
+}
+
+.vasplus_drop_down_box dd ul 
+{
+	background:#fff none repeat scroll 0 0 !important; 
+	border:1px solid #E5E5E5 !important; 
+	color:#C5C0B0 !important; 
+	display:none;
+	left:0px !important; 
+	padding:6px 0px;
+	position:absolute !important; 
+	top:2px !important; 
+	min-width:200px !important; 
+	width:102% !important; 
+	list-style:none !important;
+	max-height:300px !important; 
+	white-space: nowrap !important;
+	height:auto !important;
+	overflow-y:auto;
+	overflow-x:hidden;
+	-webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+-moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+	box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+	z-index:9;
+	margin-bottom:0px !important;
+	margin-top:24px !important;
+	
+}
+.vasplus_drop_down_box span.value { display:none !important;}
+.vasplus_drop_down_box dd ul li a { padding:8px; display:block;}
+.vasplus_drop_down_box dd ul li a:hover { background-color:#DAE6FF !important; color:#000 !important; }

@@ -1,0 +1,34 @@
+<div class="ibox">
+    <div class="ibox-content">
+        <h3>Michael Hampton</h3>
+        <div class="bgColor">
+            <form id="uploadForm2" action="uploadProfile.php" method="post">
+                <div id="targetOuter">
+                    <div id="targetLayer"><img src="/blab/public/images/profile.jpg" width="400px" height="300px" class="upload-preview" /></div>
+
+                    <?php
+                    if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $_SESSION['user']['username'] . '.jpg') )
+                    {
+                        echo '<img src="/blab/public/uploads/profile/' . $_SESSION['user']['username'] . '.jpg"  class="icon-choose-image"/>';
+                    }
+                    else
+                    {
+                        echo '<img src="/blab/public/img/avatar.gif"  class="icon-choose-image"/>';
+                    }
+                    ?>
+
+
+                    <div class="icon-choose-image" onClick="showUploadOption ()"></div>
+                    <div id="profile-upload-option">
+                        <div class="profile-upload-option-list"><input name="userImage" id="userImage" type="file" class="inputFile" onChange="showPreview (this);"></input><span>Upload</span></div>
+                        <div class="profile-upload-option-list" onClick="removeProfilePhoto ();">Remove</div>
+                        <div class="profile-upload-option-list" onClick="hideUploadOption ();">Cancel</div>
+                    </div>
+                </div>	
+                <div>
+                    <input type="submit" value="Upload Photo" class="btnSubmit" onClick="hideUploadOption ();"/>
+                </div>
+            </form>
+        </div>	
+    </div>
+</div>

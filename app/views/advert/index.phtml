@@ -1,0 +1,185 @@
+<div class="row">
+
+    <div class="col-sm-4">
+        <div class="ibox ">
+
+            <div class="ibox-content">
+
+                <button type="button" class="btn btn-w-m btn-primary CreateAdvert">Create Advert</button>
+
+                <div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
+
+
+                    <strong>Adverts</strong>
+
+                    <ul class="list-group clear-list">
+
+                        <?php
+                        foreach ($arrAdverts as $arrAdvert) {
+                            echo ' <li class="list-group-item">
+                                <a href="#" advertid="' . $arrAdvert->getId () . '" class="deleteAdvert pull-right">Delete</a>
+            <a href="#" class="openAdvert" id="' . $arrAdvert->getId () . '">' . $arrAdvert->getTitle () . '</a>
+        </li>';
+                        }
+                        ?>
+                    </ul>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-8">
+        <div class="ibox">
+            <div class="ibox-content bannersWrapper pull-left col-lg-12">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $ (document).ready (function ()
+    {
+        $ (document).off ("click", ".deleteBanner");
+        $ (document).on ('click', '.deleteBanner', function ()
+        {
+            var bannerId = $ (this).attr ("id");
+
+            if (!bannerId)
+            {
+                return false;
+            }
+
+            swal ({
+                title: "Are you sure you want to delete this banner?",
+                text: "You will not be able to recover it!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }, function ()
+            {
+                $.post ('/blab/advert/deleteBanner', {"bannerId": bannerId}, function (response)
+                {
+
+
+                    try {
+                        var objResponse = $.parseJSON (response);
+
+                        if (objResponse.sucess == 0)
+                        {
+                            swal ("Unable to delete banner!", objResponse.message, "success");
+                            return false;
+                        }
+                        else
+                        {
+                            swal ("Deleted!", "The banner has been deleted.", "success");
+                            $ (".deleteBanner[id=" + bannerId + "]").parent ().remove ();
+                        }
+                    } catch (error) {
+                        swal ("Unable to delete banner!", "Something went wrong whilst trying to delete the banner", "success");
+                    }
+                });
+            });
+        });
+
+        // delete advert
+        $ (document).off ("click", ".deleteAdvert");
+        $ (document).on ('click', '.deleteAdvert', function ()
+        {
+            var bannerId = $ (this).attr ("advertid");
+
+            if (!bannerId)
+            {
+                return false;
+            }
+
+            swal ({
+                title: "Are you sure you want to delete this advert?",
+                text: "You will not be able to recover it!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }, function ()
+            {
+                $.post ('/blab/advert/deleteAdvert', {"advertId": bannerId}, function (response)
+                {
+
+
+                    try {
+                        var objResponse = $.parseJSON (response);
+
+                        if (objResponse.sucess == 0)
+                        {
+                            swal ("Unable to delete advert!", objResponse.message, "success");
+                            return false;
+                        }
+                        else
+                        {
+                            swal ("Deleted!", "The advert has been deleted.", "success");
+                            $ (".deleteAdvert[id=" + bannerId + "]").parent ().remove ();
+                        }
+                    } catch (error) {
+                        swal ("Unable to advert banner!", "Something went wrong whilst trying to delete it", "warning");
+                    }
+                });
+            });
+        });
+
+        $ (".createAdvert").on ("click", function ()
+        {
+
+
+            $.post ('/blab/advert/createAdvert', {}, function (response)
+            {
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 0)
+                    {
+                        alert (objResponse.message);
+                        return false;
+                    }
+                } catch (error) {
+                    $ (".bannersWrapper").html (response);
+                }
+            });
+        });
+
+
+        $ (".openAdvert").on ("click", function ()
+        {
+            var id = $ (this).attr ("id");
+
+            if (!id)
+            {
+                return false;
+            }
+
+            $.post ('/blab/advert/getBanners/' + id, {}, function (response)
+            {
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 0)
+                    {
+                        alert (objResponse.message);
+                        return false;
+                    }
+                } catch (error) {
+                    $ (".bannersWrapper").html (response);
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+

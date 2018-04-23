@@ -1,0 +1,189 @@
+<div id="add_new_product_box" style="display:block !important; margin:0 auto;">
+    <div style="width:100%; margin:0 auto;">
+        <div>                  
+            <div class="modal-body" style="line-height:30px;">
+
+                <div style="margin:0 auto; font-size:14px; font-family:arial; line-height:28px;" align="left">Please make all necessary changes to the product details below and click on the save changes button<br></div><br>
+
+
+                <div style="100%; text-align:left;">
+                    <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Name</span>
+                    <input type="text" class="forms-controled" id="pname" data-placement="top" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objProduct->getName () ?>" required="">
+
+                </div>
+                <br clear="all">
+
+
+                <div style="100%; text-align:left;">
+                    <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Price</span>
+                    <input type="text" class="forms-controled" id="pprice" data-placement="top" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objProduct->getPrice () ?>" required="">
+
+                </div>
+                <br clear="all">
+
+
+                <div style="100%; text-align:left;">
+                    <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Code</span>
+                    <input type="text" class="forms-controled" id="pcode" data-placement="top" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<?= $objProduct->getProductCode () ?>" required="">
+
+                </div>
+                <br clear="all">
+
+                <?php $arrColours = array("White", "Black", "Red", "Orange", "Pink", "Blue", "Grey", "Purple", "Yellow", "Brown", "none") ?>
+
+                <div style="100%; text-align:left;">
+                    <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Color</span>
+
+                    <select name="pcolor" id="pcolor" style="width: 100%; float: left; text-align: left;" tabindex="-1" title="">
+                        <option value="">Select a product color</option>
+                        <?php
+                        foreach ($arrColours as $colour):
+                            $selected = $colour == $objProduct->getColour () ? 'selected="selected"' : '';
+                            ?>
+                            <option value="<?= $colour ?>" <?= $selected ?>><?= $colour ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <br clear="all"><br clear="all">
+
+
+                    <div style="100%; text-align:left;">
+                        <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Size</span>
+
+                        <?php $arrSizes = ["M", "L", "XL", "XXL", "none"] ?>
+
+                        <select name="psize" id="psize" style="width: 100%; float: left; text-align: left;" tabindex="-1" title="">
+                            <option value="">Select product size</option>
+                            <?php
+                            foreach ($arrSizes as $size):
+                                $selected = trim ($size) == trim ($objProduct->getSize ()) ? 'selected="selected"' : '';
+                                ?>
+                                <option value="<?= $size ?>" <?= $selected ?>><?= $size ?></option>      
+                            <?php endforeach;
+                            ?>
+
+                        </select>
+                        <br clear="all"><br clear="all">
+
+
+
+
+
+                        <div style="100%; text-align:left;">
+                            <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Category</span>
+
+                            <select name="pcategory" id="pcategory" style="width: 100%; float: left; text-align: left;" tabindex="-1" title="">
+                                <option value="">Select a category</option>
+                                <?php
+                                foreach ($arrCategories as $arrCategory):
+                                    $selected = (int) $arrCategory->getId () == (int) $objProduct->getCategory () ? 'selected="selected"' : '';
+                                    ?>
+                                    <option value="<?= $arrCategory->getId () ?>" <?= $selected ?>><?= $arrCategory->getName () ?></option>
+<?php endforeach; ?>
+                            </select>
+                        </div>
+                        <br clear="all"><br clear="all">
+
+
+
+                        <div style="100%; text-align:left;">
+                            <span class="input-group-addon" style="width:100%; text-align:left !important; font-weight:bold; padding:8px; display:block !important; border-radius:0px !important; border:1px solid #CCC; border-bottom:0px solid;">Product Description</span>
+                            <div style="display:block; font-size:12px;border:1px solid #CCC;border-bottom:0px solid; padding:6px;">The description field supports HTML tags such as &lt;h2 style="margin:0px !important;"&gt;Header&lt;/h2&gt;, &lt;b&gt;Bold&lt;/b&gt;</div>
+                            <div class="expanding-wrapper" style="position:relative">
+                                <textarea class="forms-controled" id="pdescription" style="min-height: 50px; border-radius: 0px; margin: 0px; box-sizing: border-box; width: 100%; position: absolute; top: 0px; left: 0px; height: 100%; resize: none; overflow: auto;" data-placement="top" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><?= $objProduct->getDescription () ?></textarea>
+                                <pre class="expanding-clone" style="margin: 0px; box-sizing: border-box; width: 100%; display: block; border: 1px solid; visibility: hidden; min-height: 56px; white-space: pre-wrap; line-height: 21.4286px; text-decoration: none solid rgb(34, 34, 34); font-size: 15px; font-family: arial; text-align: start; word-break: normal; padding: 6px 15px;"><span><?= $objProduct->getDescription () ?></span><br></pre></div>
+                        </div>
+                        <br clear="all">
+
+
+
+                        <div class="input-group" style="float:left; text-align:left;">
+                            <span class="input-group-addon" style="min-width:160px; font-weight:bold;">Product Photo(s)</span>
+                            <div style="padding:10px;border:1px solid #E2E2E2; display:inline-block; width:100%;">
+                                
+                                <?php foreach ($arrProductImages as $arrProductImage): ?>
+                                    
+                                    <div id="vcart_photos_wrp_<?= $arrProductImage->getId () ?>" class="vpb_preview_wrapper">
+
+                                        <div id="vcart_new_photo_<?= $arrProductImage->getId () ?>">
+                                            <img class="vpb_image_style" src="<?= $arrProductImage->getFileLocation () ?>" title="" onclick="vpb_view_this_image ('Photo Preview', '<?= $arrProductImage->getFileLocation () ?>');" style="cursor:pointer;">
+                                        </div><br>
+                                        <br>
+
+                                        <div id="vcart_photos_top_<?= $arrProductImage->getId () ?>" style="display:block;"></div>
+
+                                        <div id="vcart_photos_bottom_<?= $arrProductImage->getId () ?>">
+                                            <input onchange="vpb_change_photo ('<?= $objProduct->getId() ?>', '<?= $arrProductImage->getId () ?>');" id="add_photos_<?= $arrProductImage->getId () ?>" type="file" style="display:none;" multiple="">
+
+                                            <div align="left" title="No file is chosen" onclick="document.getElementById ('add_photos_<?= $arrProductImage->getId () ?>').click ();" class="btn btn-default" style="border-radius:0px;"><i class="fa fa-link"></i> Change</div>
+                                            <div align="left" onclick="vpb_remove_photo('<?= $arrProductImage->getId () ?>', '<?= $objProduct->getId() ?>');" class="btn btn-default" style="border-radius:0px;"><i class="fa fa-times"></i> Remove</div>
+                                        </div>
+                                    
+                                   </div>
+                                <?php endforeach; ?>
+                                
+                                
+                        <br clear="all">
+
+
+
+
+                        <div id="vpb_product_save_status" style="margin:0 auto;" align="center"></div>
+
+                    </div>
+
+                    <div class="modal-footer" style="padding-top:10px; padding-bottom:10px; border-bottom:1px solid #E6E6E6; text-align:center;">
+
+                        <span class="cbtn" style="font-size:12px !important;padding-top:8px; padding-bottom:10px;" onclick="vpb_manage_shopping_cart_products ('1', 'default', '');">Go back</span>
+
+                        <span id="rnowait" class="sbtn sbtn-success" style="padding-top:8px; padding-bottom:10px; margin-left:20px;" onclick="vpb_save_product_details ('<?= $objProduct->getId () ?>');">Save changes</span>
+
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                $ ("textarea").expanding ();
+                $ ("#psize").select2 ();
+                $ ("#pcolor").select2 ();
+                $ ("#pcategory").select2 ();
+
+
+                $ (function ()
+                {
+                    var input = document.getElementById ('pprice');
+                    input.onkeypress = function ()
+                    {
+                        if (input.value != "")
+                        {
+                            var newInput = input.value.replace (/[^0-9+.]/g, '');
+                            input.value = newInput;
+                        }
+                        else
+                        {
+                        }
+                    }
+                    input.onkeyup = function ()
+                    {
+                        if (input.value != "")
+                        {
+                            var newInput = input.value.replace (/[^0-9+.]/g, '');
+                            input.value = newInput;
+                        }
+                        else
+                        {
+                        }
+                    }
+                    input.onfocusout = function () // Check for lower than 200 amounts
+                    {
+                        if (input.value != "")
+                        {
+                            var newInput = input.value.replace (/[^0-9+.]/g, '');
+                            input.value = newInput;
+                        }
+                        else
+                        {
+                        }
+                    }
+                });
+                    </script> 
+        </div>

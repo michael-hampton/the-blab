@@ -1,0 +1,26 @@
+<?php
+if ( !empty ($arrAlbums) )
+{
+
+    echo '<div class="albums">';
+
+    foreach ($arrAlbums as $arrAlbum) {
+
+        $albumId = $arrAlbum->getId ();
+
+        echo '<div class="album col-lg-6" id="' . $albumId . '" droppable="true"><h2 class="openAlbum">' . $arrAlbum->getName () . '</h2>';
+
+        if ( !empty ($arrAlbumPhotos[$albumId]) )
+        {
+
+            foreach ($arrAlbumPhotos[$albumId] as $albumPhoto) {
+                echo '<a class="pull-left" id="' . $albumId . '"><img src="' . $albumPhoto->getFileLocation () . '"></a>';
+            }
+        }
+
+        echo '</div>';
+    }
+    echo '</div>
+<div style="clear:both"></div>';
+}
+?>

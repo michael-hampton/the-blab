@@ -1,0 +1,480 @@
+<link rel="stylesheet" href="/blab/public/css/profile.css">
+
+
+<?php
+$totalCommentsToDisplay = 1;
+
+$friendIds = [];
+$requestIds = [];
+
+foreach ($arrFriendRequests as $objFriendRequest) {
+    $requestIds[] = $objFriendRequest->getId ();
+}
+
+foreach ($arrCurrentUserFreindList as $friend) {
+    $friendIds[] = $friend->getId ();
+}
+?>
+
+<input type="hidden" id="userId" name="userId" value="<?= $arrUser->getId () ?>">
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-10 col-md-offset-1" id="container">
+
+            <div id="timelineContainer">
+                <!-- timeline background -->
+                <div id="timelineBackground">
+
+                    <?php
+                    if ( trim ($objUser->getBackgroundImage ()) !== "" && file_exists ($rootPath . $objUser->getBackgroundImage ()) )
+                    {
+                        echo '<img src="' . $objUser->getBackgroundImage () . '" class="bgImage" style="margin-top: ' . $objUser->getBackgroundPosition () . 'px;">';
+                    }
+                    else
+                    {
+                        echo '<img src="/blab/public/img/avatar.gif" class="bgImage">';
+                    }
+                    ?>
+
+
+
+                </div>
+
+                <!-- timeline background -->
+                <div id="timelineShade">
+                    <form id="bgimageform" method="post" enctype="multipart/form-data" action="blab/user/saveBackgroundImage.php">
+                        <input type="hidden" id="position" name="position">
+                        <div class="uploadFile timelineUploadBG">
+                            <input type="file" name="photoimg" id="bgphotoimg" class="custom-file-input">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- timeline profile picture -->
+                <div id="timelineProfilePic" style="padding:0px; width: 20%;">
+
+                    <?php
+                    if ( trim ($objUser->getProfileImage ()) !== "" && file_exists ($rootPath . $objUser->getProfileImage ()) )
+                    {
+                        echo '<img style="width:100%;" class="userProfileImg" src="' . $objUser->getProfileImage () . '">';
+                    }
+                    else
+                    {
+                        echo '<img style="width:100%;" class="userProfileImg" src="/blab/img/avatar.gif">';
+                    }
+                    ?>
+
+                    <div>
+                        <form id="userImage" method="post" enctype="multipart/form-data">
+                            <div class="uploadFile2">
+                                <input type="file" class="custom-file-upload" name="userImage" id="profileimgaa">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- start -->
+                <!-- timeline title -->
+                <div id="timelineTitle"><?= $objUser->getFirstName () . ' ' . $objUser->getLastName () ?></div>
+
+                <!-- timeline nav -->
+                <div id="timelineNav">
+                    <div class="col-lg-10 col-md-offset-4 menu-parent" style="margin-top: 12px;">
+                        <div class="col-lg-2 pull-left">
+                            <a onclick="vpb_show_status_updates ();">Timeline</a>
+
+                        </div>
+
+                        <div class="col-lg-2 pull-left">
+
+                            <?php
+                            if ( (int) $_SESSION['user']['user_id'] === (int) $objUser->getId () )
+                            {
+                                echo '<a onclick="vpb_show_about_page_owner_details(\'edit\', ' . $objUser->getId () . ')"; class="" type="about" href="#">About</a>';
+                            }
+                            else
+                            {
+                                echo '<a onclick="vpb_show_about_page_owner_details(\'normal\', ' . $objUser->getId () . ');" class="" type="about" href="#">About</a>';
+                            }
+                            ?>
+                        </div>
+
+                        <?php
+                        if ( $arrUserSettings->getProfileSetting ('friends') !== false )
+                        {
+                            ?>
+                            <div class="col-lg-2 pull-left">
+                                <a class="" type="friends" href="#" onclick="vpb_show_page_owner_friends ();">Friends</a>
+
+                            </div>
+
+                            <?php
+                        }
+                        ?>
+
+
+
+                        <div class="col-lg-2 pull-left">
+                            <a class="" type="photos" onclick="vpb_show_photos ('normal', <?= $objUser->getId () ?>)" href="#">Photos</a>
+
+                        </div>
+
+                        <div class="col-lg-2 pull-left">
+                            <div class="dropdown-a" id="dropdown">
+                                <input type="checkbox" id="drop1" />
+                                <label for="drop1" class="dropdown_button">More <span class="arrow"></span></label>
+                                <ul class="dropdown_content">
+
+                                    <?php
+                                    if ( $arrUserSettings->getProfileSetting ('group') !== false )
+                                    {
+                                        echo '<li><a class="menuItem" type="groups" href="#">Groups</a></li>';
+                                    }
+
+                                    if ( $arrUserSettings->getProfileSetting ('event') !== false )
+                                    {
+                                        echo '<li><a class="menuItem" type="events" href="#">Events</a></li>';
+                                    }
+
+                                    if ( $arrUserSettings->getProfileSetting ('page') !== false )
+                                    {
+                                        echo '<li><a class="menuItem" type="pages" href="#">Pages</a></li> ';
+                                    }
+
+                                    if ( $arrUserSettings->getProfileSetting ('likes') !== false )
+                                    {
+                                        echo '<li><a class="menuItem" type="likes" href="#">Likes</a></li>';
+                                    }
+                                    ?>
+                                </ul>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- end -->
+            </div>
+        </div>
+
+
+        <!-- mike -->
+        <?php $this->partial ("templates/searchFriends"); ?>
+
+        <div class="vmiddle_other enable_this_box" id="vasplus_notifications" style=" display: none; ">
+            <div class="vmiddle_other_title vprofile_o_title">
+                <div style="float:left;">Notifications</div>
+                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" onclick="vpb_show_status_updates ();" original-title="Close">×</button>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            <div style="padding:10px;" id="vpb_display_vnotifications"></div>
+        </div>
+
+        <div id="" style="width:100%;">
+
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <div class="col-lg-3 r-sidebar">
+
+
+                        <?php
+                        $this->partial ("templates/profileUpload", ["arrUser" => $arrUser, "friendIds" => $friendIds, "requestIds" => $requestIds]);
+                        $this->partial ("templates/links");
+                        $this->partial ("templates/events", ["arrEvents" => $arrEvents]);
+
+                        $this->partial (
+                                "templates/groups", ["arrGroups" => $arrGroups
+                                ]
+                        );
+
+
+                        $this->partial (
+                                "templates/friends", ["arrFriendList" => $arrFriendList
+                                ]
+                        );
+
+//                $this->partial (
+//                        "templates/chatList", ["arrUsers" => $arrChatUsers, "arrChatGroups" => $arrChatGroups
+//                        ]
+//                );
+                        ?>
+
+
+                    </div>
+
+                    <div class="col-lg-10 m-sidebar col-md-offset-1" style="display: none;">
+                        <div class="vmiddle_other pull-left" id="vasplus_page_owners_friends" style="display: none;">
+                            <div class="vmiddle_other_title vprofile_o_title">
+                                <div style="float:left;">Friends · <span class="vtotals"><?= count ($arrFriendList) ?></span></div>
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" onclick="vpb_show_status_updates ();" original-title="Close">×</button>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+
+
+
+                            <input type="hidden" id="page_id" value="wall">
+                            <input type="hidden" id="vtotal_friends" value="<?= count ($arrFriendList) ?>">
+                            <input type="hidden" id="vpb_friends_start" value="1">
+
+                            <div class="input-group vpb-the-friends-wrap" id="vpb_load_more_friends_box">
+                                <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_page_owner_friends (<?= $objUser->getId () ?>);">View more friends</span></div>
+                                <div style="float:right; color:#999;"><span id="v_this_friends_totals">20</span> of <?= count ($arrFriendList) ?></div>
+                                <div style="clear:both;"></div>
+                            </div>
+
+                            <!-- Loading Comments Gif -->
+                            <div class="input-group vpb-the-friends-wrap" style="display:none;padding:7px 10px !important;" id="vpb_loading_friends_outer">
+                                <div id="vpb_loading_friends"></div>
+                            </div>
+
+                            <div id="vpb_loaded_friends"></div>
+                            <div id="vpb_get_all_the_users_friends"> <div style="margin-left:4px;margin-right:4px;margin-bottom:4px !important;position:relative;" align="center">               
+                                    <!-- here -->
+                                    <?php
+                                    foreach ($arrFilteredFriendList as $key => $arrFriend):
+                                        ?>
+                                        <div class="vfriendsPhotos_wraper">
+                                            <a href="/blab/index/profile/<?= $arrFriend->getUsername () ?>">
+
+                                                <?php
+                                                if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg') )
+                                                {
+                                                    echo '<img title="' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '" src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg">';
+                                                }
+                                                else
+                                                {
+                                                    echo '<img src="/blab/public/img/avatar.gif">';
+                                                }
+                                                ?>
+
+                                                <span><?= $arrFriend->getFirstname () . ' ' . $arrFriend->getLastname () ?></span>
+                                            </a> 
+                                        </div>
+
+                                        <?php
+                                    endforeach;
+                                    ?>
+                                </div></div>        
+                            <div style="padding:10px;" id="vpb_display_page_owners_friends"></div>
+                        </div>
+
+                        <!-- Display About the Page Owner Details Starts -->
+                        <div class="vmiddle_other enable_this_box pull-left" id="vasplus_about_page_owner">
+                            <div class="vmiddle_other_title vprofile_o_title">
+                                <div style="float:left;">Details</div>
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+                            <div style="padding:10px;" id="vpb_display_about_page_owner"></div>
+                        </div>
+                        <!-- Display About the Page Owner Details Ends -->
+
+                        <!-- Pages -->
+                        <div class="vmiddle_other enable_this_box pull-left" id="vasplus_pages">
+                            <div class="vmiddle_other_title vprofile_o_title">
+                                <div style="float:left;">Pages</div>
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+
+                            <div style="padding:10px;" class="text-wrapper" id="vpb_display_pages"></div>
+                        </div>
+                        <!-- End Pages -->
+
+                        <!-- Pages -->
+                        <div class="vmiddle_other enable_this_box pull-left" id="vasplus_groups">
+                            <div class="vmiddle_other_title vprofile_o_title">
+                                <div style="float:left;">Groups</div>
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+                            <div style="padding:10px;" class="text-wrapper" id="vpb_display_groups"></div>
+                        </div>
+                        <!-- End Pages -->
+
+                        <!-- Likes -->
+                        <div class="vmiddle_other enable_this_box pull-left" id="vasplus_likes">
+                            <div class="vmiddle_other_title vprofile_o_title">
+                                <div style="float:left;">Likes</div>
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+                            <div style="padding:10px;" class="text-wrapper" id="vpb_display_likes"></div>
+                        </div>
+                        <!-- End Likes -->
+
+                        <!-- Events -->
+                        <div class="vmiddle_other enable_this_box pull-left" id="vasplus_events">
+                            <div class="vmiddle_other_title vprofile_o_title">
+                                <div style="float:left;">Events</div>
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+                            <div style="padding:10px;" class="text-wrapper" id="vpb_display_events"></div>
+                        </div>
+                        <!-- End Events -->
+
+
+                        <!-- Display About the Page Owner Details Starts -->
+                        <div class="vmiddle_other enable_this_box pull-left" id="vasplus_photos">
+                            <div class="vmiddle_other_title vprofile_o_title">
+                                <div style="float:left;">Photos</div>
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+                            <div style="padding:10px;" id="vpb_display_photos"></div>
+                        </div>
+                        <!-- Display About the Page Owner Details Ends -->
+
+                    </div>
+
+                    <div class="col-lg-6">
+
+                        <div id="vasplus_wall_status_updates">
+
+                            <?php $this->partial ("templates/postBox", ["form" => "commentform"]); ?>
+
+                            <div class="row">
+                                <?php $this->partial ("templates/sortingBox"); ?>
+                            </div>
+
+                            <div class="row m-b-lg m-t-lg" id="posts-list">
+
+
+                                <?php
+                                $this->partial (
+                                        "templates/posts", ["arrPosts" => $arrPosts, "totalCommentsToDisplay" => $totalCommentsToDisplay
+                                        ]
+                                );
+                                ?>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-3 l-sidebar">
+                        <div id="vpb_get_all_the_users_groups">
+
+                        </div>
+                        <br clear="all">
+                    </div>
+                </div>
+
+
+
+
+
+                <!--                <div class="col-lg-9">
+                
+                                </div>-->
+
+
+
+                <div id="vpb_loading_status_updates"></div>
+
+                <div class="sk-spinner sk-spinner-wave" style="display:none;">
+                    <div class="sk-rect1"></div>
+                    <div class="sk-rect2"></div>
+                    <div class="sk-rect3"></div>
+                    <div class="sk-rect4"></div>
+                    <div class="sk-rect5"></div>
+                </div>
+
+                <div class="chatWindow" style="display:none;">
+
+                </div>
+
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <div class="cd-panel from-right" style="background-color: #FFF;">
+
+
+        <div class="cd-panel-container" style="background-color: #FFF;">
+
+
+            <div class="pages" style="display:none;">
+                <header class="cd-panel-header">
+                    <h1>Pages</h1>
+                    <a href="#0" class="cd-panel-close">Close</a>
+                </header>
+
+                <div class="cd-panel-content">
+
+                </div>
+            </div>
+
+            <div class="events" style="display:none;">
+                <header class="cd-panel-header">
+                    <h1>Events</h1>
+                    <a href="#0" class="cd-panel-close pull-right">Close</a>
+                </header>
+
+                <div class="cd-panel-content">
+
+                </div>
+            </div>
+
+            <div class="groups" style="display:none;">
+                <header class="cd-panel-header">
+                    <h1>Groups</h1>
+                    <a href="#0" class="cd-panel-close pull-right">Close</a>
+                </header>
+
+                <div class="cd-panel-content">
+
+                </div>
+            </div>
+
+            <div class="likes" style="display:none;">
+                <header class="cd-panel-header">
+                    <h1>Likes</h1>
+                    <a href="#0" class="cd-panel-close">Close</a>
+                </header>
+
+                <div class="cd-panel-content">
+
+                </div>
+            </div>
+
+
+        </div>
+
+    </div> <!-- cd-panel -->
+
+    <script>
+        var profileUser = <?= $objUser->getId () ?>;
+    </script>
+
+    <script src="/blab/public/js/geocomplete.js"></script>
+    <script src="/blab/public/js/newsFeed.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1COtE7cJxfGxNWiTjEgtSNhbvDBCiiqQ&libraries=places"></script>
+    <script src="/blab/public/js/geocomplete.js"></script>
+
+    <script src="/blab/public/js/profile.js" type="text/javascript"></script>

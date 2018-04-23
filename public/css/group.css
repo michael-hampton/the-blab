@@ -1,0 +1,560 @@
+.vpb_profile_name:hover {
+    text-decoration: none;
+}
+
+.vbreaker_item
+{
+    display:inline-block;
+    text-transform:capitalize !important;
+    margin-left:16px;
+    opacity:0.5;
+}
+.v_the_iconed
+{
+    color: #999 !important;
+}
+.vedit_item
+{
+    color:#000;
+    opacity:0.5;
+    cursor:pointer;
+    display:inline-block;
+    text-transform:capitalize !important; 
+    margin-left:16px;
+}
+
+.vedit_item:hover
+{
+    opacity:1;
+}
+
+.vfriendsPhoto_wraper
+{
+    display:inline-block;
+    margin:4px;
+    margin-right:0px !important;
+    margin-left:0px;
+    margin-bottom:0px !important;
+    position:relative;
+    text-align:left;
+    text-decoration:none;
+    position:relative;
+}
+.vfriendsPhoto_wraper a{ text-decoration:none; color:#FFF; cursor:pointer; }
+.vfriendsPhoto_wraper img
+{
+    height: 200px;
+    width: 90%;
+    border:0px !important;
+}
+@media (min-width: 768px) {
+    .vfriendsPhoto_wraper img
+    {
+        height: 92px;
+        width: 92px;
+        border:0px !important;
+    }
+}
+
+
+.vfriendsVideo_wraper
+{
+    display:inline-block;
+    margin:4px;
+    margin-right:0px !important;
+    margin-left:0px;
+    margin-bottom:0px !important;
+    position:relative;
+    text-align:left;
+    text-decoration:none;
+    position:relative;
+}
+
+.vfriendsVideo_wraper iframe
+{
+    height: 100% !important;
+    min-height:250px !important;
+    width: 100% !important;
+    border:0px solid !important;
+    margin:0 auto !important;
+}
+
+@media (min-width: 1000px) {
+    .vfriendsVideo_wraper iframe
+    {
+        min-height:140px !important;
+        height: 140px !important;
+        width: 140px !important;
+        border:0px solid !important;
+        margin:0 auto !important;
+    }
+}
+
+.vfriendsPhoto_wraper span
+{
+    position:absolute; 
+    bottom:5px; 
+    left:5px; 
+    text-decoration:none !important; 
+    color:#FFF !important; 
+    font-family:arial !important; 
+    font-size:13px !important; 
+    font-weight: normal !important;
+}
+
+
+.vfriendsPhotos_wraper
+{
+    display:inline-block;
+    margin:4px;
+    margin-right:0px !important;
+    margin-left:8px;
+    margin-bottom:0px !important;
+    position:relative;
+    text-align:left;
+    text-decoration:none;
+    position:relative;
+}
+.vfriendsPhotos_wraper a{ text-decoration:none; color:#FFF; cursor:pointer; }
+.vfriendsPhotos_wraper img
+{
+    height: 107px;
+    width: 107px;
+    border:0px !important;
+}
+
+.vfriendsPhotos_wraper span
+{
+    position:absolute; 
+    bottom:5px; 
+    left:5px; 
+    text-decoration:none !important; 
+    color:#FFF !important; 
+    font-family:arial !important; 
+    font-size:13px !important; 
+    font-weight: normal !important;
+}
+
+.vpb_no_friend_available{padding:10px;}
+
+.modal-title
+{
+    text-align:left !important;
+}
+
+.rate_widget {
+    /*    border:     1px solid #CCC;*/
+    overflow:   visible;
+    padding:    10px;
+    position:   relative;
+    width:      100%;
+    height:     32px;
+}
+.ratings_stars {
+    background: url('/blab/public/img/star_empty.png') no-repeat;
+    float:      left;
+    height:     28px;
+    padding:    2px;
+    width:      32px;
+}
+.ratings_vote {
+    background: url('/blab/public/img/star_full.png') no-repeat;
+}
+.ratings_over {
+    background: url('/blab/public/img/star_highlight.png') no-repeat;
+}
+
+.total_votes {
+    background: #eaeaea;
+    top: 58px;
+    left: 0;
+    padding: 5px;
+    position:   absolute;  
+} 
+.movie_choice {
+    font: 10px verdana, sans-serif;
+    margin: 0 auto 40px auto;
+    width: 100%;
+}
+
+.vpb_profile_name
+{
+    font-family: helvetica, arial, 'lucida grande', sans-serif; 
+    font-size:16px; 
+    color:black; 
+    font-weight:bold;
+    cursor:pointer;
+    text-decoration:none;
+    width:90%;
+    text-align:center !important;
+    padding:7px;
+    margin:0 auto;
+}
+.vpb_profile_name:hover
+{
+    text-decoration:none;
+}
+.profilephoto_wrap 
+{
+    position:relative;
+    max-width:90%;
+    max-height:90%;
+    width:280px;
+    height:280px;
+    margin:0 auto !important;
+    text-align:center !important;
+    color:#FFF !important;
+    display:block;
+}
+.gprofilephoto_wrap 
+{
+    position:relative;
+    max-width:100%;
+    max-height:260px;
+    width:100%;
+    height:260px;
+    margin:0 auto !important;
+    text-align:center !important;
+    color:#FFF !important;
+    display:block;
+}
+
+.vprofilephoto
+{
+    width:100%;
+    height:100%;
+    border:1px solid;
+    margin:0 auto;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-color:#FFF;
+    display: block;
+    /*-webkit-border-radius: 99em;
+    -moz-border-radius: 99em;
+    border-radius: 99em;*/
+    border: 5px solid #F1F1F1;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);  
+    text-align:center;
+    cursor: pointer;
+}
+.gvprofilephoto
+{
+    width:100%;
+    height:100%;
+    border:0px solid;
+    margin:0 auto;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-color:#FFF;
+    display: block;
+    /*-webkit-border-radius: 99em;
+    -moz-border-radius: 99em;
+    border-radius: 99em;*/
+    border: 0px solid #F1F1F1;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);  
+    text-align:center;
+    cursor: pointer;
+}
+
+.vprofilephoto:hover 
+{
+    opacity:0.9;
+}
+.gvprofilephoto:hover 
+{
+    opacity:1;
+}
+
+.vprofilephoto_editer 
+{
+    display:inline; 
+    position: absolute;
+    width:auto;
+    height:32px;
+    background-color:#333;
+    color:#FFF !important;
+    top: 80%;
+    left: 28%;
+    bottom: 0;
+    margin:0 auto;
+    text-align:center;
+    text-decoration:none !important;
+    padding:8px;
+    cursor:pointer;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
+    font-family:arial !important;
+    font-size:13px !important;
+    letter-spacing:1px;
+}
+
+.vprofilephoto_editer:hover 
+{
+    background-color:#000;
+}
+
+.gvprofilephoto_editer 
+{
+    display:none; 
+    position: absolute;
+    width:auto;
+    height:29px;
+    top: 14px;;
+    right: 14px;;
+    bottom: 0;
+    margin:0 auto;
+    text-align:center;
+    z-index:1;
+    text-decoration:none !important;
+    border-color: #ccc;
+    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+    text-decoration: none !important;
+    margin-bottom: 0;
+    color: #000;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.75);
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #f5f5f5;
+    background-image: -ms-linear-gradient(top, #fff, #e6e6e6);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#e6e6e6));
+    background-image: -webkit-linear-gradient(top, #fff, #e6e6e6);
+    background-image: -o-linear-gradient(top, #fff, #e6e6e6);
+    background-image: linear-gradient(top, #fff, #e6e6e6);
+    background-image: -moz-linear-gradient(top, #fff, #e6e6e6);
+    background-repeat: repeat-x;
+    border: 1px solid #ddd !important;
+    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+    border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+    border-bottom-color: #b3b3b3;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
+    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    user-select: none;
+    font-family: arial !important;
+    font-size: 13px !important;
+    font-weight: normal;
+    padding: 5px 12px;
+}
+
+.gprofilephoto_wrap:hover .gvprofilephoto_editer
+{
+    display:block;
+
+}
+.vthe_group_dname
+{
+    z-index:1;
+    position: absolute;
+    width:auto;
+    height:25px;
+    top: auto;
+    left: 5px;;
+    bottom: 40px;
+    margin:0 auto;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    user-select: none;
+    line-height:25px;
+    font-family: arial !important;
+    font-size: 24px;
+    font-weight: 500 !important;
+    color:#FFF !important;
+    text-overflow: ellipsis;
+    text-rendering: optimizelegibility;
+    text-shadow: 0 0 3px rgba(0, 0, 0, .8);
+    white-space: nowrap;
+    text-align:left !important;
+}
+.vprivacy_text
+{
+    font-size: 14px !important;
+    text-align:left !important;
+}
+
+
+.cbtns {
+    display: inline-block;
+    margin-bottom: 0;
+    color: #333;
+    text-align: center;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.75);
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+    border-bottom-color: #b3b3b3;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    user-select: none;
+    font-family: arial;
+    font-size: 15px !important;
+    font-weight: normal !important;
+    margin-top: 10px;
+    padding: 6px 12px !important;
+    cursor: default;
+    text-decoration: none !important;
+}
+
+
+
+.vpb_progress_outer_bar 
+{
+    display:none;
+    position:relative; 
+    width:60%; 
+    border: 1px solid #ddd; 
+    padding: 2px; 
+    border-radius: 3px; 
+    text-align:left; 
+    background-color:#F9F9F9;
+    margin:0 auto;
+    margin-top:20px;
+}
+.vpb_progress_percentage 
+{
+    position:relative;
+    margin:0 auto;
+    width:100%;
+    color:#000;
+    z-index:9999;
+    display: inline-block;
+    text-align:center;
+    font-family: helvetica, arial, 'lucida grande', sans-serif; 
+    font-size:18px; 
+}
+.vpb_progress_inner_bar
+{
+    position:absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background-color: #B4F5B4; 
+    width:0%;
+    height:100%;
+    border-radius: 3px; 
+    text-align:left; 
+    padding-top:0px; 
+    padding-bottom:0px; 
+    background-color: rgb(43,194,83);
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(43,194,83)),color-stop(1, rgb(84,240,84)));
+    background-image: -moz-linear-gradient(center bottom,rgb(43,194,83) 37%,rgb(84,240,84) 69%);
+    -webkit-box-shadow: inset 0 2px 9px  rgba(255,255,255,0.3),inset 0 -2px 6px rgba(0,0,0,0.4);
+    -moz-box-shadow: inset 0 2px 9px  rgba(255,255,255,0.3),inset 0 -2px 6px rgba(0,0,0,0.4);
+    box-shadow:  inset 0 2px 9px  rgba(255,255,255,0.3),inset 0 -2px 6px rgba(0,0,0,0.4);
+    background-image: -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)), color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent), to(transparent));
+    background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%, transparent 75%, transparent);
+    z-index: 0;
+    -webkit-background-size: 50px 50px;
+    -moz-background-size: 50px 50px;
+    -webkit-animation: move 2s linear infinite;
+    overflow:hidden;
+}
+
+
+.vpb_progress_inner_bar:after {
+    content: "";
+    position: absolute;
+    height:100%;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background-image: 
+        -webkit-gradient(linear, 0 0, 100% 100%, 
+        color-stop(.25, rgba(255, 255, 255, .2)), 
+        color-stop(.25, transparent), color-stop(.5, transparent), 
+        color-stop(.5, rgba(255, 255, 255, .2)), 
+        color-stop(.75, rgba(255, 255, 255, .2)), 
+        color-stop(.75, transparent), to(transparent)
+        );
+    background-image: 
+        -moz-linear-gradient(
+        -45deg, 
+        rgba(255, 255, 255, .2) 25%, 
+        transparent 25%, 
+        transparent 50%, 
+        rgba(255, 255, 255, .2) 50%, 
+        rgba(255, 255, 255, .2) 75%, 
+        transparent 75%, 
+        transparent
+        );
+    z-index: 99999999;
+    -webkit-background-size: 50px 50px;
+    -moz-background-size: 50px 50px;
+    -webkit-animation: move 2s linear infinite;
+    overflow: hidden;
+}
+
+@-webkit-keyframes move {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+.vpb_preview_wrapper {
+    max-width:220px !important;
+    max-height:220px !important;
+    border: solid 1px #cbcbcb;
+    background-color: #FFF;
+    box-shadow: 0 0px 10px #cbcbcb;
+    -moz-box-shadow: 0 0px 10px #cbcbcb;
+    -webkit-box-shadow: 0 0px 10px #cbcbcb;
+    -webkit-border-radius: 10px;-moz-border-radius: 10px;border-radius: 10px;
+    text-align:center;
+    padding:10px;
+    margin:0 auto; 
+    margin-bottom:20px;
+    word-wrap: break-word;
+}
+
+.vpb_image_style{ width:100%; height:100%;-webkit-border-radius: 10px;-moz-border-radius: 10px;border-radius: 10px; border:0px solid;}
+.vpb_preview_wrapper img { max-width:200px !important;max-height:200px !important; width:auto;height:auto;  border:0px solid;}
+
+
+.vp_ul_wrap ul.dropdown-menu a,
+.vp_ul_wrap li.dropdown.open > a, 
+.vp_ul_wrap li.dropdown.open > ul.dropdown-menu a
+{
+    background-color: #fff;
+    border-top:0px solid;
+    padding-top:5px !important;
+    padding-bottom:5px !important;
+    border-color: #F1F1F1;
+    cursor:pointer;
+    font-family:arial !important;
+    font-size:13px !important;
+}
+
+
+.vp_ul_wrap ul.dropdown-menu a:hover,
+.vp_ul_wrap li.dropdown.open > a, 
+.vp_ul_wrap li.dropdown.open > ul.dropdown-menu a:hover
+{
+    color: #fff;
+    background-color: #777;
+    background-image: linear-gradient(to bottom, #666, #777) !important;
+    background-repeat: repeat-x !important;
+    border-color: #666;
+}

@@ -1,0 +1,42 @@
+<div class="ibox pull-left" style="width: 100%;">
+    <div class="ibox-content" style="padding: 0px !important; float: left;width: 100%;">
+
+        <div class="vprofile_o_title" style="padding:0px;">
+            <div style="float:left; padding:10px;">
+                <i class="fa fa-group v_the_iconed"></i> Pages
+            </div>
+
+            <div style="float:right; padding:10px;">
+
+                <span id="view_or_edit_buttonD">
+                    <i class="fa fa-plus-square v_the_iconed"></i> <span class="vpb_hover vview_item"> Create Page</span>
+
+                </span>
+
+            </div><div style="clear:both;"></div>
+
+        </div>
+
+
+        <ul class="list-group clear-list" style="padding: 10px;">
+            <?php
+            if ( !empty ($arrPages) ):
+                foreach ($arrPages as $arrPage):
+                    ?>
+
+                    <li class="col-lg-6" style="list-style: none;">
+                        <a href="/blab/page/index/<?= $arrPage->getUrl () ?>">
+                            <img style="max-width: 50px;" title="<?= $arrPage->getName () ?>" src="<?= $arrPage->getFileLocation () ?>" class="img-responsive">
+                            <?= $arrPage->getName () ?>
+                        </a>
+                    </li>
+
+
+                    <?php
+                endforeach;
+            endif;
+            ?>
+
+        </ul>
+    </div>
+</div>

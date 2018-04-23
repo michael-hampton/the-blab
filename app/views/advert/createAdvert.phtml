@@ -1,0 +1,218 @@
+<form class="form-horizontal">
+    <p>Create a new advert.</p>
+
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Title</label>
+
+        <div class="col-lg-10">
+            <input type="text" placeholder="Title" id="advertTitle" name="advertTitle" class="form-control">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Location</label>
+
+        <div class="col-lg-10">
+            <select class="form-control" id="advertLocation" name="advertLocation">
+                <option value="">Select Location</option>
+
+                <?php
+                foreach ($arrCountries as $arrCountry) {
+                    echo '<option value="' . $arrCountry['IC_NAME'] . '">' . $arrCountry['IC_NAME'] . '</option>';
+                }
+                ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Language</label>
+
+        <div class="col-lg-10">
+            <select class="form-control" id="advertLanguage" name="advertLanguage">
+                <option value="">Select Location</option>
+
+                <?php
+                foreach ($arrLanguages as $arrLanguage) {
+                    echo '<option value="' . $arrLanguage['value'] . '">' . $arrLanguage['value'] . '</option>';
+                }
+                ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Gender</label>
+
+        <div class="col-lg-10">
+            <select class="form-control" id="advertGender" name="advertGender">
+                <option value="">Select Gender</option>
+
+                <?php
+                foreach ($arrGenders as $gender) {
+                    echo '<option value="' . $gender . '">' . $gender . '</option>';
+                }
+                ?>
+            </select>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    <div class="form-group col-sm-6">
+        <input id="advert-fileupload" type="file" multiple="multiple" />
+        <hr />
+        <b>Preview</b><br />
+    </div>
+</div>
+<div id="dvPreview">
+</div>
+
+<button type="button" class="btn btn-w-m btn-primary Save">Save</button>
+
+
+
+
+<script>
+    $ (".Save").on ("click", function ()
+    {
+        var data = new FormData ();
+        $.each ($ ('#advert-fileupload')[0].files, function (i, file)
+        {
+            data.append ('file-' + i, file);
+        });
+
+        var elems = $ ("input[name='tag_line[]']").map (function ()
+        {
+            return $ (this).val ();
+        }).get ();
+
+        var elems2 = $ ("input[name='url[]']").map (function ()
+        {
+            return $ (this).val ();
+        }).get ();
+
+        data.append ("tags", JSON.stringify (elems));
+        data.append ("url", JSON.stringify (elems2));
+
+        var advertLocation = $ ("#advertLocation").val ();
+        var advertLanguage = $ ("#advertLanguage").val ();
+        var advertTitle = $ ("#advertTitle").val ();
+        var advertGender = $ ("#advertGender").val ();
+
+        if (advertLocation === '')
+        {
+            alert ("Ypu must select a location");
+            return false;
+        }
+
+        if (advertLanguage === '')
+        {
+            alert ("Ypu must select a language");
+            return false;
+        }
+
+        if (advertTitle === '')
+        {
+            alert ("Ypu must enter a title");
+            return false;
+        }
+
+        if (advertGender === '')
+        {
+            alert ("Ypu must select a gender");
+            return false;
+
+        }
+
+        data.append ("advertGender", advertGender);
+        data.append ("advertTitle", advertTitle);
+        data.append ("advertLanguage", advertLanguage);
+        data.append ("advertLocation", advertLocation);
+
+        $.ajax ({
+            url: '/blab/advert/saveAdvert',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            method: 'POST',
+            type: 'POST', // For jQuery < 1.9
+            success: function (data)
+            {
+                alert (data);
+            }
+        });
+    });
+
+    $ ("#advert-fileupload").on ("change", function ()
+    {
+
+        var fileUpload = document.getElementById ("advert-fileupload");
+
+        if (typeof (FileReader) != "undefined")
+        {
+            var dvPreview = document.getElementById ("dvPreview");
+            dvPreview.innerHTML = "";
+            var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.jpg|.jpeg|.gif|.png|.bmp)$/;
+            for (var i = 0; i < fileUpload.files.length; i++) {
+                var file = fileUpload.files[i];
+                if (regex.test (file.name.toLowerCase ()))
+                {
+                    var reader = new FileReader ();
+                    reader.onload = function (e)
+                    {
+                        // Caption
+                        var img = document.createElement ("IMG");
+                        var textbox = document.createElement ('input');
+
+                        
+                        var div = document.createElement("div");
+                        //div.style.width = "100%";
+                        div.class= 'col-lg-12';
+                        //div.style.height = "100px";
+                        //div.style.background = "red";
+                        //div.style.color = "white";
+                        div.style.marginBottom = "20px";
+
+
+                        textbox.type = 'text';
+                        textbox.name = 'tag_line[]';
+                        textbox.class = 'form-control';
+                        textbox.placeholder = 'Enter image tag line';
+
+                        // URL
+                        var textbox2 = document.createElement ('input');
+                        textbox2.type = 'text';
+                        textbox2.name = 'url[]';
+                        textbox2.class = 'form-control';
+                        textbox2.placeholder = 'Enter URL';
+
+                        // Image
+                        img.height = "100";
+                        img.width = "100";
+                        img.src = e.target.result;
+                        div.appendChild (img);
+                        div.appendChild (textbox);
+                        div.appendChild (textbox2);
+                        dvPreview.appendChild(div);
+                    }
+                    reader.readAsDataURL (file);
+                }
+                else
+                {
+                    alert (file.name + " is not a valid image file.");
+                    dvPreview.innerHTML = "";
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            alert ("This browser does not support HTML5 FileReader.");
+        }
+    });
+
+
+
+
+</script>

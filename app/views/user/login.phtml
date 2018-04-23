@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>The Blab | Login</title>
+
+        <link href="/blab/public/css/bootstrap.css" rel="stylesheet">
+        <link href="/blab/public/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+        <link href="/blab/public/css/animate.css" rel="stylesheet">
+        <link href="/blab/public/css/style.css" rel="stylesheet">
+        <link href="/blab/public/css/sweetalert.css" rel="stylesheet">
+
+    </head>
+
+    <body class="gray-bg">
+
+        <div class="col-lg-12">
+            <div class="col-lg-6">
+                <div class="middle-box text-center loginscreen animated fadeInDown">
+                    <div>
+
+                        <h3>Welcome to The Blab</h3>
+                        <p>Social networking
+                        </p>
+                        <p>Login in. To see it in action.</p>
+                        <form class="m-t" role="form" action="index.html">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="username" placeholder="Username" required="">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="password" placeholder="Password" required="">
+                            </div>
+                            <button type="button" class="btn btn-primary block full-width m-b login-btn">Login</button>
+
+                            <a href="/blab/user/forgotPassword"><small>Forgot password?</small></a>
+<p><small>Your username is firstname.lastname for example michael.hampton and the password you used when signing up.</small>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="middle-box text-center loginscreen   animated fadeInDown">
+                    <div>
+
+                        <h3>Register to The Blab</h3>
+                        <p>Create account to see it in action.</p>
+                        <form class="m-t" role="form" id="newUserForm">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="firstname" placeholder="First Name" required="required">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="lastname" placeholder="Last Name" required="required">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="email" name="youremail" class="form-control" placeholder="Email" required="required">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="email" name="reenteremail" class="form-control" placeholder="Re-enter your Email" required="required">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="password" name="password" class="form-control" placeholder="Password" required="required">
+                            </div>
+
+                            <!--                            <label for="">
+                                                            Birth Date</label>
+                                                        <div class="row">
+                                                            <div class="col-xs-4 col-md-4">
+                                                                <select class="form-control input-lg">
+                                                                    <option value="Month">Month</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-xs-4 col-md-4">
+                                                                <select class="form-control input-lg">
+                                                                    <option value="Day">Day</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-xs-4 col-md-4">
+                                                                <select class="form-control input-lg">
+                                                                    <option value="Year">Year</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                            
+                                                        <label class="radio-inline">
+                                                            <input type="radio" name="sex" id="inlineCheckbox1" value="male" />
+                                                            Male
+                                                        </label>
+                                                        <label class="radio-inline">
+                                                            <input type="radio" name="sex" id="inlineCheckbox2" value="female" />
+                                                            Female
+                                                        </label>
+                                                        <br />-->
+
+                            <div class="form-group">
+                                <span class="help-block">
+                                    <a href="/blab/terms">
+                                        By clicking Create my account, you agree to our Terms and that you have read our Data Use Policy, including our Cookie Use.
+                                    </a>
+
+                                </span>
+                            </div>
+                    </div>
+                    <button type="button" class="btn btn-primary block full-width m-b signup-btn">Create my account</button>
+
+                    </form>
+                    <p class="m-t"> <small>The Blab social networking platform</small> </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="/blab/public/js/jquery-2.1.1.js"></script>
+    <script src="/blab/public/js/inspinia.js"></script>
+    <script src="/blab/public/js/bootstrap.js"></script>
+    <script src="/blab/public/js/sweetalert.js"></script>
+
+
+    <script>
+
+        $ (".login-btn").on ("click", function ()
+        {
+            var password = $ ("#password").val ();
+            var username = $ ("#username").val ();
+
+            $.ajax ({
+                url: '/blab/user/doLogin',
+                type: 'POST',
+                data: {username: username, password: password},
+                success: function (response)
+                {
+                    if (response === 'ERROR')
+                    {
+                        showErrorMessage ("Unable to login");
+                        return false;
+                    }
+                    else
+                    {
+                        location.href = "/blab/index/index";
+                    }
+
+                    return false;
+                }
+            });
+        });
+
+        $ (".signup-btn").on ("click", function ()
+        {
+            var FormData = $ ("#newUserForm").serialize ();
+
+            $.ajax ({
+                url: '/blab/user/saveNewUser',
+                type: 'POST',
+                data: FormData,
+                success: function (response)
+                {
+                    formatResponse (response);
+                }
+            });
+
+            return false;
+        });
+
+        function formatResponse (response)
+        {
+
+            try {
+                var objResponse = $.parseJSON (response);
+
+                if (objResponse.sucess == 0)
+                {
+                    showErrorMessage (objResponse.message);
+                }
+                else
+                {
+                    if (objResponse.data.username !== undefined)
+                    {
+                        username = objResponse.data.username;
+                        showSuccessMessage ('The user was created successfully. Your new username is ' + username);
+                        location.href = "/blab/index/index";
+                    }
+
+
+                }
+            } catch (error) {
+                alert (error);
+                showErrorMessage ();
+            }
+
+        }
+
+        function showSuccessMessage (message)
+        {
+            message = message || "The action was complete successfully.";
+
+            swal ({
+                title: "Success",
+                text: message,
+                type: "success",
+                showCancelButton: false,
+                confirmButtonColor: "#1ab394",
+                confirmButtonText: "Ok",
+                closeOnConfirm: false
+
+            });
+        }
+
+        function showErrorMessage (message)
+        {
+            message = message || "Somethinh went wrong whilst trying to complete the request";
+
+            swal ({
+                title: "Error",
+                text: message,
+                type: "error",
+                showCancelButton: false,
+                confirmButtonColor: "#1ab394",
+                confirmButtonText: "Ok",
+                closeOnConfirm: false,
+                html: true
+
+            });
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<div class="ibox">
+    <div class="ibox-content" style="padding: 0px !important;">
+        <div class="vprofile_o_title" style="padding:0px;">
+            <div style="float:left; padding:10px;">
+                <i class="fa fa-user v_the_iconed"></i> Friends
+            </div>
+
+            <div style="clear:both;"></div>
+
+        </div>
+
+        <div class="user-friends" style="padding: 10px;">
+            <?php
+            if ( !empty ($arrFriendList) )
+            {
+                foreach ($arrFriendList as $arrFriend) {
+                    ?>
+
+
+                    <a href="/blab/index/profile/<?= $arrFriend->getUsername () ?>">
+
+                        <?php
+                        if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg') )
+                        {
+                            echo '<img title="' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '" alt="image" class="img-circle" src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg">';
+                        }
+                        else
+                        {
+                            echo '<img alt="image" class="img-circle" src="/blab/public/img/avatar.gif">';
+                        }
+                    }
+
+                    echo '<br><a userid="' . $_SESSION['user']['user_id'] . '" href="#" class="seeAllFriends">See all friends</a>';
+                }
+                else
+                {
+                    echo '<h3>You have no friends</h3>';
+                }
+                ?>
+        </div>
+
+
+    </div>
+</div>

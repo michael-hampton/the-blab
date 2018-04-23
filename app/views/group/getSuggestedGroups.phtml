@@ -1,0 +1,26 @@
+<div style="padding:10px; font-family:arial; font-size:12px; border:1px solid #E9E9E9;border-top:0px solid #E9E9E9;color: #9197a3; text-transform:uppercase;">
+    <div style="float:left;">Suggested Groups</div>
+    <div style="float:right;"><span class="vpb_hover vview_item" onclick="window.location.href = 'http://www.vasplus.info/groups/';">See All</span></div>
+    <div style="clear:both"></div>
+</div>
+
+<?php foreach ($arrGroups as $arrGroup): ?>
+    <div class="vproductbox">
+        <a href="/blab/group/index/<?= $arrGroup->getId() ?>"><img src="<?= $arrGroup->getImageLocation() ?>" class="img-responsive" border="0"></a>
+        <div class="vproducttitle"><a href="/blab/group/index/<?= $arrGroup->getId() ?>"><span><?= $arrGroup->getGroupName() ?></span></a></div>
+        <div class="vproductprice">
+            <div class="vpull_left"><?= $arrGroup->getMemberCount() ?> members</div>
+            <div class="vpull_right">
+
+                <span id="group_join_<?= $arrGroup->getId() ?>" onclick="vpb_send_request_to_join_group ('<?= $arrGroup->getId() ?>', 'emile', 'michaelhampton', 'join');" class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;"><i class="fa fa-plus"></i> Join</span>
+
+                <span id="group_requestsent_<?= $arrGroup->getId() ?>" style="display:none;">
+                    <span class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;opacity:0.6;cursor:default;"><i class="fa fa-reply"></i> Request Sent</span>
+
+                    <span class="cbtn vpb_cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;" title="Cancel Request" onclick="vpb_send_request_to_join_group ('<?= $arrGroup->getId() ?>', 'emile', 'michaelhampton', 'cancel');"><i class="fa fa-times"></i></span>
+                </span></div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+    <br clear="all">
+<?php endforeach; ?>

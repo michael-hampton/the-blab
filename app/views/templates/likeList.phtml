@@ -1,0 +1,27 @@
+<?php
+
+if ( !empty ($arrLikes) )
+{
+
+
+
+    foreach ($arrLikes as $arrLike) {
+        echo '<div class="input-group vpb_popup_tagged_box">
+					<span class="input-group-addon vpb_popup_tagged_box_a">
+					
+					<img src="/blab/uploads/profile/' . $arrLike->getUsername () . '.jpg" class="vpb_popup_tagged_box_b" style="cursor:pointer;" border="0" align="absmiddle" onclick="window.location.href=\'/blab/index/profile?userId=' . $arrLike->getId () . '\';">
+					<div style="position:absolute; display:block; margin-top:-10px;margin-left:50px;z-index:9;text-align:right;"><i class="likeIcon_c" style="cursor:default;"></i></div>
+					
+					<span class="vpb_popup_tagged_box_c vpb_hover" title="' . $arrLike->getFirstName () . ' ' . $arrLike->getLastName () . '" onclick="window.location.href=\'/blab/index/profile?userId=' . $arrLike->getId () . '\';">' . $arrLike->getFirstName () . ' ' . $arrLike->getLastName () . '</span>
+					</span>
+					<div class=" vpb_popup_tagged_box_d">
+					
+					</div>
+					<div style="clear:both;"></div>
+				</div>';
+    }
+}
+else
+{
+    echo '<h2>There are no likes</h2>';
+}

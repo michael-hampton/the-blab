@@ -1,0 +1,30 @@
+<?php
+if ( empty ($arrFriendList) )
+{
+    
+    return;
+}
+?>
+
+<div class="ibox">
+    <div class="ibox-content">
+        <div id="contact_list">
+            <ul class="list-group clear-list">
+                <?php foreach ($arrFriendList as $objUser) { ?>
+                    <li class="list-group-item fist-item">
+                        <a href="/blab/chat/messenger?username=<?= $objUser->getUsername()?>">
+                            <span class="pull-left">
+                                <img class="img-responsive" style="width:20px; margin-right: 12px;" src="/blab/public/uploads/profile/<?= $objUser->getUsername () ?>.jpg"> </span>
+                                <?= $objUser->getFirstname () . ' ' . $objUser->getLastname () ?>
+                        </a>
+                        </a>
+
+                    </li>
+
+                <?php } ?>
+
+            </ul>
+        </div>
+        <br clear="all">
+    </div>
+</div>

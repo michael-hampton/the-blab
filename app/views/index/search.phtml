@@ -1,0 +1,69 @@
+<?php
+
+if ( !empty ($arrUsers) )
+{
+    foreach ($arrUsers as $arrUser) {
+                
+        $showRequest = !in_array ((int) $arrUser->getId (), $arrFriendIds) ? 'inline-block' : 'none';
+        $showRemove = in_array ($arrUser->getId (), $arrFriendIds) ? 'inline-block' : 'none !important';
+        
+        echo '<div class="input-group vpb_popup_fb_box">
+            
+				<div style="float:left;">
+					<div style="display:inline-block;margin-right:10px;">';
+
+        if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $arrUser->getUsername () . '.jpg') )
+        {
+            echo '<a href = "/blab/index/profile/' . $arrUser->getUsername () . '"><img title="' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '" src="/blab/public/uploads/profile/' . $arrUser->getUsername () . '.jpg"></a>';
+        }
+        else
+        {
+            echo '<a href = "/blab/index/profile/' . $arrUser->getUsername () . '"><img src="/blab/public/img/avatar.gif"></a>';
+        }
+
+
+        echo '<div class="vpb_popup_fb_box_c vpb_hover" title="' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '"><a href = "/blab/index/profile/' . $arrUser->getUsername () . '">' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '</a></div>
+					<div style="clear:both;"></div>
+				</div>
+					<div class="vpb_popup_fb_box_d"><span style="display:' . $showRequest . '" id="addfriend_' . $arrUser->getId () . '" friendid="' . $arrUser->getId () . '" class="cbtn" onclick="vpb_friend_ship (\'' . $arrUser->getId () . '\', \'' . $arrUser->getId () . '\', \'addfriend\')"><i class="fa fa-user-plus"></i> Add Friend</span>
+						
+						<span style="opacity:0.6;cursor:default;display:none;" id="requestsent_' . $arrUser->getId () . '" class="cbtn"><i class="fa fa-reply"></i> Request Sent</span>
+						
+						<span style="display:' . $showRemove . '" onclick="vpb_friend_ship (\'' . $arrUser->getId () . '\',\'' . $arrUser->getId () . '\', \'cancelrequest\')" title="Cancel Request" id="cancelrequest_' . $arrUser->getId () . '" class="cbtn vpb_cbtn"><i class="fa fa-times"></i>Cancel Request</span></div>
+					<div style="clear:both;"></div>
+                                     
+				</div>';
+    }
+}
+
+if ( !empty ($arrPages) )
+{
+    foreach ($arrPages as $arrPage) {
+
+        echo '<div class="vpb_popup_fb_box_c vpb_hover">
+            <a href = "/blab/page/index/' . $arrPage->getUrl () . '">
+
+            <img src = "' . $arrPage->getFileLocation () . '" width = "50" height = "50" border = "0">
+            <span class = "text">' . $arrPage->getName () . '</span>
+            <span class = "category">' . $arrPage->getDescription () . '</span>
+
+            </a>
+            </div>';
+    }
+}
+
+if ( !empty ($arrGroups) )
+{
+    foreach ($arrGroups as $arrGroup) {
+
+        echo '<div class="vpb_popup_fb_box_c vpb_hover">
+            <a href = "/blab/group/index/' . $arrGroup->getId () . '">
+
+            <img src = "' . $arrGroup->getImageLocation () . '" width = "50" height = "50" border = "0">
+            <span class = "text">' . $arrGroup->getGroupName () . '</span>
+            <span class = "category">' . $arrGroup->getDescription () . '</span>
+
+            </a>
+            </div>';
+    }
+}

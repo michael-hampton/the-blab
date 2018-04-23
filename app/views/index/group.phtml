@@ -1,0 +1,237 @@
+<link href="/facebook/public/css/group.css" rel="stylesheet" type="text/css">
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+
+
+
+
+        <?php
+        $totalCommentsToDisplay = 1;
+
+        $friendIds = [];
+
+        foreach ($arrFriendList as $friend) {
+            $friendIds[] = $friend->getId ();
+        }
+        ?>
+
+        <input type="hidden" id="currentGroupId" value="<?= $objGroup->getId () ?>">
+        <input type="hidden" id="currentGroupName" value="<?= $objGroup->getGroupName () ?>">
+        <input type="hidden" id="currentGroupDescription" value="<?= $objGroup->getDescription () ?>">
+        <input type="hidden" id="currentGroupImage" value="<?= $objGroup->getImageLocation () ?>">
+        <input type="hidden" id="currentPrivacy" value="public">
+
+        <div class="col-lg-3">
+            <?php
+            $this->partial ("templates/profileUpload", ["arrUser" => $objUser, "friendIds" => $friendIds]);
+
+            $this->partial (
+                    "templates/friends", [
+                "arrFriendList" => $arrFriendList,
+                    ]
+            );
+
+            $this->partial (
+                    "templates/chatList", [
+                "arrUsers" => $arrChatUsers,
+                    ]
+            );
+            ?>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="text-center m-t-md">
+                        <!-- timeline profile picture -->
+
+                        <div class="gprofilephoto_wrap">
+                            <div id="vcoverPic" style="display:block; width:100%; height:100%;">
+                                <div class="gvprofilephoto" style="background-image: url('<?= $objGroup->getImageLocation () ?>');" onclick="vpb_popup_photo_box ('michaelhampton', '1', '1', '<?= $objGroup->getImageLocation () ?>');">
+                                </div>
+                            </div>
+
+                            <div class="gvprofilephoto_editer" data-backdrop="static" data-toggle="modal" data-target="#add-group-photo">
+                                <i class="fa fa-camera"></i> Update Photo
+                            </div>
+
+                            <div class="vthe_group_dname vpb_profile_name" style="cursor:text;">
+                                <span id="p_page_name"><?= $objGroup->getGroupName () ?></span><br>
+                                <span class="vprivacy_text"><i class="fa fa-certificate"></i> <?= $objGroup->getGroupType () ?> Group</span>
+                            </div>
+                        </div>
+
+
+
+
+
+
+                        <?php
+                        if ( $objGroup->getCreatedBy () === $_SESSION['user']['user_id'] )
+                        {
+                            echo '<br><button type="button" class="btn btn-w-m btn-primary inviteFriends" groupId="' . $objGroup->getId () . '">Invite</button>';
+                        }
+                        else
+                        {
+
+                            $display1 = $blRequestSent === true ? 'block' : none;
+                            $display2 = $blRequestSent === false && $hasPermission !== true ? 'inline-block' : none;
+
+                            echo '<br><span id="groups_join_' . $objGroup->getId () . '" onclick="vpb_send_request_to_join_groups(\'' . $objGroup->getId () . '\', \'Rain52Kullamaa\', \'michaelhampton\', \'join\');" class="create_btn" style="padding:4px 10px; margin-top:13px; margin-bottom:0px; display: ' . $display2 . '"><i class="fa fa-plus"></i> Join Group</span>';
+
+                            echo '<span class="groups_requestsent" id="groups_requestsent_' . $objGroup->getId () . '" style="display: ' . $display1 . ';">
+	
+			<span class="cbtn vpb_cbtn" style="padding:3px 10px;margin:10px;margin-left:4px !important; margin-top:13px; margin-bottom:0px;" title="Cancel Request" onclick="vpb_send_request_to_join_groups(\'' . $objGroup->getId () . '\', \'Rain52Kullamaa\', \'michaelhampton\', \'cancel\');"><i class="fa fa-times"></i></span>
+			
+			<span class="create_btn" style="padding:4px 10px; margin-right:0px !important; margin-top:13px; margin-bottom:0px;opacity:0.6;cursor:default !important;"><i class="fa fa-reply"></i> Request Sent</span>
+			
+			</span>';
+
+
+                            //echo '<br><button type="button" class="btn btn-w-m btn-primary inviteFriends" groupId="'. $objGroup->getId () .'">Invite</button>';
+                        }
+                        ?>
+
+                        <div id="group_page_menu" class="group_manin_menu_wrapper">
+                            <div id="not_deleting_group" style="width:100%; display:block;">
+                                <div style="clear:both;"></div>
+                                <span id="g_discussion" class="group_menu_wrapper_active" onclick="vpb_show_status_updates ();">Discussion</span>
+                                <span id="g_members" class="group_menu_wrapper" onclick="vpb_show_group_page_members ();">Members</span>
+
+                                <span class="group_menu_wrapper" onclick="vpb_load_group_photos ('<?= $objGroup->getGroupName () ?>');">Photos</span>
+
+                                <span id="g_videos" class="group_menu_wrapper" onclick="vpb_show_group_videos ();">Videos</span>
+
+                                <span id="g_videos" class="group_menu_wrapper" onclick="vpb_shoq_report_this_group_box ('Michael hampton', 'michaelhampton', 'bluetiger_uan@yahoo.com', '<?= $objGroup->getId () ?>', '<?= $objGroup->getGroupName () ?>')">Report Group</span>             
+                                <span id="vpb_get_all_the_group_confirmation_box" class="group_menu_wrapper"></span> 
+
+                                <?php if ( $objGroup->getCreatedBy () === $_SESSION['user']['user_id'] ): ?> 
+                                    <span onclick="vpb_confirm_delete_current_group_details ('<?= $objGroup->getId () ?>', 'michaelhampton', '<?= $objGroup->getGroupName () ?>');" style="float:right !important;" class="group_menu_wrapper vasplus_tooltip_icons" original-title="Delete this Group"><i class="fa fa-remove v_edit_group_details"></i></span>
+                                    <span onclick="vpb_set_current_group_details (<?= $objGroup->getId () ?>);" style="float:right !important;border-left: 1px solid #e5e5e5;" class="group_menu_wrapper vasplus_tooltip_icons" original-title="Edit Group Details"><i class="fa fa-pencil-square v_edit_group_details"></i></span>
+                                <?php endif; ?>
+
+                            </div>
+                            <div style="clear:both;"></div>
+
+
+                        </div>
+
+
+
+
+                        <div class="uploadedImage">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="vasplus_wall_status_updates" style="width:100%;">
+                <?php if ( $hasPermission === true || $objGroup->getCreatedBy () === $_SESSION['user']['user_id'] ): ?>
+
+                    <?php $this->partial ("templates/postBox", ["form" => "groupcommentform"]); ?>
+
+                    <div class="row">
+                        <?php //$this->partial ("templates/sortingBox");  ?>
+                    </div>
+
+                <?php endif; ?>
+
+                <div id="posts-list" style="margin-top: 20px;">
+                    <?php
+                    $this->partial (
+                            "templates/posts", [
+                        "arrPosts" => $arrPosts,
+                        "totalCommentsToDisplay" => $totalCommentsToDisplay
+                            ]
+                    );
+                    ?>
+                </div>
+            </div>
+
+            <span id="deleting_group"></span>
+
+            <!-- Display this Page Group Videos Starts -->
+            <div class="vmiddle_other" id="vasplus_group_page_videos">
+                <div class="vmiddle_other_title vprofile_o_title">
+                    <div style="float:left;">Videos · <span class="vtotals">0</span></div>
+                    <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                        <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+
+
+                <div id="vpb_get_all_the_groups_videos"><div style="padding:10px;" title="Loading..." class="btn_loading">Loading<span class="dots"><span>.</span><span>.</span><span>.</span></span></div></div>
+
+            </div>
+
+            <!-- Display this Page Group Photos Starts -->
+            <div class="vmiddle_other" id="vasplus_group_page_photos">
+                <div class="vmiddle_other_title vprofile_o_title">
+                    <div style="float:left;">Photos · <span class="vtotals"><?= count($arrPhotos) ?></span></div>
+                    <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                        <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+
+
+                <div id="vpb_get_all_the_groups_photos">
+                    <div class="lightBoxGallery">
+                        <?php
+                        foreach ($arrPhotos as $key => $arrPhoto) {
+                            
+                            if($key === 0) {
+                                $id = $arrPhoto->getId();
+                            }
+                            
+                             echo '<input type="hidden" id="hidden_photo_link_' .$id . '_' . ($key + 1) . '" value="' . $arrPhoto->getFileLocation () . '">';
+                            
+                            echo '<a href="#"  onclick="vpb_popup_photo_box(\'' . $arrPhoto->getId () . '\', \'' . count ($arrPhotos) . '\', \'' . ($key + 1) . '\', \'' . $arrPhoto->getFileLocation () . '\');" title="Image from Unsplash" data-gallery=""><img src="' . $arrPhoto->getFileLocation () . '"></a>';
+                        }
+                        ?>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- Display this Page Group Photos Ends -->
+
+
+
+
+
+
+        </div>
+
+        <div class="col-lg-3">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div id="vpb_get_all_the_users_groups">
+
+                    </div>
+                    <br clear="all">
+                </div>
+            </div>
+
+        </div>
+
+        <script src="/facebook/public/js/geocomplete.js"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1COtE7cJxfGxNWiTjEgtSNhbvDBCiiqQ&libraries=places"></script>
+        <script src="/facebook/public/js/geocomplete.js"></script>
+        <script src="/facebook/public/js/newsFeed.js"></script>
+        <script src="/facebook/public/js/group.js" type="text/javascript"></script>
+
+        <script>
+
+                            var groupId = <?= $_GET['groupId'] ?>;
+                            var groupName = '<?= $objGroup->getGroupName () ?>';
+                            var selectedImageType = "group";
+                            var selectedImageId = groupId;
+
+        </script>
+    </div>
+</div>

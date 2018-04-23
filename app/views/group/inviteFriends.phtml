@@ -1,0 +1,37 @@
+<?php
+
+echo '<div class="full-height-scroll" style="overflow: auto; width: auto; height: 400px; margin-top: 20px;
+           float: left;
+           width: 100%;
+           }">
+
+
+    <ul class="list-group clear-list">';
+
+foreach ($arrAllUsers as $objUser) {
+
+    echo '<li class="list-group-item fist-item" style="border-bottom: 1px dotted #EEE;">';
+
+
+    echo '<img style="width:50px; margin-right:10px;" src="/blab/public/uploads/profile/' . $objUser->getUsername () . '.jpg">';
+
+    echo $objUser->getFirstName () . ' ' . $objUser->getLastName ();
+
+    if ( in_array ($objUser->getId (), $arrAllMembers) )
+    {
+        echo '<button type="button" userid="' . $objUser->getId () . '" groupid="' . $id . '" class="btn btn-danger btn-sm removeMember">Remove Member</button>';
+    }
+    elseif ( in_array ($objUser->getId (), $arrAllRequests) )
+    {
+        echo '<button type="button" groupid="' . $id . '" class="btn btn-sm btn-success">Accept Request</button>';
+    }
+    else
+    {
+        echo '<button type="button" groupId="' . $id . '" class="btn btn-primary btn-sm joinGroup" userId="' . $objUser->getId () . '">Add Member</button>';
+    }
+
+    echo '</li>';
+}
+
+echo '</div>';
+echo '</ul>';

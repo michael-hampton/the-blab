@@ -1,0 +1,79 @@
+<div class="modal-dialog">
+    <div class="modal-content animated flipInY">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Create Group</h5>
+
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal" name="groupForm" id="eventForm">
+                    <div class="form-group">
+                        <label class="col-lg-4 control-label">Group Name</label>
+
+                        <div class="col-lg-8">
+                            <input type="text" placeholder="Group Name" id="groupName" name="groupName" class="form-control"> 
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-4 control-label">Group Description</label>
+
+                        <div class="col-lg-8">
+                            <input type="text" placeholder="Group Description" id="groupDescription" name="groupDescription" class="form-control"> 
+                        </div>
+                    </div>
+
+                    <div style="height: 250px; overflow-y: auto;">
+                        <ul class="list-group clear-list">
+
+                            <?php foreach ($arrFriendList as $friend): ?>
+
+                                <li class="list-group-item fist-item">
+                                    <?= $friend->getFirstName () . ' ' . $friend->getLastName () ?>
+                                    <input class="checkbox-primary group-checkbox" type="checkbox" value="<?= $friend->getId () ?>">
+                                </li>
+
+                            <?php endforeach; ?>
+                        </ul>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-lg-offset-2 col-lg-10">
+                            <button class="btn btn-sm btn-primary saveGroup" type="submit">Create</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $ (".saveGroup").off ();
+    $ (".saveGroup").on ("click", function ()
+    {
+        var groupIds = $ (".group-checkbox:checked").map (function ()
+        {
+            return $ (this).val ();
+        }).get ();
+
+        var arrData = {
+            groupName: $ ("#groupName").val (),
+            groupDescription: $ ("#groupDescription").val (),
+            groupIds: groupIds
+        };
+
+        $.ajax ({
+            url: '/blab/group/saveGroup',
+            type: 'POST',
+            data: arrData,
+            success: function (response)
+            {
+                formatResponse (response, 'The group was created successfuly');
+            }
+        });
+
+        return false;
+    });
+</script>

@@ -1,0 +1,17 @@
+[2018-04-16 20:30:54.702014] [info] SELECT * FROM users WHERE uid = :userId
+[2018-04-16 20:30:54.714539] [info] SELECT * FROM user_settings WHERE user_id = :userId
+[2018-04-16 20:30:54.715043] [info] SELECT * FROM user_settings WHERE user_id = :userId
+[2018-04-16 20:30:54.810745] [info] INSERT INTO user_settings (user_id, feed_groups, feed_events, feed_pages, visible_groups, visible_birthday, visible_email, visible_telephone, visible_likes, visible_pages, visible_events, notification_pages, notification_groups, notification_events) VALUES (:user_id, :feed_groups, :feed_events, :feed_pages, :visible_groups, :visible_birthday, :visible_email, :visible_telephone, :visible_likes, :visible_pages, :visible_events, :notification_pages, :notification_groups, :notification_events);
+[2018-04-16 20:30:54.810893] [info] {":user_id":1,":feed_groups":"yes",":feed_events":"yes",":feed_pages":"yes",":visible_groups":"private",":visible_birthday":"private",":visible_email":"private",":visible_telephone":"private",":visible_likes":"private",":visible_pages":"private",":visible_events":"private",":notification_pages":"yes",":notification_groups":"yes",":notification_events":"yes"}
+[2018-04-16 20:32:46.234905] [info] SELECT * FROM users WHERE uid = :userId
+[2018-04-16 20:32:46.246925] [info] SELECT * FROM user_settings WHERE user_id = :userId
+[2018-04-16 20:35:27.191644] [info] SELECT * FROM users WHERE uid = :userId
+[2018-04-16 20:35:27.202713] [info] SELECT * FROM user_settings WHERE user_id = :userId
+[2018-04-16 20:36:14.777259] [info] SELECT * FROM users WHERE uid = :userId
+[2018-04-16 20:36:14.789091] [info] SELECT * FROM user_settings WHERE user_id = :userId
+[2018-04-16 20:41:50.229240] [info] SELECT * FROM users WHERE uid = :userId
+[2018-04-16 20:41:50.239201] [info] SELECT * FROM user_settings WHERE user_id = :userId
+[2018-04-16 20:42:17.459125] [info] SELECT * FROM users WHERE uid = :userId
+[2018-04-16 20:42:17.475090] [info] SELECT * FROM user_settings WHERE user_id = :userId
+[2018-04-16 20:42:29.231972] [info] SELECT * FROM users WHERE uid = :userId
+[2018-04-16 20:42:29.242650] [info] SELECT * FROM user_settings WHERE user_id = :userId

@@ -1,0 +1,41 @@
+<div class="ibox">
+    <div class="vprofile_o_title" style="padding:0px;">
+        <div style="float:left; padding:10px;">
+            <i class="fa fa-camera v_the_iconed"></i> Photos
+        </div> 
+    </div>
+
+
+    <div class="ibox-content" style="padding:0px;">
+        <div style="padding-left: 26px;">
+
+            <?php
+            if ( !isset ($arrPhotos) || empty ($arrPhotos) )
+            {
+                echo '<h2>There are no photos</h2>';
+            }
+            else
+            {
+                foreach ($arrPhotos as $key => $arrPhoto) {
+
+                    if ( $key === 0 )
+                    {
+                        $photoId = $arrPhoto->getId ();
+                    }
+
+                    echo '<input type="hidden" id="hidden_photo_link_' . $photoId . '_' . ($key + 1) . '" value="' . $arrPhoto->getFileLocation () . '">';
+
+                    echo '<div class="vfriendsPhoto_wraper">
+					<a onclick="vpb_popup_photo_box(\'' . $photoId . '\', \'' . count ($arrPhotos) . '\', \'' . ($key + 1) . '\', \'' . $arrPhoto->getFileLocation () . '\');">
+					<img src="' . $arrPhoto->getFileLocation () . '">
+					</a> 
+					 </div>';
+
+                    //echo '<a href="' . $arrPhoto->getFileLocation () . '" title="Image from Unsplash" data-gallery=""><img src="' . $arrPhoto->getFileLocation () . '"></a>';
+                }
+            }
+            ?>
+
+        </div>
+    </div>
+</div>
