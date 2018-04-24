@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>app/views/index/getUserDetails.phtml</url>
+            <bookmark id="1">
+                <name/>
+                <line>579</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/xampp/htdocs/blab/public/js/chatModal.js</file>
+            <file>file:/C:/xampp/htdocs/blab/app/views/index/chat.phtml</file>
+            <file>file:/C:/xampp/htdocs/blab/app/models/PostAction.php</file>
+            <file>file:/C:/xampp/htdocs/blab/app/views/chat/searchChatUsers.phtml</file>
+            <file>file:/C:/xampp/htdocs/blab/app/controllers/ChatController.php</file>
+            <file>file:/C:/xampp/htdocs/blab/app/views/index.phtml</file>
+            <file>file:/C:/xampp/htdocs/blab/app/views/chat/messenger.phtml</file>
+            <file>file:/C:/xampp/htdocs/blab/app/views/templates/posts.phtml</file>
+            <file>file:/C:/xampp/htdocs/blab/app/controllers/LikeController.php</file>
+            <file>file:/C:/xampp/htdocs/blab/app/views/chat/chat.phtml</file>
+            <file>file:/C:/xampp/htdocs/blab/app/views/templates/templateFunctions.php</file>
+            <file>file:/C:/xampp/htdocs/blab/app/controllers/ReplyController.php</file>
+            <file>file:/C:/xampp/htdocs/blab/app/controllers/IndexController.php</file>
+            <file>file:/C:/xampp/htdocs/blab/app/controllers/ProductController.php</file>
+            <file>file:/C:/xampp/htdocs/blab/public/js/chat.js</file>
+            <file>file:/C:/xampp/htdocs/blab/public/js/newsFeed.js</file>
+            <file>file:/C:/xampp/htdocs/blab/app/models/chat/MessageFactory.php</file>
+        </group>
+    </open-files>
+</project-private>

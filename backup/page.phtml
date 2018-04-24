@@ -1,0 +1,397 @@
+<?php
+$totalCommentsToDisplay = 1;
+?>
+
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="text-center m-t-md">
+                <h2><?= $objPage->getName () ?></h2>
+                <!-- timeline profile picture -->
+                <a href="#" id="timelineProfilePic">
+                    <img class="currentImage" src="<?= $objPage->getFileLocation () ?>">
+                    <br>Click to upload
+
+                </a>
+
+                <div style="display:none;">
+                    <form id="groupImage" method="post" enctype="multipart/form-data">
+                        <div class="uploadFile2">
+                            <input type="file" class="custom-file-upload" name="userImage" id="profileimgaa">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="uploadedImage">
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="vasplus_wall_status_updates">
+        <div class="ibox">
+            <div class="ibox-content">
+                <div id="status">Loading.............</div>
+                <div id="map"></div>
+
+                <ul class="list-group clear-list">
+                    <li class="list-group-item fist-item">
+                        <?= $objPage->getAddress () . " " . $objPage->getPostcode () ?>
+                    </li>
+                    <li class="list-group-item">
+                        <?= $objPage->getTelephoneNo () ?>
+                    </li>
+                    <li class="list-group-item">
+                        <?= $objPage->getWebsiteUrl () ?>
+                    </li>
+                    <li class="list-group-item">
+                        <?= $objPage->getDescription () ?>
+                    </li>
+                    <!--                        <li class="list-group-item">
+                                                Write a letter to Sandra
+                                            </li>-->
+                </ul>
+
+            </div>
+        </div>
+
+
+        <div class="row m-b-lg m-t-lg">
+
+            <?php if ( $_SESSION['user']['user_id'] === $objPage->getUserId () ): ?>
+
+                <?php $this->partial ("templates/postBox", ["form" => "groupcommentform"]); ?>
+
+                <div class="row">
+                    <?php //$this->partial ("templates/sortingBox");  ?>
+                </div>
+
+            <?php endif; ?>
+
+
+            <div class="row">
+
+            </div>
+
+        </div>
+        <div class="row">
+
+            <div class="col-lg-3">
+
+
+
+
+            </div>
+
+            <div id="posts-list" class="col-lg-9">
+
+                <?php
+                $this->partial (
+                        "templates/posts", [
+                    "arrPosts" => $arrPosts,
+                    "totalCommentsToDisplay" => $totalCommentsToDisplay
+                        ]
+                );
+                ?>
+
+
+
+            </div>
+
+            
+        </div>
+    </div>
+
+
+</div>
+
+
+<script src="/blab/public/js/geocomplete.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1COtE7cJxfGxNWiTjEgtSNhbvDBCiiqQ&libraries=places"></script>
+<script src="/blab/public/js/geocomplete.js"></script>
+<script src="/blab/public/js/newsFeed.js"></script>
+
+<script>
+
+    var lat = '<?= $lat ?>';
+    var lng = '<?= $lng ?>';
+
+
+    var groupId = '<?= $url ?>';
+    var groupName = '<?= $objPage->getName () ?>';
+
+    var selectedImageType = "page";
+    var selectedImageId = groupId;
+
+    success (lat, lng);
+
+    function success (lat, lng)
+    {
+        var s = document.querySelector ('#status');
+        if (s.className == 'success')
+        {
+            return;
+        }
+        s.className = 'Success';
+        var mapcanvas = document.createElement ('div');
+        mapcanvas.id = 'mapcanvas';
+        mapcanvas.style.height = '100%';
+        mapcanvas.style.width = '100%';
+        document.querySelector ('#map').appendChild (mapcanvas);
+        var latlng = new google.maps.LatLng (lat, lng);
+        var myOptions = {
+            zoom: 15,
+            center: latlng,
+            mapTypeControl: false,
+            navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map (document.getElementById ("mapcanvas"), myOptions);
+        var marker = new google.maps.Marker ({
+            position: latlng,
+            map: map,
+            title: "You are here!"
+        });
+//            $.cookie ("MyLat", position.coords.latitude); // Storing latitude value
+//            $.cookie ("MyLon", position.coords.longitude); // Storing longitude value
+    }
+
+    function error (msg)
+    {
+        var s = document.querySelector ('#status');
+        s.innerHTML = typeof msg == 'string' ? msg : "failed";
+        s.className = 'Fail';
+    }
+
+//        if (navigator.geolocation)
+//        {
+//            navigator.geolocation.getCurrentPosition (success, error);
+//        }
+//        else
+//        {
+//            error ('Not supported'); //HTML Support
+//        }
+
+    function readURL (input)
+    {
+        if (input.files && input.files[0])
+        {
+            var reader = new FileReader ();
+
+            reader.onload = function (e)
+            {
+                $ ('.uploadedImage').append ('<img src="' + e.target.result + '">');
+
+            };
+
+            reader.readAsDataURL (input.files[0]);
+            $ (".currentImage").remove ();
+            $ ("#groupImage").submit ();
+        }
+    }
+
+    //Jquery Code 
+    $ (document).ready (function ()
+    {
+//        $ ("#check").click (function ()
+//        {
+//            var lat = $.cookie ("MyLat");
+//            var lon = $.cookie ("MyLon");
+//            alert ('Latitued: ' + lat);
+//            alert ('Longitude: ' + lon);
+//            var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lon + "&sensor=false";
+//            alert ('Google Map API: ' + url);
+//            //Get Json Request Here
+//        });
+        $ (document).off ("click", "#timelineProfilePic");
+        $ (document).on ('click', '#timelineProfilePic', function ()
+        {
+            $ ("#profileimgaa").click ();
+
+        });
+
+        $ (document).off ("change", "#profileimgaa");
+        $ (document).on ('change', '#profileimgaa', function ()
+        {
+
+            readURL (this);
+        });
+
+        $ (document).off ("submit", "#groupImage");
+        $ (document).on ('submit', '#groupImage', function ()
+        {
+            //stop submit the form, we will post it manually.
+            event.preventDefault ();
+            // Get form
+            var form = $ ('#groupImage')[0];
+            // Create an FormData object
+            var data = new FormData (form);
+            data.append ("groupId", groupId);
+            data.append ("groupName", groupName);
+
+            alert ("OK");
+
+            // If you want to add an extra field for the FormData
+            // disabled the submit button
+            $.ajax ({
+                type: "POST",
+                enctype: 'multipart/form-data',
+                url: "/blab/page/updatePageImage",
+                data: data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (response)
+                {
+
+                    formatResponse (response, 'The image was saved successfully.');
+                    return false;
+                },
+                error: function (e)
+                {
+
+
+                }
+            });
+
+            return false;
+        });
+
+    });
+
+    function handleGroupSubmit ()
+    {
+        alert ("1");
+
+        var mentions = $ ('.mentions').mentionsInput ('getMentions');
+
+        var blkstr = [];
+        $.each (mentions, function (idx2, val2)
+        {
+
+            blkstr.push (val2.uid);
+        });
+
+        var tags = blkstr.join (", ");
+
+        var form = $ (this);
+        if (form.find ('#comment').val () === "")
+        {
+            showErrorMessage ("You must enter a comment");
+            return false;
+        }
+
+        var data = {
+            "comment": form.find ('#comment').val (),
+            "pageUrl": groupId,
+            tags: tags
+        };
+        postGroupComment (data);
+        return false;
+    }
+
+    function postGroupComment (data)
+    {
+        alert ("Yes");
+
+        // send the data to the server
+        $.ajax ({
+            type: 'POST',
+            url: '/blab/page/postPageComment',
+            data: data,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: postGroupSuccess,
+            error: postGroupError
+        });
+    }
+
+    function postGroupSuccess (data, textStatus, jqXHR)
+    {
+        $ ('#groupcommentform').get (0).reset ();
+        displayGroupComment (data);
+        load_unseen_notification ();
+        return false;
+    }
+
+    function postGroupError (jqXHR, textStatus, errorThrown)
+    {
+        // display error
+        showErrorMessage (errorThrown);
+    }
+
+    function displayGroupComment (data)
+    {
+        var commentHtml = createComment (data);
+        var commentEl = $ (commentHtml);
+        commentEl.hide ();
+        var postsList = $ ('#posts-list');
+        postsList.addClass ('has-comments');
+        postsList.prepend (commentEl);
+        commentEl.slideDown ();
+    }
+
+    function createGroupComment (data)
+    {
+        var data = $.parseJSON (data);
+
+        var html = '<div class="social-feed-box">' +
+                '<div class="pull-right social-action dropdown">' +
+                '<button data-toggle="dropdown" class="dropdown-toggle btn-white">' +
+                '<i class="fa fa-angle-down"></i>' +
+                '</button>' +
+                '<ul class="dropdown-menu m-t-xs">' +
+                '<li><a href="#">Config</a></li>' +
+                '</ul>' +
+                '</div>' +
+                '<div class="social-avatar">' +
+                '<a href="" class="pull-left">' +
+                '<img alt="image" src="/blab/public/uploads/profile/' + data.username + '.jpg">' +
+                '</a>' +
+                '<div class="media-body">' +
+                '<a href="#">' +
+                data.author +
+                '</a>' +
+                '<small date="' + data.date_added + '" class="text-muted timeAgo">' + timeSince (data.date_added) + '</small>' +
+                '</div>' +
+                '</div>' +
+                '<div class="social-body">' +
+                '<p>' +
+                data.comment +
+                '</p>' +
+                '<div class="btn-group">' +
+                '<button id="' + data.id + '" class="btn btn-white btn-xs like post"><i class="fa fa-thumbs-up"></i> Like this!</button>' +
+                '<br><a href="#" class="showLikes" type="post">Liked by Mike</a>' +
+                '<button class="btn btn-white btn-xs"><i class="fa fa-comments"></i> Comment</button>' +
+                '<button class="btn btn-white btn-xs Share" messageid="' + data.id + '"><i class="fa fa-share"></i> Share</button>' +
+                '</div>' +
+                '</div>' +
+                '<div class="social-footer" id="' + data.id + '">' +
+                '<div class="social-comment">' +
+                '<a href="" class="pull-left">' +
+                '<img alt="image" src="/blab/public/img/a3.jpg">' +
+                '</a>' +
+                '<div class="media-body">' +
+                '<textarea comment-id="' + data.id + '" class="form-control reply-comment" placeholder="Write comment..."></textarea>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+        return html;
+    }
+
+    $ (document).ready (function ()
+    {
+        $ ('#groupcommentform').submit (handleGroupSubmit);
+    });
+
+
+
+
+
+
+</script>
