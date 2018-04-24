@@ -184,35 +184,35 @@ function buildReactions ($arrComment)
 
     if ( $wowCount > 0 )
     {
-        $likeStr .= '<span class="vpb_d_like_status" onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Wow\');">							
+        $likeStr .= '<span id="' . $arrComment->getId () . '" class="showLikes vpb_d_like_status" type="reaction" reactiontype="wow">							
             <i class="wowIcon_c"></i> <span class="vpb_WowStatus like_text">Wow(' . $wowCount . ')</span>						
             </span>';
     }
 
     if ( $angryCount > 0 )
     {
-        $likeStr .= '<span class="vpb_d_like_status" onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Angry\');">							
+        $likeStr .= '<span id="' . $arrComment->getId () . '" class="showLikes vpb_d_like_status" type="reaction" reactiontype="angry">							
             <i class="angryIcon_c"></i> <span class="vpb_AngryStatus like_text">Angry(' . $angryCount . ')</span>						
             </span>';
     }
 
     if ( $sadCount > 0 )
     {
-        $likeStr .= '<span class="vpb_d_like_status" onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Sad\');">							
+        $likeStr .= '<span id="' . $arrComment->getId () . '" class="showLikes vpb_d_like_status" type="reaction" reactiontype="sad">							
             <i class="sadIcon_c"></i> <span class="vpb_SadStatus like_text">Sad(' . $sadCount . ')</span>						
             </span>';
     }
 
     if ( $hahaCount > 0 )
     {
-        $likeStr .= '<span class="vpb_d_like_status" onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Haha\');">							
+        $likeStr .= '<span id="' . $arrComment->getId () . '" class="showLikes vpb_d_like_status" type="reaction" reactiontype="haha">							
             <i class="hahaIcon_c"></i> <span class="vpb_HahaStatus like_text">Haha(' . $hahaCount . ')</span>						
             </span>';
     }
 
     if ( $loveCount > 0 )
     {
-        $likeStr .= '<span class="vpb_d_like_status" onclick="vpb_like_box(\'michaelhampton\', \'' . $arrComment->getId () . '\', \'Love\');">							
+        $likeStr .= '<span id="' . $arrComment->getId () . '" class="showLikes vpb_d_like_status" type="reaction" reactiontype="love">							
             <i class="loveIcon_c"></i> <span class="vpb_LoveStatus like_text">Love(' . $loveCount . ')</span>						
             </span>';
     }

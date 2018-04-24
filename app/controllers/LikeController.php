@@ -52,16 +52,16 @@ class LikeController extends ControllerBase
             if ( (int) $objPost->getUserId () !== (int) $objUser->getId () )
             {
                 try {
-                    $subject = $objUser->getFirstName() . ' ' . $objUser->getLastName() . ' liked your post';
-                    $message = 'Post: ' . $objPost->getMessage();
+                    $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' liked your post';
+                    $message = 'Post: ' . $objPost->getMessage ();
                     $objNotification = new NotificationFactory();
-                    $objOwner = new User($objPost->getUserId());
-                    $objEmail = new EmailNotification($objOwner, $subject, $message);
-                    $objEmail->sendEmail();
-                    $objNotification->createNotification($objOwner, $subject);
+                    $objOwner = new User ($objPost->getUserId ());
+                    $objEmail = new EmailNotification ($objOwner, $subject, $message);
+                    $objEmail->sendEmail ();
+                    $objNotification->createNotification ($objOwner, $subject);
                 } catch (Exception $ex) {
-                    trigger_error($ex->getMessage(), E_USER_WARNING);
-                    $this->ajaxresponse("error", $this->defaultErrrorMessage);
+                    trigger_error ($ex->getMessage (), E_USER_WARNING);
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
                 }
             }
 
@@ -99,16 +99,25 @@ class LikeController extends ControllerBase
 
         $id = $_POST['id'];
 
-        if ( $_POST['type'] == "post" )
-        {
-            $objPost = new Post ($id);
-            $arrLikes = $objPostAction->getLikeListForPost ($objPost);
-        }
-        else
-        {
-            $objComment = new Comment ($id);
+        switch (trim ($_POST['type'])) {
+            case "post":
+                $objPost = new Post ($id);
+                $arrLikes = $objPostAction->getLikeListForPost ($objPost);
+                break;
 
-            $arrLikes = $objPostAction->getLikeListForComment ($objComment);
+            case "reaction":
+                if ( empty ($_POST['reactionType']) )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+                die ("Yes");
+                break;
+
+            default:
+                $objComment = new Comment ($id);
+
+                $arrLikes = $objPostAction->getLikeListForComment ($objComment);
+                break;
         }
 
         if ( $arrLikes === false )
@@ -212,6 +221,51 @@ class LikeController extends ControllerBase
         }
 
         $this->view->arrLikes = $arrLikes;
+    }
+
+    public function reactionAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['post_id']) || empty ($_POST['type']) || empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+
+            $objFactory = new PostAction();
+            $objPost = new Post ($_POST['post_id']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( strtolower (trim ($_POST['type'])) === "like" )
+        {
+            $blResponse = $objFactory->likePost ($objPost, $objUser);
+
+            if ( $blResponse === false )
+            {
+                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            }
+
+            $count = $objFactory->getLikesForPost ($objPost);
+
+            $this->ajaxresponse ("sucess", "SUCCESS", ["count" => $count]);
+        }
+
+        $blResult = $objFactory->add ($_POST['type'], $objUser, $objPost);
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $count = $objFactory->getReactionCounts ($_POST['type'], $objPost);
+
+        $this->ajaxresponse ("sucess", "SUCCESS", ["count" => $count]);
     }
 
 }
