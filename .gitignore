@@ -1,0 +1,7 @@
+public/uploads/*
+app/logs/*
+app/private/*
+app/config/config.php
+backup/*
+uploads/*
+public/js/*
