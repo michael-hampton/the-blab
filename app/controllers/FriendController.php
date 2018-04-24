@@ -307,7 +307,7 @@ class FriendController extends ControllerBase
         $this->ajaxresponse ("success", "success");
     }
 
-    public function pollFriendListAction ($userId)
+    public function pollFriendListAction ()
     {
         $this->view->disable ();
 

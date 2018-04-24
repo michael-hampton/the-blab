@@ -869,7 +869,7 @@ class IndexController extends ControllerBase
     public function uploadAction ()
     {
         $this->view->disable ();
-        
+
         if ( !isset ($_POST['uploadComment']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -938,10 +938,16 @@ class IndexController extends ControllerBase
 
                 $objNewUser = new User ($taggedUser);
 
+                $blTagResult = (new TagUserFactory())->createTagForPost ($objNewUser, $objPost);
+
+                if ( $blTagResult === false )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
                 $blResult = $objNotification->createNotification ($objNewUser, $message);
 
-                $blResult2 = (new TagUserFactory())->createTagForPost ($objNewUser, $objPost);
-                $objEmail = new EmailNotification ($objNewUser, $message, $_POST['comment']);
+                $objEmail = new EmailNotification ($objNewUser, $message, $comment);
                 $objEmail->sendEmail ();
             }
 
