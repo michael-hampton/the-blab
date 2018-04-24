@@ -21,23 +21,19 @@
 
         <div class="row border-bottom white-bg">
             <nav class="navbar navbar-static-top" role="navigation" style="background-color: #60a83a">
-                <div class="navbar-header">
-                    <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
-                        <i class="fa fa-reorder"></i>
-                        Toggle Menu
-                    </button>
 
-                    <img class="img-responsive pull-right" style="margin-top:14px; margin-right: 14px;" src="\blab\public\img\flags\32/Philippines.png">
+<!--                <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>-->
 
-                    <a style="color:#FFF;" href="#" class="navbar-brand">The Blab
-                        <br> Philippines
-                    </a>
-                </div>
-                <div class="navbar-collapse collapse" id="navbar">
-                    <div class="col-lg-4">
+                <img class="img-responsive pull-left" style="margin-top:14px; margin-left: 14px;" src="\blab\public\img\flags\32/Philippines.png">
 
+                <a style="color:#FFF;" href="#" class="navbar-brand">The Blab
+                    <br> Philippines
+                </a>
+
+                <div class="navbar-header col-lg-5">
+
+                    <div>
                         <h2 class="vpb_profile_search_box">
-
                             <div class="input-group">
 
                                 <input type="text" class="form-control form-control-plus" name="vfrnd_data" id="vfrnd_data" value="" placeholder="Search..." autocomplete="off" onclick="vpb_show_previous_search_results ();vpb_show_status_updates ();">
@@ -55,165 +51,144 @@
 
                                 </div>
 
-
-                            </div>    
-
-                        </h2>
-
-                        <!--                        <div class="vasplus_pb_Search pull-left col-lg-12" style="margin-top:20px;">
-                                                    <form>
-                                                        <input style="border-radius: 8px; border: 1px solid #CCC" type="text" name="vpv_search_box" class="form-control" id="vpv_search_box" placeholder="Search for people or pages">
-                                                        <a href="javascript:void(0);" id="vpv_search_button" onclick="vpb_auto_search_people_and_pages ();"></a>
-                                                    </form>
-                                                    <div class="vpb_search_results" style="display: block;">
-                                                        <ul>
-                                                            <div id="response_brought">  </div>
-                                                        </ul>
-                                                    </div>
-                                                </div>-->
-                    </div>
-
-
-                    <ul class="nav navbar-nav">
-
-                        <li class="user-d-s">
-                            <a style="color:#FFF;" href="/blab/index/profile/<?= $_SESSION['user']['username'] ?>" id="o_p_page_first_name" title="<?= $_SESSION['user']['username'] ?>">
-                                <div class="vpb_profile_picture_icon_wrapper">
-                                    <span id="vp_profile_photo">
-
-                                        <?php
-                                        if ( file_exists ($rootPath . '/blab/uploads/profile/' . $_SESSION['user']['username'] . '.jpg') )
-                                        {
-                                            echo '<img src="/blab/uploads/profile/' . $_SESSION['user']['username'] . '.jpg" border="0" width="30" height="26" align="absmiddle">';
-                                        }
-                                        else
-                                        {
-                                            echo '<img src="/blab/public/img/avatr.gif" border="0" width="30" height="26" align="absmiddle">';
-                                        }
-                                        ?>
-
-                                        <span id="p_page_first_name"><?= $_SESSION['user']['username'] ?></span>
-                                        <div style="clear:both;"></div>
-                                </div>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a herd='/blab/index' style="color:#FFF;"> News Feed</a>
-                        </li>
-
-
-
-                    </ul>
-
-                    <ul class="nav navbar-nav col-lg-3">
-                        <li class="dropdown">
-                            <a  style="color:#FFF;" href="#" class="dropdown-toggle count-info" data-toggle="dropdown"><i style="font-size: 18px;" class="fa fa-bell"></i><span class="label label-warning count"></span></a>
-                            <ul class="dropdown-menu2"></ul>
-                        </li>
-
-                        <li style='margin-left:20px;' class="dropdown dropdown-toggle count-info" id="friendRequests">
-                            <i  style="color:#FFF;" style="font-size: 18px;" class="fa fa-users"></i>
-                            <span id="counter" class="label label-primary"></span>
-                            <div id="friendRequests_bar" style="border-radius: 0px; border-top: 1px solid rgb(225, 225, 225); font-size: 13px !important; font-family: arial !important; min-width: 460px !important; max-width: 460px !important; width: 100% !important;">
-                                <div style="border-bottom: 1px solid #E5E5E5;
-                                     font-weight: bold;
-                                     padding-left: 10px !important;
-                                     padding-bottom: 5px;
-                                     font-family: arial !important;
-                                     font-size: 13px !important;
-                                     word-spacing: normal !important;
-                                     white-space: normal !important;
-                                     letter-spacing: normal !important;
-                                     padding: 3px 20px;
-                                     line-height: 1.42857143;
-                                     color: #777;">
-                                    <div style="float:left;">Friend Requests</div>
-                                    <div style="float:right; font-weight:normal !important; font-size:13px !important;">
-                                        <span class="vpb_hover_b" onclick="vpb_show_find_new_friends_box ('michaelhampton');">Find Friend</span>
-                                    </div>
-
-                                    <div style="clear:both;"></div>
-
-                                </div>
-
-                                <div id="midContent" style="height:250px; overflow: auto;   
-                                     min-width: 100%;
-                                     width: 100%;
-                                     max-height: 400px !important;
-                                     display: block;
-                                     padding: 10px;">
-
-                                </div>
-                                <div id="friendRequests_bar_footer"><a href="#">See All</a></div>
                             </div>
-                        </li>
-
-                        <li class="vp_ul_wrap"><a style="text-decoration:none !important;" class="dropdown open">
-
-                                <i style="font-size: 18px;" class="fa fa-cog vpb_notifications_icon vasplus_tooltip_menu" id="v_site_menu" onclick="vpb_show_site_menu ();" original-title="Menu"></i>
-                            </a><ul id="v_site_menu_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="min-width: 150px; right: 6px; left: auto; font-size: 13px !important; font-family: arial !important; display: none;" aria-labelledby="v_site_menu"><a style="margin-top:4px;text-decoration:none !important;" class="dropdown open">
-
-                                    <li class="dropdown-header" style="cursor:default;">Site Menu</li>
-
-                                </a>
-                                <li>
-                                    <a style="text-decoration:none !important;" class="dropdown open"></a>
-                                    <a href="/blab/terms/settings" onclick="vpb_show_about_page_owner_details ('edit');">
-                                        <i class="fa fa-cog"></i> Settings</a>
-                                </li>
-
-                                <li><a href="/blab/terms/index"><i class="fa fa-envelope-o"></i> Terms and Policies</a></li>
-
-                                <li><a href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Messages</a></li>
-
-                                <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#update-password" onclick="vpb_hide_profile_popups ();"><i class="fa fa-edit"></i> Reset Password</a></li>
-
-
-                                <li role="separator" class="divider"></li>
-                                <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#logout-confirmation" onclick="vpb_hide_profile_popups ();"><i class="fa fa-power-off"></i> Logout</a></li>
-                            </ul>      
-                        </li>
-
-                        <li style="list-style: none;">
-                            <a style="text-decoration:none !important;" class="dropdown open">
-                                <i id="v_new_messages"  class="fa fa-envelope  vpb_notifications_icon vasplus_tooltip_notify" onclick="vpb_show_message_menu ();"></i>
-                            </a>
-
-                            <span id="message_counter" class="vpb_notifyCounter" style="display:none;"><span id="totalMessages">0</span></span>
-
-                            <ul id="v_message_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="right: 200px; left: auto; border-radius:0px; border-top:1px solid #E1E1E1; font-size:13px !important; font-family:arial !important;min-width:460px !important;max-width:460px !important; width:100% !important; margin:0px !important;" aria-labelledby="v_notifications">
-                                <li class="dropdown-header">
-
-                                    <div style="float:left;">Messages</div>
-
-                                    <div style="float:right; font-weight:normal !important; font-size:13px !important;">
-
-                                        <span class="vpb_hover_b" onclick="window.location.href = 'http://www.vasplus.info/messages/new/';">Compose</span>
-
-                                    </div>
-                                    <div style="clear:both;"></div>
-                                </li>
-
-
-
-                                <li class="dropdown-header dropdown-header-plus" style="padding:0px !important;">
-                                    <div id="v_no_new_message" style="margin:0px !important;text-transform: none !important; display:none;" class="vmiddle_about_title">There is no new message</div>
-
-                                    <span id="vpb_display_messages" class="vfriend_inner" style="padding:0px;"></span>
-                                </li>
-
-
-
-
-
-                            </ul>   
-                        </li>
-                    </ul>
-
-
-
+                        </h2>
+                    </div>
                 </div>
+                <ul class="nav navbar-top-links navbar-right">
+                    <li>
+                        <a style="color:#FFF;" href="/blab/index/profile/<?= $_SESSION['user']['username'] ?>" id="o_p_page_first_name" title="<?= $_SESSION['user']['username'] ?>">
+                            <div class="vpb_profile_picture_icon_wrapper">
+                                <span id="vp_profile_photo">
+
+                                    <?php
+                                    if ( file_exists ($rootPath . '/blab/uploads/profile/' . $_SESSION['user']['username'] . '.jpg') )
+                                    {
+                                        echo '<img src="/blab/uploads/profile/' . $_SESSION['user']['username'] . '.jpg" border="0" width="30" height="26" align="absmiddle">';
+                                    }
+                                    else
+                                    {
+                                        echo '<img src="/blab/public/img/avatr.gif" border="0" width="30" height="26" align="absmiddle">';
+                                    }
+                                    ?>
+
+                                    <span id="p_page_first_name"><?= $_SESSION['user']['username'] ?></span>
+                                    <div style="clear:both;"></div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a herd='/blab/index' style="color:#FFF;"> News Feed</a>
+                    </li>
+
+                    <li class="dropdown">
+                        <a  style="color:#FFF;" href="#" class="dropdown-toggle count-info" data-toggle="dropdown"><i style="font-size: 18px;" class="fa fa-bell"></i><span class="label label-warning count"></span></a>
+                        <ul class="dropdown-menu2"></ul>
+                    </li>
+
+                    <li class="dropdown dropdown-toggle count-info" id="friendRequests">
+                        <i  style="color:#FFF;" style="font-size: 18px;" class="fa fa-users"></i>
+                        <span id="counter" class="label label-primary"></span>
+                        <div id="friendRequests_bar" style="border-radius: 0px; border-top: 1px solid rgb(225, 225, 225); font-size: 13px !important; font-family: arial !important; min-width: 460px !important; max-width: 460px !important; width: 100% !important;">
+                            <div style="border-bottom: 1px solid #E5E5E5;
+                                 font-weight: bold;
+                                 padding-left: 10px !important;
+                                 padding-bottom: 5px;
+                                 font-family: arial !important;
+                                 font-size: 13px !important;
+                                 word-spacing: normal !important;
+                                 white-space: normal !important;
+                                 letter-spacing: normal !important;
+                                 padding: 3px 20px;
+                                 line-height: 1.42857143;
+                                 color: #777;">
+                                <div style="float:left;">Friend Requests</div>
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                    <span class="vpb_hover_b" onclick="vpb_show_find_new_friends_box ('michaelhampton');">Find Friend</span>
+                                </div>
+
+                                <div style="clear:both;"></div>
+
+                            </div>
+
+                            <div id="midContent" style="height:250px; overflow: auto;   
+                                 min-width: 100%;
+                                 width: 100%;
+                                 max-height: 400px !important;
+                                 display: block;
+                                 padding: 10px;">
+
+                            </div>
+                            <div id="friendRequests_bar_footer"><a href="#">See All</a></div>
+                        </div>
+                    </li>
+
+
+                    <li class="vp_ul_wrap"><a style="text-decoration:none !important;" class="dropdown open">
+
+                            <i style="font-size: 18px;" class="fa fa-cog vpb_notifications_icon vasplus_tooltip_menu" id="v_site_menu" onclick="vpb_show_site_menu ();" original-title="Menu"></i>
+                        </a><ul id="v_site_menu_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="min-width: 150px; right: 6px; left: auto; font-size: 13px !important; font-family: arial !important; display: none;" aria-labelledby="v_site_menu"><a style="margin-top:4px;text-decoration:none !important;" class="dropdown open">
+
+                                <li class="dropdown-header" style="cursor:default;">Site Menu</li>
+
+                            </a>
+                            <li>
+                                <a style="text-decoration:none !important;" class="dropdown open"></a>
+                                <a href="/blab/terms/settings" onclick="vpb_show_about_page_owner_details ('edit');">
+                                    <i class="fa fa-cog"></i> Settings</a>
+                            </li>
+
+                            <li><a href="/blab/terms/index"><i class="fa fa-envelope-o"></i> Terms and Policies</a></li>
+
+                            <li><a href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Messages</a></li>
+
+                            <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#update-password" onclick="vpb_hide_profile_popups ();"><i class="fa fa-edit"></i> Reset Password</a></li>
+
+
+                            <li role="separator" class="divider"></li>
+                            <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#logout-confirmation" onclick="vpb_hide_profile_popups ();"><i class="fa fa-power-off"></i> Logout</a></li>
+                        </ul>      
+                    </li>
+
+
+                    <li style="list-style: none;">
+                        <a style="text-decoration:none !important;" class="dropdown open">
+                            <i id="v_new_messages"  class="fa fa-envelope  vpb_notifications_icon vasplus_tooltip_notify" onclick="vpb_show_message_menu ();"></i>
+                        </a>
+
+                        <span id="message_counter" class="vpb_notifyCounter" style="display:none;"><span id="totalMessages">0</span></span>
+
+                        <ul id="v_message_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="right: 200px; left: auto; border-radius:0px; border-top:1px solid #E1E1E1; font-size:13px !important; font-family:arial !important;min-width:460px !important;max-width:460px !important; width:100% !important; margin:0px !important;" aria-labelledby="v_notifications">
+                            <li class="dropdown-header">
+
+                                <div style="float:left;">Messages</div>
+
+                                <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+
+                                    <span class="vpb_hover_b" onclick="window.location.href = 'http://www.vasplus.info/messages/new/';">Compose</span>
+
+                                </div>
+                                <div style="clear:both;"></div>
+                            </li>
+
+
+
+                            <li class="dropdown-header dropdown-header-plus" style="padding:0px !important;">
+                                <div id="v_no_new_message" style="margin:0px !important;text-transform: none !important; display:none;" class="vmiddle_about_title">There is no new message</div>
+
+                                <span id="vpb_display_messages" class="vfriend_inner" style="padding:0px;"></span>
+                            </li>
+
+
+
+
+
+                        </ul>   
+                    </li>
+
+                </ul>
+
             </nav>
         </div>
 
@@ -1613,6 +1588,8 @@
 <input type="hidden" id="vpb_total_friends_per_load" value="<?= $totalFriendsPerLoad; ?>">
 
 <script>
+
+    
 
     $ (document).ready (function ()
     {
