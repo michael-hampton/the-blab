@@ -36,6 +36,19 @@ class LikeController extends ControllerBase
                 $this->ajaxresponse ("error", $this->defaultErrrorMessage);
             }
 
+            try {
+                $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' liked your post';
+                $message = 'Comment: ' . $objComment->getComment ();
+                $objNotification = new NotificationFactory();
+                $objOwner = new User ($objComment->getUserId ());
+                $objEmail = new EmailNotification ($objOwner, $subject, $message);
+                $objEmail->sendEmail ();
+                $objNotification->createNotification ($objOwner, $subject);
+            } catch (Exception $ex) {
+                trigger_error ($ex->getMessage (), E_USER_WARNING);
+                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            }
+
             $likes = $objPostAction->getLikesForComment ($objComment);
         }
         else
@@ -143,7 +156,7 @@ class LikeController extends ControllerBase
      */
     private function getLikeIcon ($type)
     {
-        
+
         switch (trim ($type)) {
             case "wow":
                 $img = 'wowIcon_c';
