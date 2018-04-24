@@ -37,7 +37,7 @@ class LikeController extends ControllerBase
             }
 
             try {
-                $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' liked your post';
+                $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' liked your comment';
                 $message = 'Comment: ' . $objComment->getComment ();
                 $objNotification = new NotificationFactory();
                 $objOwner = new User ($objComment->getUserId ());
