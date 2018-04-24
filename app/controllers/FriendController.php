@@ -2,6 +2,9 @@
 
 use Phalcon\Mvc\View;
 
+/**
+ * 
+ */
 class FriendController extends ControllerBase
 {
 
@@ -47,23 +50,28 @@ class FriendController extends ControllerBase
     {
         $this->view->disable ();
 
-        $friendId = $_POST['friendId'];
-
-        if ( !isset ($_SESSION['user']['user_id']) || empty ($_SESSION['user']['user_id']) )
+        if ( empty ($_POST['friendId']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $friendId = $_POST['friendId'];
+
         $objUser = new User ($_SESSION['user']['user_id']);
 
         $blResponse = (new FriendRequest())->sendRequest ($objUser, $friendId, new NotificationFactory ());
-        
-        if ( $blResponse === FALSE )
+
+        if ( $blResponse === false )
         {
             $this->ajaxresponse ("error", "CANT SAVE");
         }
-        
-        $this->ajaxresponse("success", "success");
+
+        $this->ajaxresponse ("success", "success");
     }
 
     public function confirmFriendAction ()
@@ -135,7 +143,7 @@ class FriendController extends ControllerBase
      */
     public function getAllFriendsAction ()
     {
-        $this->view->disable ();
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
         if ( !isset ($_GET['userId']) )
         {
@@ -155,37 +163,12 @@ class FriendController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( !empty ($arrFriends) )
-        {
-
-            echo '<div class="full-height-scroll" style="overflow: auto; width: auto; height: 400px; margin-top: 20px;
-    float: left;
-    width: 100%;
-}">
-
-
-                                        <ul class="list-group clear-list">';
-
-            foreach ($arrFriends as $arrFriend) {
-                echo '<li class="list-group-item fist-item" style="border-bottom: 1px dotted #EEE;">';
-
-
-                echo '<img style="width:50px; margin-right:10px;" src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg">';
-
-                echo $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName ();
-
-
-                echo '</li>';
-            }
-
-            echo '</div>';
-            echo '</ul>';
-        }
+        $this->view->arrFriends = $arrFriends;
     }
 
     public function searchFriendsAction ()
     {
-        $this->view->disable ();
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
         if ( empty ($_POST['friend']) )
         {
@@ -199,26 +182,12 @@ class FriendController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        foreach ($arrUsers as $arrUser) {
-            echo '<div class="input-group vpb_popup_fb_box">
-				<div style="float:left;">
-					<div style="display:inline-block;margin-right:10px;"><img src="/blab/uploads/profile/' . $arrUser->getUsername () . '.jpg" border="0" align="absmiddle" onclick="window.location.href=\'/blab/index/profile/' . $arrUser->getUsername () . '\';"></div>
-					<div class="vpb_popup_fb_box_c vpb_hover" title="' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '" onclick="window.location.href=\'/blab/index/profile/' . $arrUser->getUsername () . '\';">' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '</div>
-					<div style="clear:both;"></div>
-				</div>
-					<div class="vpb_popup_fb_box_d"><span id="addfriend_' . $arrUser->getId () . '" onclick="vpb_friend_ship(\'' . $arrUser->getId () . '\', \'' . $arrUser->getUsername () . '\', \'addfriend\');" class="cbtn"><i class="fa fa-user-plus"></i> Add Friend</span>
-						
-						<span style="opacity:0.6;cursor:default;display:none;" id="requestsent_' . $arrUser->getId () . '" class="cbtn"><i class="fa fa-reply"></i> Request Sent</span>
-						
-						<span style="display:none;" title="Cancel Request" id="cancelrequest_' . $arrUser->getId () . '" onclick="vpb_friend_ship(\'' . $arrUser->getId () . '\', \'' . $arrUser->getUsername () . '\', \'cancelrequest\');" class="cbtn vpb_cbtn"><i class="fa fa-times"></i></span></div>
-					<div style="clear:both;"></div>
-				</div>';
-        }
+        $this->view->arrUsers = $arrUsers;
     }
 
     public function loadMoreFriendsAction ()
     {
-        $this->view->disable ();
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
         if ( empty ($_POST['vpb_start']) || empty ($_POST['page_id']) || empty ($_POST['session_uid']) )
         {
@@ -234,29 +203,15 @@ class FriendController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        foreach ($arrFriends as $arrFriend) {
-            echo '<div class="vfriendsPhotos_wraper" style="display:inline-block !important">
-                        <a href="/blab/index/profile/' . $arrFriend->getUsername () . '">';
+        $this->view->rootPath = $this->rootPath;
 
-
-            if ( file_exists ($this->rootPath . '/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg') )
-            {
-                echo '<img title="' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '" src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg">';
-            }
-            else
-            {
-                echo '<img src="/blab/public/img/avatar.gif">';
-            }
-
-            echo '<span>' . $arrFriend->getFirstname () . ' ' . $arrFriend->getLastname () . '</span>
-                        </a> 
-                    </div>';
-        }
+        $this->view->arrFriends = $arrFriends;
+        
     }
 
     public function suggestFriendsForShareAction ()
     {
-        $this->view->disable ();
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
         if ( empty ($_POST['friend']) || empty ($_SESSION['user']['user_id']) )
         {
@@ -271,16 +226,10 @@ class FriendController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
+        
+        $this->view->arrFriends = $arrFriends;
 
-        foreach ($arrFriends as $arrFriend) {
-            echo '<li>
-					<a onclick="vpb_select_this_friend_for_shares(\'' . $arrFriend->getId () . '\', \'' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '\');">
-					<span class="vpb_left_tag_box"><img src="/blab/uploads/profile/' . $arrFriend->getUsername () . '.jpg" width="40" height="40" border="0"></span>
-					<span class="vpb_left_tag_text_box">' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '</span>
-					<div style="clear:both;"></div>
-					</a>
-					</li>';
-        }
+       
     }
 
     public function readFriendListAction ()
@@ -307,7 +256,7 @@ class FriendController extends ControllerBase
         $this->ajaxresponse ("success", "success");
     }
 
-    public function pollFriendListAction ($userId)
+    public function pollFriendListAction ()
     {
         $this->view->disable ();
 

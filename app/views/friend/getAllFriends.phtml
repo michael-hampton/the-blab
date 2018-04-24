@@ -1,0 +1,28 @@
+<?php
+
+if ( !empty ($arrFriends) )
+{
+
+    echo '<div class="full-height-scroll" style="overflow: auto; width: auto; height: 400px; margin-top: 20px;
+           float: left;
+           width: 100%;
+           }">
+
+
+    <ul class="list-group clear-list">';
+
+    foreach ($arrFriends as $arrFriend) {
+        echo '<li class="list-group-item fist-item" style="border-bottom: 1px dotted #EEE;">';
+
+
+        echo '<img style="width:50px; margin-right:10px;" src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg">';
+
+        echo $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName ();
+
+
+        echo '</li>';
+    }
+
+    echo '</div>';
+    echo '</ul>';
+}

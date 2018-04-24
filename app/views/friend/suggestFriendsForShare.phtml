@@ -1,0 +1,14 @@
+<?php
+
+if ( !empty ($arrFriends) )
+{
+    foreach ($arrFriends as $arrFriend) {
+        echo '<li>
+					<a onclick="vpb_select_this_friend_for_shares(\'' . $arrFriend->getId () . '\', \'' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '\');">
+					<span class="vpb_left_tag_box"><img src="/blab/uploads/profile/' . $arrFriend->getUsername () . '.jpg" width="40" height="40" border="0"></span>
+					<span class="vpb_left_tag_text_box">' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '</span>
+					<div style="clear:both;"></div>
+					</a>
+					</li>';
+    }
+}

@@ -8249,3 +8249,7 @@ body.md-skin {
         margin: 0;
     }
 }
+
+.highlighter {
+   display: none !important;
+}

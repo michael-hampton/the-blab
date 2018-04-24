@@ -188,13 +188,13 @@ input[type="file"] {
     text-align:center;
 }
 
-.dropdown-a {
+/*.dropdown-a {
     display: block;
     display: inline-block;
     margin: 0px 3px;
     position: relative;
     z-index: 99;
-}
+}*/
 
 
 /* ===[ End demonstration ]=== */
@@ -360,10 +360,10 @@ and (max-width: 600px) {
         margin-top: 30px !important;
     }
 
-    li.dropdown {
+/*    li.dropdown {
         width: 22%;
         float:left;
-    }
+    }*/
 }
 
 @media only screen 
@@ -408,10 +408,10 @@ and (max-width: 1300px) {
         margin-top: 11px !important;
     }
 
-    li.dropdown {
+/*    li.dropdown {
         width: 22%;
         float:left;
-    }
+    }*/
 }
 
 .ui-autocomplete {

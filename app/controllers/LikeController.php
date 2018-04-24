@@ -52,16 +52,16 @@ class LikeController extends ControllerBase
             if ( (int) $objPost->getUserId () !== (int) $objUser->getId () )
             {
                 try {
-                    $subject = $objUser->getFirstName() . ' ' . $objUser->getLastName() . ' liked your post';
-                    $message = 'Post: ' . $objPost->getMessage();
+                    $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' liked your post';
+                    $message = 'Post: ' . $objPost->getMessage ();
                     $objNotification = new NotificationFactory();
-                    $objOwner = new User($objPost->getUserId());
-                    $objEmail = new EmailNotification($objOwner, $subject, $message);
-                    $objEmail->sendEmail();
-                    $objNotification->createNotification($objOwner, $subject);
+                    $objOwner = new User ($objPost->getUserId ());
+                    $objEmail = new EmailNotification ($objOwner, $subject, $message);
+                    $objEmail->sendEmail ();
+                    $objNotification->createNotification ($objOwner, $subject);
                 } catch (Exception $ex) {
-                    trigger_error($ex->getMessage(), E_USER_WARNING);
-                    $this->ajaxresponse("error", $this->defaultErrrorMessage);
+                    trigger_error ($ex->getMessage (), E_USER_WARNING);
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
                 }
             }
 
@@ -99,16 +99,31 @@ class LikeController extends ControllerBase
 
         $id = $_POST['id'];
 
-        if ( $_POST['type'] == "post" )
-        {
-            $objPost = new Post ($id);
-            $arrLikes = $objPostAction->getLikeListForPost ($objPost);
-        }
-        else
-        {
-            $objComment = new Comment ($id);
+        switch (trim ($_POST['type'])) {
+            case "post":
+                $objPost = new Post ($id);
+                $arrLikes = $objPostAction->getLikeListForPost ($objPost);
+                break;
 
-            $arrLikes = $objPostAction->getLikeListForComment ($objComment);
+            case "reaction":
+                if ( empty ($_POST['reactionType']) )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
+                $objPost = new Post ($id);
+                $reactionType = trim ($_POST['reactionType']);
+
+                $arrLikes = $objPostAction->getReactions ($objPost, $reactionType);
+                $this->view->icon = $this->getLikeIcon ($reactionType);
+
+                break;
+
+            default:
+                $objComment = new Comment ($id);
+
+                $arrLikes = $objPostAction->getLikeListForComment ($objComment);
+                break;
         }
 
         if ( $arrLikes === false )
@@ -117,7 +132,44 @@ class LikeController extends ControllerBase
         }
 
         $this->view->arrLikes = $arrLikes;
+
         $this->view->partial ("templates/likeList");
+    }
+
+    /**
+     * 
+     * @param type $type
+     * @return string
+     */
+    private function getLikeIcon ($type)
+    {
+        
+        switch (trim ($type)) {
+            case "wow":
+                $img = 'wowIcon_c';
+                break;
+            case "sad":
+                $img = 'sadIcon_c';
+                break;
+
+            case "love":
+                $img = 'loveIcon_c';
+                break;
+
+            case "angry":
+                $img = 'angryIcon_c';
+                break;
+
+            case "haha":
+                $img = 'hahaIcon_c';
+                break;
+
+            default:
+                $img = 'likeIcon_c';
+                break;
+        }
+
+        return $img;
     }
 
     public function getLikeCountAction ()
@@ -129,18 +181,47 @@ class LikeController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPostAction = new PostActionFactory();
 
-        if ( $_POST['type'] == "comment" )
-        {
-            
-        }
-        else
-        {
-            $objPost = new Post ($_POST['post_id']);
-            $arrLikes = $objPostAction->getLikeListForPost ($objPost);
+        $objPostAction = new PostAction();
 
-            echo '<span id="vpb_system_like_title"><div style="display:inline-block; margin-right:25px; font-family:arial !important; font-size:14px !important;" class="vpb_DefaultColor"><i class="likeIcon_c" onclick="vpb_auto_load_post_likes(\'' . $_POST['post_id'] . '\', \'michaelhampton\', \'Like\');"></i> 1</div></span>';
+        $type = trim ($_POST['type']);
+
+        switch ($type) {
+            case "comment":
+
+                break;
+
+            case "reaction":
+                if ( empty ($_POST['reactionType']) )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
+                $reactionType = trim ($_POST['reactionType']);
+
+                $objPost = new Post ($_POST['post_id']);
+                $count = $objPostAction->getReactionCounts ($reactionType, $objPost);
+
+                if ( $count === false )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
+                $icon = $this->getLikeIcon ($reactionType);
+                echo '<span id="vpb_system_like_title"><div style="display:inline-block; margin-right:25px; font-family:arial !important; font-size:14px !important;" class="vpb_DefaultColor"><i class="' . $icon . '" onclick="vpb_auto_load_post_likes(\'' . $_POST['post_id'] . '\', \'michaelhampton\', \'' . $type . '\');"></i> ' . $count . '</div></span>';
+                break;
+
+            default:
+                $objPost = new Post ($_POST['post_id']);
+                $count = $objPostAction->getLikesForPost ($objPost);
+
+                if ( $count === false )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
+                echo '<span id="vpb_system_like_title"><div style="display:inline-block; margin-right:25px; font-family:arial !important; font-size:14px !important;" class="vpb_DefaultColor"><i class="likeIcon_c" onclick="vpb_auto_load_post_likes(\'' . $_POST['post_id'] . '\', \'michaelhampton\', \'Like\');"></i> ' . $count . '</div></span>';
+                break;
         }
     }
 
@@ -212,6 +293,51 @@ class LikeController extends ControllerBase
         }
 
         $this->view->arrLikes = $arrLikes;
+    }
+
+    public function reactionAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['post_id']) || empty ($_POST['type']) || empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+
+            $objFactory = new PostAction();
+            $objPost = new Post ($_POST['post_id']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( strtolower (trim ($_POST['type'])) === "like" )
+        {
+            $blResponse = $objFactory->likePost ($objPost, $objUser);
+
+            if ( $blResponse === false )
+            {
+                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            }
+
+            $count = $objFactory->getLikesForPost ($objPost);
+
+            $this->ajaxresponse ("sucess", "SUCCESS", ["count" => $count]);
+        }
+
+        $blResult = $objFactory->add ($_POST['type'], $objUser, $objPost);
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $count = $objFactory->getReactionCounts ($_POST['type'], $objPost);
+
+        $this->ajaxresponse ("sucess", "SUCCESS", ["count" => $count]);
     }
 
 }

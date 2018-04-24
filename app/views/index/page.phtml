@@ -23,12 +23,12 @@
         <input type="hidden" id="currentAddress" value="<?= $objPage->getAddress () ?>">
         <input type="hidden" id="currentPrivacy" value="public">
 
-        <div class="col-lg-3">
+        <div class="col-md-3">
 
             <?php $this->partial ("templates/pageDetails", ["objPage" => $objPage]); ?>
         </div>
 
-        <div class = "col-lg-6">
+        <div class = "col-md-6">
             <div class = "ibox">
                 <div class = "ibox-content">
                     <div class = "text-center m-t-md">
@@ -184,7 +184,7 @@
                     </div>
                     <button class="btn btn-primary btn-block SaveReview">Save</button>
 
-                    <div class="col-lg-12">
+                    <div class="col-md-12">
                         <?php
                         $this->partial (
                                 "templates/posts", [
@@ -237,7 +237,7 @@
 
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-md-3">
             <div class="ibox">
                 <div class="ibox-content">
                     <div id="vpb_get_all_the_users_groups">

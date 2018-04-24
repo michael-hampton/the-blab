@@ -752,50 +752,7 @@ class IndexController extends ControllerBase
         echo $html;
     }
 
-    public function reactionAction ()
-    {
-        $this->view->disable ();
-
-        if ( empty ($_POST['post_id']) || empty ($_POST['type']) || empty ($_SESSION['user']['user_id']) )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        try {
-            $objUser = new User ($_SESSION['user']['user_id']);
-
-            $objFactory = new PostAction();
-            $objPost = new Post ($_POST['post_id']);
-        } catch (Exception $ex) {
-            trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        if ( strtolower (trim ($_POST['type'])) === "like" )
-        {
-            $blResponse = $objFactory->likePost ($objPost, $objUser);
-
-            if ( $blResponse === false )
-            {
-                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-            }
-
-            $count = $objFactory->getLikesForPost ($objPost);
-
-            $this->ajaxresponse ("sucess", "SUCCESS", ["count" => $count]);
-        }
-
-        $blResult = $objFactory->add ($_POST['type'], $objUser, $objPost);
-
-        if ( $blResult === false )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        $count = $objFactory->getReactionCounts ($_POST['type'], $objPost);
-
-        $this->ajaxresponse ("sucess", "SUCCESS", ["count" => $count]);
-    }
+    
 
     public function searchAction ()
     {
@@ -869,7 +826,7 @@ class IndexController extends ControllerBase
     public function uploadAction ()
     {
         $this->view->disable ();
-        
+
         if ( !isset ($_POST['uploadComment']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -938,10 +895,16 @@ class IndexController extends ControllerBase
 
                 $objNewUser = new User ($taggedUser);
 
+                $blTagResult = (new TagUserFactory())->createTagForPost ($objNewUser, $objPost);
+
+                if ( $blTagResult === false )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
                 $blResult = $objNotification->createNotification ($objNewUser, $message);
 
-                $blResult2 = (new TagUserFactory())->createTagForPost ($objNewUser, $objPost);
-                $objEmail = new EmailNotification ($objNewUser, $message, $_POST['comment']);
+                $objEmail = new EmailNotification ($objNewUser, $message, $comment);
                 $objEmail->sendEmail ();
             }
 

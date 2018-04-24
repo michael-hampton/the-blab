@@ -1,0 +1,21 @@
+<?php
+
+if ( !empty ($arrUsers) )
+{
+    foreach ($arrUsers as $arrUser) {
+        echo '<div class="input-group vpb_popup_fb_box">
+				<div style="float:left;">
+					<div style="display:inline-block;margin-right:10px;"><img src="/blab/uploads/profile/' . $arrUser->getUsername () . '.jpg" border="0" align="absmiddle" onclick="window.location.href=\'/blab/index/profile/' . $arrUser->getUsername () . '\';"></div>
+					<div class="vpb_popup_fb_box_c vpb_hover" title="' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '" onclick="window.location.href=\'/blab/index/profile/' . $arrUser->getUsername () . '\';">' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '</div>
+					<div style="clear:both;"></div>
+				</div>
+					<div class="vpb_popup_fb_box_d"><span id="addfriend_' . $arrUser->getId () . '" onclick="vpb_friend_ship(\'' . $arrUser->getId () . '\', \'' . $arrUser->getUsername () . '\', \'addfriend\');" class="cbtn"><i class="fa fa-user-plus"></i> Add Friend</span>
+						
+						<span style="opacity:0.6;cursor:default;display:none;" id="requestsent_' . $arrUser->getId () . '" class="cbtn"><i class="fa fa-reply"></i> Request Sent</span>
+						
+						<span style="display:none;" title="Cancel Request" id="cancelrequest_' . $arrUser->getId () . '" onclick="vpb_friend_ship(\'' . $arrUser->getId () . '\', \'' . $arrUser->getUsername () . '\', \'cancelrequest\');" class="cbtn vpb_cbtn"><i class="fa fa-times"></i></span></div>
+					<div style="clear:both;"></div>
+				</div>';
+    }
+}
+
