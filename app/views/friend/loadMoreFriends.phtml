@@ -1,0 +1,23 @@
+<?php
+
+if ( !empty ($arrFriends) )
+{
+    foreach ($arrFriends as $arrFriend) {
+        echo '<div class="vfriendsPhotos_wraper" style="display:inline-block !important">
+                        <a href="/blab/index/profile/' . $arrFriend->getUsername () . '">';
+
+
+        if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg') )
+        {
+            echo '<img title="' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '" src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg">';
+        }
+        else
+        {
+            echo '<img src="/blab/public/img/avatar.gif">';
+        }
+
+        echo '<span>' . $arrFriend->getFirstname () . ' ' . $arrFriend->getLastname () . '</span>
+                        </a> 
+                    </div>';
+    }
+}

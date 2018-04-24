@@ -20,7 +20,7 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
-        <div class="col-lg-10 col-md-offset-1" id="container">
+        <div class="col-md-10 col-md-offset-1" id="container">
 
             <div id="timelineContainer">
                 <!-- timeline background -->
@@ -80,13 +80,13 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
                 <!-- timeline nav -->
                 <div id="timelineNav">
-                    <div class="col-lg-10 col-md-offset-4 menu-parent" style="margin-top: 12px;">
-                        <div class="col-lg-2 pull-left">
+                    <div class="col-md-10 col-md-offset-4 menu-parent" style="margin-top: 12px;">
+                        <div class="col-md-2 pull-left">
                             <a onclick="vpb_show_status_updates ();">Timeline</a>
 
                         </div>
 
-                        <div class="col-lg-2 pull-left">
+                        <div class="col-md-2 pull-left">
 
                             <?php
                             if ( (int) $_SESSION['user']['user_id'] === (int) $objUser->getId () )
@@ -104,7 +104,7 @@ foreach ($arrCurrentUserFreindList as $friend) {
                         if ( $arrUserSettings->getProfileSetting ('friends') !== false )
                         {
                             ?>
-                            <div class="col-lg-2 pull-left">
+                            <div class="col-md-2 pull-left">
                                 <a class="" type="friends" href="#" onclick="vpb_show_page_owner_friends ();">Friends</a>
 
                             </div>
@@ -115,12 +115,12 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
 
 
-                        <div class="col-lg-2 pull-left">
+                        <div class="col-md-2 pull-left">
                             <a class="" type="photos" onclick="vpb_show_photos ('normal', <?= $objUser->getId () ?>)" href="#">Photos</a>
 
                         </div>
 
-                        <div class="col-lg-2 pull-left">
+                        <div class="col-md-2 pull-left">
                             <div class="dropdown-a" id="dropdown">
                                 <input type="checkbox" id="drop1" />
                                 <label for="drop1" class="dropdown_button">More <span class="arrow"></span></label>
@@ -179,8 +179,8 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
             <div class="row">
 
-                <div class="col-lg-12">
-                    <div class="col-lg-3 r-sidebar">
+                <div class="col-md-12">
+                    <div class="col-md-3 r-sidebar">
 
 
                         <?php
@@ -208,7 +208,7 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
                     </div>
 
-                    <div class="col-lg-10 m-sidebar col-md-offset-1" style="display: none;">
+                    <div class="col-md-10 m-sidebar col-md-offset-1" style="display: none;">
                         <div class="vmiddle_other pull-left" id="vasplus_page_owners_friends" style="display: none;">
                             <div class="vmiddle_other_title vprofile_o_title">
                                 <div style="float:left;">Friends · <span class="vtotals"><?= count ($arrFriendList) ?></span></div>
@@ -348,7 +348,7 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
                     </div>
 
-                    <div class="col-lg-6">
+                    <div class="col-md-6">
 
                         <div id="vasplus_wall_status_updates">
 
@@ -373,23 +373,13 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
                     </div>
 
-                    <div class="col-lg-3 l-sidebar">
+                    <div class="col-md-3 l-sidebar">
                         <div id="vpb_get_all_the_users_groups">
 
                         </div>
                         <br clear="all">
                     </div>
                 </div>
-
-
-
-
-
-                <!--                <div class="col-lg-9">
-                
-                                </div>-->
-
-
 
                 <div id="vpb_loading_status_updates"></div>
 
@@ -407,66 +397,9 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
             </div>
         </div>
-
-
-
-
     </div>
 
-    <div class="cd-panel from-right" style="background-color: #FFF;">
-
-
-        <div class="cd-panel-container" style="background-color: #FFF;">
-
-
-            <div class="pages" style="display:none;">
-                <header class="cd-panel-header">
-                    <h1>Pages</h1>
-                    <a href="#0" class="cd-panel-close">Close</a>
-                </header>
-
-                <div class="cd-panel-content">
-
-                </div>
-            </div>
-
-            <div class="events" style="display:none;">
-                <header class="cd-panel-header">
-                    <h1>Events</h1>
-                    <a href="#0" class="cd-panel-close pull-right">Close</a>
-                </header>
-
-                <div class="cd-panel-content">
-
-                </div>
-            </div>
-
-            <div class="groups" style="display:none;">
-                <header class="cd-panel-header">
-                    <h1>Groups</h1>
-                    <a href="#0" class="cd-panel-close pull-right">Close</a>
-                </header>
-
-                <div class="cd-panel-content">
-
-                </div>
-            </div>
-
-            <div class="likes" style="display:none;">
-                <header class="cd-panel-header">
-                    <h1>Likes</h1>
-                    <a href="#0" class="cd-panel-close">Close</a>
-                </header>
-
-                <div class="cd-panel-content">
-
-                </div>
-            </div>
-
-
-        </div>
-
-    </div> <!-- cd-panel -->
+   
 
     <script>
         var profileUser = <?= $objUser->getId () ?>;

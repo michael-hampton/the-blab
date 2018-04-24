@@ -110,7 +110,13 @@ class LikeController extends ControllerBase
                 {
                     $this->ajaxresponse ("error", $this->defaultErrrorMessage);
                 }
-                die ("Yes");
+
+                $objPost = new Post ($id);
+                $reactionType = trim ($_POST['reactionType']);
+
+                $arrLikes = $objPostAction->getReactions ($objPost, $reactionType);
+                $this->view->icon = $this->getLikeIcon ($reactionType);
+
                 break;
 
             default:
@@ -126,7 +132,44 @@ class LikeController extends ControllerBase
         }
 
         $this->view->arrLikes = $arrLikes;
+
         $this->view->partial ("templates/likeList");
+    }
+
+    /**
+     * 
+     * @param type $type
+     * @return string
+     */
+    private function getLikeIcon ($type)
+    {
+        
+        switch (trim ($type)) {
+            case "wow":
+                $img = 'wowIcon_c';
+                break;
+            case "sad":
+                $img = 'sadIcon_c';
+                break;
+
+            case "love":
+                $img = 'loveIcon_c';
+                break;
+
+            case "angry":
+                $img = 'angryIcon_c';
+                break;
+
+            case "haha":
+                $img = 'hahaIcon_c';
+                break;
+
+            default:
+                $img = 'likeIcon_c';
+                break;
+        }
+
+        return $img;
     }
 
     public function getLikeCountAction ()
@@ -138,18 +181,47 @@ class LikeController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPostAction = new PostActionFactory();
 
-        if ( $_POST['type'] == "comment" )
-        {
-            
-        }
-        else
-        {
-            $objPost = new Post ($_POST['post_id']);
-            $arrLikes = $objPostAction->getLikeListForPost ($objPost);
+        $objPostAction = new PostAction();
 
-            echo '<span id="vpb_system_like_title"><div style="display:inline-block; margin-right:25px; font-family:arial !important; font-size:14px !important;" class="vpb_DefaultColor"><i class="likeIcon_c" onclick="vpb_auto_load_post_likes(\'' . $_POST['post_id'] . '\', \'michaelhampton\', \'Like\');"></i> 1</div></span>';
+        $type = trim ($_POST['type']);
+
+        switch ($type) {
+            case "comment":
+
+                break;
+
+            case "reaction":
+                if ( empty ($_POST['reactionType']) )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
+                $reactionType = trim ($_POST['reactionType']);
+
+                $objPost = new Post ($_POST['post_id']);
+                $count = $objPostAction->getReactionCounts ($reactionType, $objPost);
+
+                if ( $count === false )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
+                $icon = $this->getLikeIcon ($reactionType);
+                echo '<span id="vpb_system_like_title"><div style="display:inline-block; margin-right:25px; font-family:arial !important; font-size:14px !important;" class="vpb_DefaultColor"><i class="' . $icon . '" onclick="vpb_auto_load_post_likes(\'' . $_POST['post_id'] . '\', \'michaelhampton\', \'' . $type . '\');"></i> ' . $count . '</div></span>';
+                break;
+
+            default:
+                $objPost = new Post ($_POST['post_id']);
+                $count = $objPostAction->getLikesForPost ($objPost);
+
+                if ( $count === false )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+
+                echo '<span id="vpb_system_like_title"><div style="display:inline-block; margin-right:25px; font-family:arial !important; font-size:14px !important;" class="vpb_DefaultColor"><i class="likeIcon_c" onclick="vpb_auto_load_post_likes(\'' . $_POST['post_id'] . '\', \'michaelhampton\', \'Like\');"></i> ' . $count . '</div></span>';
+                break;
         }
     }
 

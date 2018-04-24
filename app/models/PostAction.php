@@ -19,7 +19,7 @@ class PostAction
      * @var type 
      */
     private $db;
-    
+
     /**
      *
      * @var type 
@@ -35,7 +35,7 @@ class PostAction
 
         $this->db->connect ();
     }
-    
+
     /**
      * 
      * @return type
@@ -45,7 +45,6 @@ class PostAction
         return $this->validationFailures;
     }
 
-    
     /**
      * 
      * @param Comment $objComment
@@ -325,7 +324,7 @@ class PostAction
 
         if ( empty ($result[0]['like_count']) )
         {
-            return [];
+            return 0;
         }
 
         return $result[0]['like_count'];
@@ -481,29 +480,31 @@ class PostAction
      */
     public function getReactionCounts ($type, Post $objPost)
     {
+        $type = strtolower (trim ($type));
+        
         switch ($type) {
-            case "Love":
+            case "love":
                 $columnName = "love_count";
                 $type = "love";
                 break;
 
-            case "Wow":
+            case "wow":
                 $columnName = "wow_count";
                 $type = "wow";
 
                 break;
 
-            case "Haha":
+            case "haha":
                 $columnName = "haha_count";
                 $type = "haha";
                 break;
 
-            case "Sad":
+            case "sad":
                 $columnName = "sad_count";
                 $type = "sad";
                 break;
 
-            case "Angry":
+            case "angry":
                 $columnName = "angry_count";
                 $type = "angry";
                 break;
@@ -518,7 +519,7 @@ class PostAction
             return false;
         }
 
-        return $result[0][$columnName];
+        return (int) $result[0][$columnName];
     }
 
 }

@@ -32,15 +32,53 @@ class PostActionFactory
 
     /**
      * 
+     * @param array $arrResults
+     * @return \User
+     */
+    private function loadObject (array $arrResults)
+    {
+        try {
+            if ( empty ($arrResults[0]) )
+            {
+                return [];
+            }
+
+            $arrLikes = [];
+
+            foreach ($arrResults as $arrResult) {
+                $objUser = new User ($arrResult['uid']);
+                $objUser->setUsername ($arrResult['username']);
+                $objUser->setFirstName ($arrResult['fname']);
+                $objUser->setLastName ($arrResult['lname']);
+
+                $arrLikes[] = $objUser;
+            }
+
+            return $arrLikes;
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            return false;
+        }
+    }
+
+    /**
+     * 
      * @param Post $objPost
      * @return \User|boolean
      */
     public function getLikeListForPost (Post $objPost)
     {
 
-        $results = $this->db->_query ("SELECT u.uid, u.fname, u.lname, u.username, l.created FROM `message_like` l
-                                    INNER JOIN users u ON u.uid = l.uid_fk
-                                    WHERE l.msg_id_fk = :comId", [':comId' => $objPost->getId ()]
+        $results = $this->db->_query ("SELECT u.uid, 
+                                            u.fname, 
+                                            u.lname, 
+                                            u.username, 
+                                            l.created 
+                                     FROM   `message_like` l 
+                                            INNER JOIN users u 
+                                                    ON u.uid = l.uid_fk 
+                                     WHERE  l.msg_id_fk = :comId
+                                     ORDER BY l.created", [':comId' => $objPost->getId ()]
         );
 
         if ( $results === FALSE )
@@ -49,23 +87,7 @@ class PostActionFactory
             return false;
         }
 
-        if ( empty ($results[0]) )
-        {
-            return [];
-        }
-
-        $arrLikes = [];
-
-        foreach ($results as $arrResult) {
-            $objUser = new User ($arrResult['uid']);
-            $objUser->setUsername ($arrResult['username']);
-            $objUser->setFirstName ($arrResult['fname']);
-            $objUser->setLastName ($arrResult['lname']);
-
-            $arrLikes[] = $objUser;
-        }
-
-        return $arrLikes;
+        return $this->loadObject ($results);
     }
 
     /**
@@ -75,34 +97,25 @@ class PostActionFactory
      */
     public function getLikeListForComment (Comment $objComment)
     {
-        $results = $this->db->_query ("SELECT u.uid, u.fname, u.lname, u.username, l.created FROM `comment_like` l
-                                    INNER JOIN users u ON u.uid = l.uid_fk
-                                    WHERE l.com_id_fk = :comId", [':comId' => $objComment->getId ()]
+        $results = $this->db->_query ("SELECT u.uid, 
+                                            u.fname, 
+                                            u.lname, 
+                                            u.username, 
+                                            l.created 
+                                     FROM   `comment_like` l 
+                                            INNER JOIN users u 
+                                                    ON u.uid = l.uid_fk 
+                                     WHERE  l.com_id_fk = :comId
+                                     ORDER BY l.created", [':comId' => $objComment->getId ()]
         );
 
-        if ( $results === FALSE )
+        if ( $results === false )
         {
             trigger_error ("Db query failed", E_USER_WARNING);
             return false;
         }
 
-        if ( empty ($results[0]) )
-        {
-            return [];
-        }
-
-        $arrLikes = [];
-
-        foreach ($results as $arrResult) {
-            $objUser = new User ($arrResult['uid']);
-            $objUser->setUsername ($arrResult['username']);
-            $objUser->setFirstName ($arrResult['fname']);
-            $objUser->setLastName ($arrResult['lname']);
-
-            $arrLikes[] = $objUser;
-        }
-
-        return $arrLikes;
+        return $this->loadObject ($results);
     }
 
     /**
@@ -112,9 +125,16 @@ class PostActionFactory
      */
     public function getLikeListForReply (CommentReply $objCommentReply)
     {
-        $results = $this->db->_query ("SELECT u.uid, u.fname, u.lname, u.username, l.created FROM `comment_reply_like` l
-                                    INNER JOIN users u ON u.uid = l.uid_fk
-                                    WHERE l.com_id_fk = :comId", [':comId' => $objCommentReply->getId ()]
+        $results = $this->db->_query ("SELECT u.uid, 
+                                            u.fname, 
+                                            u.lname, 
+                                            u.username, 
+                                            l.created 
+                                     FROM   `comment_reply_like` l 
+                                            INNER JOIN users u 
+                                                    ON u.uid = l.uid_fk 
+                                     WHERE  l.com_id_fk = :comId
+                                     ORDER BY l.created", [':comId' => $objCommentReply->getId ()]
         );
 
         if ( $results === FALSE )
@@ -123,23 +143,7 @@ class PostActionFactory
             return false;
         }
 
-        if ( empty ($results[0]) )
-        {
-            return [];
-        }
-
-        $arrLikes = [];
-
-        foreach ($results as $arrResult) {
-            $objUser = new User ($arrResult['uid']);
-            $objUser->setUsername ($arrResult['username']);
-            $objUser->setFirstName ($arrResult['fname']);
-            $objUser->setLastName ($arrResult['lname']);
-
-            $arrLikes[] = $objUser;
-        }
-
-        return $arrLikes;
+        return $this->loadObject ($results);
     }
 
     /**
@@ -149,13 +153,23 @@ class PostActionFactory
      */
     public function getAllLikesForUser (User $objUser)
     {
-        $arrResults = $this->db->_query ("SELECT m.msg_id, m.message, l.created, 'message' AS type FROM message_like l
-                                        INNER JOIN messages m ON m.msg_id = l.msg_id_fk
-                                        WHERE l.uid_fk = :userId
-                                        UNION
-                                        SELECT c.com_id, c.comment, l2.created, 'comment' AS type FROM comment_like l2
-                                        INNER JOIN comments c ON c.com_id = l2.com_id_fk
-                                        WHERE l2.uid_fk = :userId", [":userId" => $objUser->getId ()]);
+        $arrResults = $this->db->_query ("SELECT m.msg_id, 
+                                                m.message, 
+                                                l.created, 
+                                                'message' AS type 
+                                         FROM   message_like l 
+                                                INNER JOIN messages m 
+                                                        ON m.msg_id = l.msg_id_fk 
+                                         WHERE  l.uid_fk = :userId 
+                                         UNION 
+                                         SELECT c.com_id, 
+                                                c.comment, 
+                                                l2.created, 
+                                                'comment' AS type 
+                                         FROM   comment_like l2 
+                                                INNER JOIN comments c 
+                                                        ON c.com_id = l2.com_id_fk 
+                                         WHERE  l2.uid_fk = :userId", [":userId" => $objUser->getId ()]);
 
         if ( $arrResults === false )
         {
@@ -168,6 +182,35 @@ class PostActionFactory
         }
 
         return $arrResults;
+    }
+
+    /**
+     * 
+     * @param Post $objPost
+     * @param type $type
+     * @return boolean
+     */
+    public function getReactions (Post $objPost, $type)
+    {
+        $arrResults = $this->db->_query ("SELECT u.uid, 
+                                                u.fname, 
+                                                u.lname, 
+                                                u.username, 
+                                                l.created 
+                                         FROM   message_like l 
+                                                INNER JOIN users u 
+                                                        ON u.uid = l.uid_fk 
+                                         WHERE  l.msg_id_fk = :postId 
+                                                AND l.reaction_type = :reactionType 
+                                         ORDER  BY l.created ", [":postId" => $objPost->getId (), ":reactionType" => $type]);
+
+        if ( $arrResults === FALSE )
+        {
+            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
+            return false;
+        }
+
+        return $this->loadObject ($arrResults);
     }
 
 }

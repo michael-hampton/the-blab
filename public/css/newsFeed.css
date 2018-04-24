@@ -257,6 +257,20 @@ article
 
 .d_end{margin-right:0px !important;}
 
+.loveIcon_c 
+{
+    background-image: url('../img/d_loves_c.jpg');
+    background-size: 100%;
+    float:left;
+    height: 18px;
+    width: 18px;
+    image-rendering: crisp-edges;
+    line-height: 1;
+    cursor: pointer;
+    margin-right:5px;
+}
+
+
 
 
 .wowIcon_c 
@@ -4090,7 +4104,7 @@ But what about when the browser window starts getting narrow? 5 columns might be
     }
 
     #friendRequests_bar {
-        margin-left: 225px;
+        margin-left: 120px;
         min-width: 250px !important;
         max-width: 250px !important;
     }
