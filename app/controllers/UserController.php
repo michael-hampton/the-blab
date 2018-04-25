@@ -82,7 +82,25 @@ class UserController extends ControllerBase
     public function loginAction ()
     {
         $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+        
+        $username = '';
+        $password = '';
 
+        if ( !empty ($_COOKIE['blab_rememberme']) )
+        {
+
+            $objUser = json_decode ($_COOKIE['blab_rememberme']);
+            $username = $objUser->username;
+            $password = $objUser->password;
+
+            $objLogin = new LoginModel();
+            $username = $objLogin->decryptCookie ($username);
+            $password = $objLogin->decryptCookie ($password);
+        }
+        
+        $this->view->username = $username;
+        $this->view->password = $password;
+        
         if ( !empty ($_SESSION['user']['username']) && !empty ($_SESSION['user']['user_id']) )
         {
             header ("Location: /blab/index/index");
@@ -95,8 +113,6 @@ class UserController extends ControllerBase
     public function forgotPasswordAction ()
     {
         $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
-
-      
     }
 
     public function sendForgotPasswordAction ()
@@ -377,9 +393,9 @@ class UserController extends ControllerBase
         $this->view->arrLanguages = $arrLanguages;
         $this->view->objUser = $objUser;
         $this->view->arrCountries = $arrCountries;
-        
-        $arrUserSettings = (new UserSettings($objUser));
-                
+
+        $arrUserSettings = (new UserSettings ($objUser));
+
         $this->view->arrUserSettings = $arrUserSettings;
     }
 

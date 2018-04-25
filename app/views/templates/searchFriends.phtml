@@ -1,9 +1,19 @@
 <div class="vmiddle_other" style="border-bottom:0PX solid !important; display: none;" id="vasplus_wall_find_friends">
+
+    <input type="hidden" id="vtotal_friends" value="<?= count ($arrFriendList) ?>">
+    <input type="hidden" id="vpb_friends_start" value="1">
+
     <div class="vmiddle_other_title vprofile_o_title" style="border-bottom:0px solid;">
-        <div style="float:left;">Find Friend</div>
+        <div style="float:left;">Find Friend <?= count ($arrFriendList) ?></div>
         <div style="float:right; font-weight:normal !important; font-size:13px !important;">
             <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" onclick="vpb_show_status_updates ();" original-title="Close">×</button>
         </div>
+        <div style="clear:both;"></div>
+    </div>
+
+    <div class="input-group vpb-the-friends-wrap" id="vpb_load_more_friends_box">
+        <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_page_owner_friends (<?= $objUser->getId () ?>);">View more friends</span></div>
+        <div style="float:right; color:#999;"><span id="v_this_friends_totals"><?= count ($arrFilteredFriendList) ?></span> of <?= count ($arrFriendList) ?></div>
         <div style="clear:both;"></div>
     </div>
 
@@ -14,4 +24,34 @@
     </div>   
 
     <div style="padding:10px;" id="vpb_display_wall_find_friends"></div>
+
+    <div style="padding:10px;" id="vpb_get_all_the_users_friends">
+        <?php
+        if ( !empty ($arrFilteredFriendList) )
+        {
+            foreach ($arrFilteredFriendList as $key => $arrFriend) {
+                ?>
+                <div class="vfriendsPhotos_wraper">
+                    <a href="/blab/index/profile/<?= $arrFriend->getUsername () ?>">
+
+                        <?php
+                        if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg') )
+                        {
+                            echo '<img title="' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '" src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg">';
+                        }
+                        else
+                        {
+                            echo '<img src="/blab/public/img/avatar.gif">';
+                        }
+                        ?>
+
+                        <span><?= $arrFriend->getFirstname () . ' ' . $arrFriend->getLastname () ?></span>
+                    </a> 
+                </div>
+
+                <?php
+            }
+        }
+        ?>
+    </div>
 </div>

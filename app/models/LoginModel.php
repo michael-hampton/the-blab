@@ -42,6 +42,30 @@ class LoginModel
     }
 
     /**
+     * Encrypt cookie
+     * @param type $value
+     * @return type
+     */
+    private function encryptCookie ($value)
+    {
+        $key = 'youkey';
+        $newvalue = base64_encode (mcrypt_encrypt (MCRYPT_RIJNDAEL_256, md5 ($key), $value, MCRYPT_MODE_CBC, md5 (md5 ($key))));
+        return( $newvalue );
+    }
+
+    /**
+     * Decrypt cookie
+     * @param type $value
+     * @return type#
+     */
+    public function decryptCookie ($value)
+    {
+        $key = 'youkey';
+        $newvalue = rtrim (mcrypt_decrypt (MCRYPT_RIJNDAEL_256, md5 ($key), base64_decode ($value), MCRYPT_MODE_CBC, md5 (md5 ($key))), "\0");
+        return( $newvalue );
+    }
+
+    /**
      * 
      * @param type $username
      * @param type $password
@@ -77,13 +101,29 @@ class LoginModel
             return false;
         }
 
-        $dbpassword = $result[0][‘password’];
 
-        $hash = $objUserFactory->blowfishCrypt ($password, 12);
-        
-         if(!password_verify($password, $hash)){
-        //if(crypt($password, $hash) != $hash){
+        $test = $result[0]['password'];
+
+        if ( crypt ($password, $test) == $test )
+        {
+            // password is correct
+            //die('good');
+        }
+        else
+        {
             return false;
+        }
+
+        if ( empty ($_COOKIE['blab_rememberme']) )
+        {
+            $days = 60;
+
+            $value = $this->encryptCookie ($username);
+            $value2 = $this->encryptCookie ($password);
+
+            $arrUser = array('username' => $value, 'password' => $value2);
+
+            setcookie ("blab_rememberme", json_encode ($arrUser), time () + ($days * 24 * 60 * 60 * 1000));
         }
 
         $_SESSION['user']['user_id'] = $result[0]['uid'];

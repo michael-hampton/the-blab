@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
-                    <li>
+                    <li class="hideMobile"> 
                         <a style="color:#FFF;" href="/blab/index/profile/<?= $_SESSION['user']['username'] ?>" id="o_p_page_first_name" title="<?= $_SESSION['user']['username'] ?>">
                             <div class="vpb_profile_picture_icon_wrapper">
                                 <span id="vp_profile_photo">
@@ -78,16 +78,16 @@
                         </a>
                     </li>
 
-                    <li>
+                    <li class="hideMobile">
                         <a herd='/blab/index' style="color:#FFF;"> News Feed</a>
                     </li>
 
-                    <li class="dropdown">
+                    <li class="dropdown hideMobile">
                         <a  style="color:#FFF;" href="#" class="dropdown-toggle count-info" data-toggle="dropdown"><i style="font-size: 18px;" class="fa fa-bell"></i><span class="label label-warning count"></span></a>
                         <ul class="dropdown-menu2"></ul>
                     </li>
 
-                    <li class="dropdown dropdown-toggle count-info" id="friendRequests">
+                    <li class="dropdown hideMobile dropdown-toggle count-info" id="friendRequests">
                         <i  style="color:#FFF;" style="font-size: 18px;" class="fa fa-users"></i>
                         <span id="counter" class="label label-primary"></span>
                         <div id="friendRequests_bar" style="border-radius: 0px; border-top: 1px solid rgb(225, 225, 225); font-size: 13px !important; font-family: arial !important; min-width: 300px !important; max-width: 300px !important; width: 100% !important;">
@@ -125,7 +125,7 @@
                     </li>
 
 
-                    <li class="vp_ul_wrap"><a style="text-decoration:none !important;" class="dropdown open">
+                    <li class="vp_ul_wrap hideMobile"><a style="text-decoration:none !important;" class="dropdown open">
 
                             <i style="font-size: 18px;" class="fa fa-cog vpb_notifications_icon vasplus_tooltip_menu" id="v_site_menu" onclick="vpb_show_site_menu ();" original-title="Menu"></i>
                         </a><ul id="v_site_menu_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="min-width: 150px; right: 6px; left: auto; font-size: 13px !important; font-family: arial !important; display: none;" aria-labelledby="v_site_menu"><a style="margin-top:4px;text-decoration:none !important;" class="dropdown open">
@@ -152,7 +152,7 @@
                     </li>
 
 
-                    <li style="list-style: none;">
+                    <li class=“hideMobile” style="list-style: none;">
                         <a style="text-decoration:none !important;" class="dropdown open">
                             <i id="v_new_messages"  class="fa fa-envelope  vpb_notifications_icon vasplus_tooltip_notify" onclick="vpb_show_message_menu ();"></i>
                         </a>
@@ -1581,6 +1581,27 @@
 </div>
 <!-- End Event List -->
 
+<!-- GDPR -->
+<div class="modal inmodal fade in" id="GDPR" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <p><strong>Lorem Ipsum is simply dummy</strong> text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
+                    remaining essentially unchanged.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <input type='hidden' id='v_loading_btn' value='<div title="Loading..." class="btn_loading">Loading<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>'>
 <input type="hidden" id="vpb_start" value="<?= $startPage ?>">
@@ -1589,10 +1610,11 @@
 
 <script>
 
-    
+
 
     $ (document).ready (function ()
     {
+
         $ ('#uploadComment').mentionsInput ({
             source: '/blab/index/autoSuggest',
             showAtCaret: true
@@ -1610,7 +1632,6 @@
         isMobile = true;
     }
 </script>
-
 
 
 

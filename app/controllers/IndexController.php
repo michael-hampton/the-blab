@@ -96,10 +96,6 @@ class IndexController extends ControllerBase
 
         $arrFriendList = $objUserFactory->getFriendList ($objUser);
 
-        $arrFilteredFriendList = $this->arrayPagination (1, $arrFriendList, 0);
-
-        $this->view->arrFilteredFriendList = $arrFilteredFriendList;
-
         if ( $arrFriendList === false )
         {
             return $this->dispatcher->forward (
@@ -110,6 +106,9 @@ class IndexController extends ControllerBase
                             ]
             );
         }
+
+        $arrFilteredFriendList = $this->arrayPagination ($this->totalFriendsPerLoad, $arrFriendList, 0);
+        $this->view->arrFilteredFriendList = $arrFilteredFriendList;
 
         $this->view->arrFriendList = $arrFriendList;
         $this->view->noPerFriend = 1;
@@ -290,6 +289,7 @@ class IndexController extends ControllerBase
         }
 
         $this->view->arrFriendRequests = $arrFriendRequests;
+        $this->view->objCurrentUser = $objCurrentUser;
     }
 
     public function indexAction ()
@@ -326,9 +326,9 @@ class IndexController extends ControllerBase
             );
         }
 
-        $this->view->arrFriendList = $objUserFactory->getFriendList ($objUser);
+        $arrFriendList = $objUserFactory->getFriendList ($objUser);
 
-        if ( $this->view->arrFriendList === false )
+        if ( $arrFriendList === false )
         {
             return $this->dispatcher->forward (
                             [
@@ -338,6 +338,11 @@ class IndexController extends ControllerBase
                             ]
             );
         }
+
+        $this->view->arrFriendList = $arrFriendList;
+
+        $arrFilteredFriendList = $this->arrayPagination ($this->totalFriendsPerLoad, $arrFriendList, 0);
+        $this->view->arrFilteredFriendList = $arrFilteredFriendList;
 
         $objEventFactory = new EventFactory();
 
@@ -751,8 +756,6 @@ class IndexController extends ControllerBase
 
         echo $html;
     }
-
-    
 
     public function searchAction ()
     {
