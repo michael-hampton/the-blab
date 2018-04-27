@@ -401,27 +401,47 @@ class UserController extends ControllerBase
         $this->view->arrUserSettings = $arrUserSettings;
     }
 
-    /* creates a compressed zip file */
-
-    function create_zip ($file, $destination, $overwrite = true)
+    /**
+     * creates a compressed zip file
+     * @param type $file
+     * @param type $destination
+     * @param type $overwrite
+     * @return boolean
+     */
+    private function create_zip ($file, $destination, $overwrite = true)
     {
         $zip = new ZipArchive;
-        $r = $zip->open ($destination, ZipArchive::CREATE);
-        var_dump ($r);
+        $result = $zip->open ($destination, ZipArchive::CREATE);
+
+        if ( $result === false )
+        {
+            trigger_error ("Unable to open zip file", E_USER_WARNING);
+            return false;
+        }
 
         if ( !file_exists ($file) )
         {
-            die ("Mike");
+            trigger_error ("User download sheet doesnt exist", E_USER_WARNING);
+            return false;
         }
 
         $content = file_get_contents ($file);
         $r = $zip->addFromString (pathinfo ($file, PATHINFO_BASENAME), $content);
 
-        //$r = $zip->addFile ($file, $file);
-        var_dump ($r);
+        if ( $r === false )
+        {
+            trigger_error ("Unable to add file to zip", E_USER_WARNING);
+            return false;
+        }
 
         $r = $zip->close ();
-        var_dump ($r);
+
+        if ( $r === false )
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public function downloadUserDataAction ()
@@ -465,7 +485,7 @@ class UserController extends ControllerBase
         $this->create_zip ($destination, $zipDestination);
 
         $objEmail = new EmailNotification (new User ($_SESSION['user']['user_id']), "Your Personal Data download", "Please find attached your personal data download");
-        $objEmail->mail_attachment ($filename, $path);
+        $objEmail->mail_attachment ($_SESSION['user']['username'] . '.zip', $this->rootPath . "/blab/public/downloads/");
     }
 
 }
