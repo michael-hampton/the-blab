@@ -85,6 +85,8 @@ class PageController extends ControllerBase
             );
         }
 
+       Phalcon\Tag::setTitle("Page " . $url);
+
         $this->view->url = $url;
 
         try {

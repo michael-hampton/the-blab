@@ -142,6 +142,7 @@
                             <li><a href="/blab/terms/index"><i class="fa fa-envelope-o"></i> Terms and Policies</a></li>
 
                             <li><a href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Messages</a></li>
+                             <li><a href="/blab/user/downloadUserData"><i class="fa fa-envelope-o"></i> Download Personal Data</a></li>
 
                             <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#update-password" onclick="vpb_hide_profile_popups ();"><i class="fa fa-edit"></i> Reset Password</a></li>
 
@@ -1583,20 +1584,26 @@
 
 <!-- GDPR -->
 <div class="modal inmodal fade in" id="GDPR" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title">Modal title</h4>
+                <h4 class="">Some important settings and updates to review</h4>
             </div>
             <div class="modal-body">
-                <p><strong>Lorem Ipsum is simply dummy</strong> text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
-                    remaining essentially unchanged.</p>
+
+
+                <div class="gdpr-body" style="height:350px;overflow-y: auto;width: 100%;overflow-x: hidden;">
+                    <p> Personal data laws are changing in the European Union, and we want to make it easy for you to view some of your data settings.</p> 
+                    <p>Please take a few minutes to review these updates and make choices about some specific data settings. </p>
+                    <p>Here’s what we will ask you to review. <br>
+                        Our updates terms and conditions <br>
+                        Our updated privacy and Cookies policy .</p>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary ContinueGdpr" step="1">Get Started</button>
             </div>
         </div>
     </div>
@@ -1632,7 +1639,6 @@
         isMobile = true;
     }
 </script>
-
 
 
 

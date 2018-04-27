@@ -33,6 +33,7 @@ class IndexController extends ControllerBase
         return $yourDataArray;
     }
 
+
     /**
      * 
      * @param type $username
@@ -91,6 +92,8 @@ class IndexController extends ControllerBase
         }
 
         $objUser = reset ($objUser);
+        
+         Phalcon\Tag::setTitle("Profile " . $objUser->getFirstName() . ' ' . $objUser->getLastName());
 
         $this->view->arrUser = $objUser;
 
@@ -295,6 +298,8 @@ class IndexController extends ControllerBase
     public function indexAction ()
     {
 
+        Phalcon\Tag::setTitle("News Feed");
+
         $objUserFactory = new UserFactory();
         $arrUsers = $objUserFactory->getUsers ();
 
@@ -464,6 +469,20 @@ class IndexController extends ControllerBase
         }
 
         $this->view->arrFriendRequests = $arrFriendRequests;
+        
+        try {
+             $blHasGdpr = (new GDPR())->checkUser($objUser);
+        } catch (Exception $ex) {
+             return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to check users gdpr status"]
+                            ]
+            );
+        }
+        
+        $this->view->blHasGdpr = $blHasGdpr;
     }
 
     public function autoSuggestAction ()

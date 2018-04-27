@@ -11,6 +11,8 @@ class EventController extends ControllerBase
      */
     public function indexAction ($id)
     {
+        Phalcon\Tag::setTitle("Event");
+
         if ( empty ($_SESSION['user']['user_id']) )
         {
             return $this->dispatcher->forward (

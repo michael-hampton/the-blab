@@ -114,8 +114,7 @@ class LoginModel
             return false;
         }
 
-        if ( empty ($_COOKIE['blab_rememberme']) )
-        {
+           try {
             $days = 60;
 
             $value = $this->encryptCookie ($username);
@@ -124,7 +123,10 @@ class LoginModel
             $arrUser = array('username' => $value, 'password' => $value2);
 
             setcookie ("blab_rememberme", json_encode ($arrUser), time () + ($days * 24 * 60 * 60 * 1000));
-        }
+           } catch(Exception $e) {
+
+            }
+        
 
         $_SESSION['user']['user_id'] = $result[0]['uid'];
         $_SESSION['user']['username'] = $result[0]['username'];

@@ -82,7 +82,7 @@ class UserController extends ControllerBase
     public function loginAction ()
     {
         $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
-        
+
         $username = '';
         $password = '';
 
@@ -97,10 +97,10 @@ class UserController extends ControllerBase
             $username = $objLogin->decryptCookie ($username);
             $password = $objLogin->decryptCookie ($password);
         }
-        
+
         $this->view->username = $username;
         $this->view->password = $password;
-        
+
         if ( !empty ($_SESSION['user']['username']) && !empty ($_SESSION['user']['user_id']) )
         {
             header ("Location: /blab/index/index");
@@ -365,16 +365,18 @@ class UserController extends ControllerBase
         }
     }
 
-    public function getUserDetailsAction ()
+    public function getUserDetailsAction ($userId = null)
     {
         $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
-        if ( empty ($_POST['userId']) )
+        $userId = ($userId !== null) ? $userId : ((!empty ($_POST['userId'])) ? $_POST['userId'] : '');
+
+        if ( empty ($userId) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objUser = new User ($_POST['userId']);
+        $objUser = new User ($userId);
 
         $arrCountries = (new Location())->getCountries ();
 
@@ -397,6 +399,73 @@ class UserController extends ControllerBase
         $arrUserSettings = (new UserSettings ($objUser));
 
         $this->view->arrUserSettings = $arrUserSettings;
+    }
+
+    /* creates a compressed zip file */
+
+    function create_zip ($file, $destination, $overwrite = true)
+    {
+        $zip = new ZipArchive;
+        $r = $zip->open ($destination, ZipArchive::CREATE);
+        var_dump ($r);
+
+        if ( !file_exists ($file) )
+        {
+            die ("Mike");
+        }
+
+        $content = file_get_contents ($file);
+        $r = $zip->addFromString (pathinfo ($file, PATHINFO_BASENAME), $content);
+
+        //$r = $zip->addFile ($file, $file);
+        var_dump ($r);
+
+        $r = $zip->close ();
+        var_dump ($r);
+    }
+
+    public function downloadUserDataAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_SESSION['user']['user_id']) || empty ($_SESSION['user']['username']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $userId = $_SESSION['user']['user_id'];
+
+        $filename = $_SESSION['user']['username'] . '.html';
+        $path = $this->rootPath . "/blab/public/downloads/";
+        $destination = $path . $filename;
+        $zipDestination = $this->rootPath . "/blab/public/downloads/" . $_SESSION['user']['username'] . '.zip';
+
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/blab/user/getUserDetails/' . $userId;
+
+
+        //fopen opens webpage in Binary
+        $handle = fopen ($url, "rb");
+// initialize
+        $lines_string = "";
+// read content line by line
+        do {
+            $data = fread ($handle, 1024);
+            if ( strlen ($data) == 0 )
+            {
+                break;
+            }
+            $lines_string.=$data;
+        }
+        while (true);
+//close handle to release resources
+        fclose ($handle);
+        $myfile = fopen ($destination, "w") or die ("Unable to open file!");
+        fwrite ($myfile, $lines_string);
+        fclose ($myfile);
+        $this->create_zip ($destination, $zipDestination);
+
+        $objEmail = new EmailNotification (new User ($_SESSION['user']['user_id']), "Your Personal Data download", "Please find attached your personal data download");
+        $objEmail->mail_attachment ($filename, $path);
     }
 
 }

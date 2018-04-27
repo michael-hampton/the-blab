@@ -130,6 +130,8 @@ class GroupController extends ControllerBase
      */
     public function indexAction ($groupId)
     {
+        
+
         if ( empty ($_SESSION['user']['username']) || empty ($_SESSION['user']['user_id']) )
         {
             return $this->dispatcher->forward (
@@ -186,6 +188,8 @@ class GroupController extends ControllerBase
 
 
         $objGroup = new Group ($groupId);
+
+        Phalcon\Tag::setTitle("Group " . $objGroup->getGroupName());
 
         $this->view->hasPermission = true;
 

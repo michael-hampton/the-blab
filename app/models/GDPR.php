@@ -39,7 +39,6 @@ class GDPR
         if ( $arrResult === false )
         {
             throw new Exception ("Db query failed");
-            ;
         }
 
         if ( empty ($arrResult[0]) )
