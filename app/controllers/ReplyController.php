@@ -158,7 +158,7 @@ class ReplyController extends ControllerBase
 				
                 <div class="vpb_default_status_wrapper" id="vpb_default_reply_wrapper_' . $objCommentReply->getId () . '">
                 <span id="vreplies_' . $objCommentReply->getId () . '">' . $objCommentReply->getReply () . '</span><span id="vreplies_large_' . $objCommentReply->getId () . '" style="display:none !important;"></span>                
-                                <br clear="all">                <div class="vpb_photos_wrapper_medium vasplus-tooltip-attached" id="reply_' . $objCommentReply->getId () . '" original-title="Click to enlarge">
+                                <br clear="all">                <div class="vpb_photos_wrapper_medium vasplus-tooltip-attached" id="reply_' . $objCommentReply->getId () . '" data-toggle="tooltip" data-placement="top" title="" data-original-title="Click to enlarge">
 					<a style="display:none;" class="v_photo_holders" onclick="vpb_popup_photo_box(\'' . $objCommentReply->getId () . '\', \'1\', \'1\', \'/blab/public/uploads/profile/' . $objCommentReply->getUsername () . '.jpg\');">
 					  <img src="/blab/public/uploads/profile/' . $objCommentReply->getUsername () . '.jpg">
 					</a>
@@ -182,7 +182,7 @@ class ReplyController extends ControllerBase
 				</span>
                 <span class="vpb_wrap_post_contents_b">
                                     <div class="dropdown">
-                     <i id="menu1' . $objCommentReply->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_replies_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" original-title="Options"></i>
+                     <i id="menu1' . $objCommentReply->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_replies_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Options"></i>
                       <ul class="dropdown-menu bullet pull-right" role="menu" aria-labelledby="menu1' . $objCommentReply->getId () . '" style="right: -15px; left: auto; top:18px;border-radius:0px !important;">
                                               	<li><a onclick="vpb_show_editable_item(\'' . $objCommentReply->getId () . '\', \'reply\');">Edit Reply</a></li>
                         	                            <li><a onclick="vpb_delete_this_wall_item(\'' . $objCommentReply->getId () . '\', \'reply\');">Delete</a></li>
@@ -205,14 +205,14 @@ class ReplyController extends ControllerBase
                <!-- Like button Ends -->
                					<span class="vpb_comment_update_bottom_links" title="Leave a reply" onclick="vpb_show_reply_box(\'' . $objCommentReply->getCommentId () . '\');">Reply</span> ·
                                 
-                <span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="display:none;color: #3b5998; text-decoration:none;" id="vpb_rlike_wrapper_' . $objCommentReply->getId () . '" onclick="vpb_load_reply_likes(\'' . $objCommentReply->getId () . '\', \'' . $objCommentReply->getUsername () . '\', \'People Who Like This\');" original-title="Click to see likes">
+                <span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="display:none;color: #3b5998; text-decoration:none;" id="vpb_rlike_wrapper_' . $objCommentReply->getId () . '" onclick="vpb_load_reply_likes(\'' . $objCommentReply->getId () . '\', \'' . $objCommentReply->getUsername () . '\', \'People Who Like This\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Click to see likes">
                 
                 <i class="fa fa-thumbs-o-up"></i> <span id="vpb_total_rlikes_' . $objCommentReply->getId () . '">0</span>
                  · </span> 
                 
                 <span class="vpb_comment_update_bottom_links" style="cursor:default;"><span class="vpb_date_time_posted" date="' . $objCommentReply->getDateCreated () . '">' . $objCommentReply->getDateCreated () . '</span></span>
                 
-                 <span style="display:none;" id="rdotted_id_' . $objCommentReply->getId () . '"> · </span><span id="redited_id_' . $objCommentReply->getId () . '" class="vpb_hover vasplus-tooltip-attached" style="display:none;font-size:12px;" onclick="vpb_load_edited_history(\'' . $objCommentReply->getId () . '\', \'' . $objCommentReply->getUsername () . '\', \'Edit History\', \'reply\');" original-title="Show edit history">Edited</span>                
+                 <span style="display:none;" id="rdotted_id_' . $objCommentReply->getId () . '"> · </span><span id="redited_id_' . $objCommentReply->getId () . '" class="vpb_hover vasplus-tooltip-attached" style="display:none;font-size:12px;" onclick="vpb_load_edited_history(\'' . $objCommentReply->getId () . '\', \'' . $objCommentReply->getUsername () . '\', \'Edit History\', \'reply\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Show edit history">Edited</span>                
 				</div>
                 
 				<div style="clear:both;"></div>

@@ -327,11 +327,11 @@ else
 
                                         <div id="vpb_comment_bottom_icons_' . $arrComment->getId () . '" style="margin-bottom:2px !important;float: right;margin-top: 12px;">
 	
-	<span class="vpb_no_radius_c vasplus-tooltip-attached" style="display:none;" id="remove_comment_photo_' . $arrComment->getId () . '" onclick="remove_comment_photo(\'' . $arrComment->getId () . '\');" original-title="Remove photo"><i style="font-size:22px;" class="fa fa-times vfooter_icon"></i></span>
+	<span class="vpb_no_radius_c vasplus-tooltip-attached" style="display:none;" id="remove_comment_photo_' . $arrComment->getId () . '" onclick="remove_comment_photo(\'' . $arrComment->getId () . '\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove photo"><i style="font-size:22px;" class="fa fa-times vfooter_icon"></i></span>
 	
-	<span id="add_file_clicked_' . $arrComment->getId () . '" class="vpb_no_radius_c vasplus-tooltip-attached" onclick="document.getElementById(\'comment_photo_' . $arrComment->getId () . '\').click();" original-title="Attach a photo"><i style="font-size:22px;" class="fa fa-camera vfooter_icon"></i></span>
+	<span id="add_file_clicked_' . $arrComment->getId () . '" class="vpb_no_radius_c vasplus-tooltip-attached" onclick="document.getElementById(\'comment_photo_' . $arrComment->getId () . '\').click();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Attach a photo"><i style="font-size:22px;" class="fa fa-camera vfooter_icon"></i></span>
 	
-	<span class="vpb_no_radius_c vpb_smiley_buttons vasplus-tooltip-attached" id="vpb_show_smiley_button_' . $arrComment->getId () . '" onclick="vpb_comment_smiley_box(\'' . $arrComment->getId () . '\');" original-title="Add smiley"><i style="font-size:22px;" class="fa fa-smile-o vfooter_icon"></i></span>
+	<span class="vpb_no_radius_c vpb_smiley_buttons vasplus-tooltip-attached" id="vpb_show_smiley_button_' . $arrComment->getId () . '" onclick="vpb_comment_smiley_box(\'' . $arrComment->getId () . '\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add a smiley"><i style="font-size:22px;" class="fa fa-smile-o vfooter_icon"></i></span>
             <button comment-id="' . $arrComment->getId () . '" type="button" class="btn btn-primary btn-sm SubmitNewComment" disabled="disabled">Send</button>
    
    </div>

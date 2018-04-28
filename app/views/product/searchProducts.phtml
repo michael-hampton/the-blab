@@ -1,4 +1,12 @@
 <?php
+$arrFormattedTags = [];
+
+if ( !empty ($arrTags) )
+{
+    foreach ($arrTags as $objTag) {
+        $arrFormattedTags[] = $objTag->getDescription ();
+    }
+}
 
 /**
  * 
@@ -12,11 +20,13 @@ function buildPagination (ProductFactory $objProduct)
     {
         $vpb_current_page = 1;
         $currentPage = 1;
-    } else {
+    }
+    else
+    {
         $currentPage = $objProduct->getPageNo () + 1;
     }
 
-    $vpb_previous_page = $currentPage - 1;    
+    $vpb_previous_page = $currentPage - 1;
     $vpb_next_page = $currentPage + 1;
     $vpb_last_page = ceil ($objProduct->getTotalCount () / 20);
     $vpb_lastpaged = $vpb_last_page - 1;
@@ -41,7 +51,7 @@ function buildPagination (ProductFactory $objProduct)
 // Pages	
         if ( $vpb_last_page < 7 + ($vpb_pagination_stages * 2) ) // Not enough pages to breaking it up
         {
-            
+
             for ($vpb_page_counter = 1; $vpb_page_counter <= $vpb_last_page; $vpb_page_counter++) {
                 if ( $vpb_page_counter == $currentPage )
                 {
@@ -135,7 +145,7 @@ function buildPagination (ProductFactory $objProduct)
 
     </div>
     <div style="width:80%; float:right;" align="right">
-    <?= buildPagination ($objProductFactory); ?>
+        <?= buildPagination ($objProductFactory); ?>
     </div>
     <div style="clear:both;"></div>
 </div>
@@ -164,7 +174,7 @@ function buildPagination (ProductFactory $objProduct)
         <li>
             <h4><?= $arrProduct->getName () ?></h4>
             <div>
-                <img onclick="vpb_show_product_photos ('<?= $arrProduct->getId () ?>', '<?= $arrProduct->getName () ?>', '<?= trim($arrProduct->getSeller()) ?>', <?= $arrProduct->getUserId() ?>, '<?= count ($arrExtraImages) ?>')" src="<?= $firstImage ?>" width="200">
+                <img onclick="vpb_show_product_photos ('<?= $arrProduct->getId () ?>', '<?= $arrProduct->getName () ?>', '<?= trim ($arrProduct->getSeller ()) ?>', <?= $arrProduct->getUserId () ?>, '<?= count ($arrExtraImages) ?>')" src="<?= $firstImage ?>" width="200">
             </div>
             <textarea id="productsPics_<?= $arrProduct->getId () ?>" style="display:none;"><?= json_encode ($arrExtraImages) ?></textarea>
             <textarea id="productsDescs_<?= $arrProduct->getId () ?>" style="display:none;"><?= $arrProduct->getDescription () ?></textarea>
@@ -174,13 +184,18 @@ function buildPagination (ProductFactory $objProduct)
                     <div class="item-box">
                         <div align="left">Color: <b style="color:gray;"><?= $arrProduct->getColour () ?></b></div>
                         <div align="left">Size: <b style="color:gray;"><?= $arrProduct->getSize () ?></b></div>
-                          <div align="left">Seller: <b style="color:gray;"><?= $arrProduct->getSeller () ?></b></div>
+                        <div align="left">Seller: <b style="color:gray;"><?= $arrProduct->getSeller () ?></b></div>
                         <!--                        <div align="left">Quantity:
                                                     <input name="product_qty_1548908492338902" id="product_qty_1548908492338902" type="number" class="forms-controled text-center vcart_select_box" onclick="vpb_track_quantity(this);" onchange="vpb_track_quantity(this);" value="1" autocomplete="off">
                         
-                                                </div>-->
+                                                  </div>-->
                         <br>
-                        <!--                        <div class="btn btn-xs btn-info" style="padding:5px 10px;" onclick="window.location.href = 'login.php';">Add to Cart</div>-->
+                        <?php
+                        if ( !in_array ($arrProduct->getId (), $arrFavoritesIds) )
+                        {
+                            ?>
+                            <div class="btn btn-xs btn-info" style="padding:5px 10px;" onclick="vpb_add_item_to_favorites ('<?= $arrProduct->getId () ?>', '<?= $arrProduct->getName () ?>', '<?= $firstImage ?>', '<?= trim ($arrProduct->getSeller ()) ?>');">Add to Favorites</div>
+    <?php } ?>
 
                     </div>
 
@@ -190,3 +205,8 @@ function buildPagination (ProductFactory $objProduct)
         </li>
 <?php endforeach; ?>
 </ul>
+
+<script>
+    var arrTags = '<?= json_encode ($arrFormattedTags) ?>';
+
+</script>

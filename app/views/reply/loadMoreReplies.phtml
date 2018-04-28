@@ -213,14 +213,14 @@ if ( !empty ($arrReplies) )
 
         if ( trim ($arrReply->getDateUpdated ()) !== "" )
         {
-            echo '<span class="pull-left" id="rdotted_id_' . $arrReply->getId () . '"> · </span><span id="redited_id_' . $arrReply->getId () . '" class="vpb_hover vasplus-tooltip-attached pull-left" style="font-size:12px;" onclick="vpb_load_edited_history(\'' . $arrReply->getId () . '\', \'' . $arrReply->getUsername () . '\', \'Edit History\', \'reply\');" original-title="Show edit history">Edited</span><br>';
+            echo '<span class="pull-left" id="rdotted_id_' . $arrReply->getId () . '"> · </span><span id="redited_id_' . $arrReply->getId () . '" class="vpb_hover vasplus-tooltip-attached pull-left" style="font-size:12px;" onclick="vpb_load_edited_history(\'' . $arrReply->getId () . '\', \'' . $arrReply->getUsername () . '\', \'Edit History\', \'reply\');"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Show edit history">Edited</span><br>';
         }
 
         echo '<div class="vpb_wall_comments_description" style="font-size:12px !important; width:100%;">
 				
                 <div style="display:block !important;" class="vpb_default_status_wrapper" id="vpb_default_reply_wrapper_' . $arrReply->getId () . '">
                 <span id="vreplies_' . $arrReply->getId () . '">' . $arrReply->getReply () . '</span><span id="vreplies_large_' . $arrReply->getId () . '" style="display:none !important;"></span>                
-                                <br clear="all">                <div class="vpb_photos_wrapper_medium vasplus-tooltip-attached" id="reply_' . $arrReply->getId () . '" original-title="Click to enlarge">';
+                                <br clear="all">                <div class="vpb_photos_wrapper_medium vasplus-tooltip-attached" id="reply_' . $arrReply->getId () . '" data-toggle="tooltip" data-placement="top" title="" data-original-title="Click to englarge">';
         $arrImages = $arrReply->getArrImages ();
 
         if ( !empty ($arrImages) )
@@ -243,7 +243,7 @@ if ( !empty ($arrReplies) )
 				</span>
                 <span class="vpb_wrap_post_contents_b">
                                     <div class="dropdown">
-                     <i id="menu1' . $arrReply->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_replies_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" original-title="Options"></i>
+                     <i id="menu1' . $arrReply->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_replies_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Options"></i>
                       <ul class="dropdown-menu bullet pull-right" role="menu" aria-labelledby="menu1' . $arrReply->getId () . '" style="right: -15px; left: auto; top:18px;border-radius:0px !important;">
                                               	<li><a onclick="vpb_show_editable_item(\'' . $arrReply->getId () . '\', \'reply\');">Edit Reply</a></li>
                         	                            <li><a onclick="vpb_delete_this_wall_item(\'' . $arrReply->getId () . '\', \'reply\');">Delete</a></li>
@@ -285,13 +285,13 @@ if ( !empty ($arrReplies) )
 
         $likeCommentReplyText = trim ($likeCommentReplyClass) === "unlike" ? 'Unlike' : "Like";
 
-        echo '<span class="vpb_comment_liked pull-left" style="display:' . $likeCommentReplyClass . ';" id="rlike_' . $arrReply->getId () . '" onclick="vpb_like_reply_box(\'' . $arrReply->getUsername () . '\', \'' . $arrReply->getId () . '\', \'like\');" title="Like this comment"><span class="like_text">Like</span></span>';
+        echo '<span class="vpb_comment_liked pull-left" style="display:' . $likeCommentReplyClass . ';" id="rlike_' . $arrReply->getId () . '" onclick="vpb_like_reply_box(\'' . $arrReply->getUsername () . '\', \'' . $arrReply->getId () . '\', \'like\');" title="Like this comment"><span class="like_text" data-toggle="tooltip" data-placement="top" title="" data-original-title="Like">Like</span></span>';
 
-        echo '<span class="vpb_comment_liked pull-left" style="display:' . $unlikeDisplay . ';" id="runlike_' . $arrReply->getId () . '" onclick="vpb_like_reply_box(\'' . $arrReply->getUsername () . '\', \'' . $arrReply->getId () . '\', \'unlike\');" title="Unlike this comment"><span class="like_text">Unlike</span></span>';
+        echo '<span class="vpb_comment_liked pull-left" style="display:' . $unlikeDisplay . ';" id="runlike_' . $arrReply->getId () . '" onclick="vpb_like_reply_box(\'' . $arrReply->getUsername () . '\', \'' . $arrReply->getId () . '\', \'unlike\');" title="Unlike this comment"><span class="like_text" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unlike">Unlike</span></span>';
 
         echo '<span class="vpb_comment_update_bottom_links pull-left" title="Leave a reply" onclick="vpb_show_reply_box(\'' . $arrReply->getCommentId () . '\');">Reply</span> ·
                                 
-                <span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="display:none;color: #3b5998; text-decoration:none;" id="vpb_rlike_wrapper_' . $arrReply->getId () . '" onclick="vpb_load_reply_likes(\'' . $arrReply->getId () . '\', \'' . $arrReply->getUsername () . '\', \'People Who Like This\');" original-title="Click to see likes">
+                <span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="display:none;color: #3b5998; text-decoration:none;" id="vpb_rlike_wrapper_' . $arrReply->getId () . '" onclick="vpb_load_reply_likes(\'' . $arrReply->getId () . '\', \'' . $arrReply->getUsername () . '\', \'People Who Like This\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Click to see likes">
                 
                 <i class="fa fa-thumbs-o-up"></i> <span id="vpb_total_rlikes_' . $arrReply->getId () . '">0</span>
                  · </span> 

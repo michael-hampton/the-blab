@@ -116,9 +116,9 @@ class ProductFactory
         {
             $sql .= " LIMIT {$page}, {$limit}";
         }
-        
+
         echo $sql;
-        
+
 
         $arrResults = $this->db->_query ($sql, $arrParams);
 
@@ -186,7 +186,7 @@ class ProductFactory
 
         foreach ($arrResults as $arrResult) {
             $objProduct = new Product ($arrResult['id']);
-            $objProduct->setSeller($arrResult['seller']);
+            $objProduct->setSeller ($arrResult['seller']);
 
             $arrImages = $objUploadFactory->getImagesForProduct ($objProduct);
 
@@ -261,6 +261,23 @@ class ProductFactory
         }
 
         return new Product ($result);
+    }
+
+    /**
+     * 
+     * @param type $id
+     * @return \Product|boolean
+     */
+    public function getProduct ($id)
+    {
+        try {
+            $objProduct = new Product ($id);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            return false;
+        }
+
+        return $objProduct;
     }
 
 }

@@ -21,7 +21,7 @@ class ControllerBase extends \Phalcon\Mvc\Controller
      *
      * @var type 
      */
-    private $totalFriendsPerLoad = 1;
+    protected $totalFriendsPerLoad = 50;
     
     /**
      *
