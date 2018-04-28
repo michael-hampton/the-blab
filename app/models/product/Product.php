@@ -19,7 +19,7 @@ class Product
      * @var type 
      */
     private $id;
-    
+
     /**
      *
      * @var type 
@@ -85,7 +85,7 @@ class Product
      * @var type 
      */
     private $db;
-    
+
     /**
      *
      * @var type 
@@ -264,7 +264,7 @@ class Product
     {
         $this->description = $description;
     }
-    
+
     /**
      * 
      * @return type
@@ -301,7 +301,6 @@ class Product
         $this->seller = $seller;
     }
 
-    
     /**
      * 
      * @return boolean
@@ -348,7 +347,11 @@ class Product
 
     public function populateObject ()
     {
-        $result = $this->db->_select ("product", "id = :id", [":id" => $this->id]);
+        $result = $this->db->_query ("SELECT p.*, 
+                                            CONCAT(u.fname, ' ' , u.lname) AS seller 
+                                    FROM `product` p 
+                                    INNER JOIN users u ON u.uid = p.user_id
+                                    WHERE p.id = :id", [":id" => $this->id]);
 
         if ( $result === false || empty ($result[0]) )
         {
@@ -365,6 +368,7 @@ class Product
         $this->price = $result[0]['price'];
         $this->category = $result[0]['category'];
         $this->userId = $result[0]['user_id'];
+        $this->seller = $result[0]['seller'];
     }
 
     /**

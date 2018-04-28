@@ -9,6 +9,7 @@
             <div class="the_row">
                 <br clear="all">
 
+
                 <!-- The Search Box -->
                 <div id="vcart_search_box" style="margin:0 auto; padding:0px; display:none;" align="center">
 
@@ -59,7 +60,7 @@
 
                                 <br clear="all"><br clear="all"> 
 
-                                <a href="/blab/product/admin"><a href="/blab/product/admin"><i class="fa fa-plus-square-o"></i></a>Sell</a>
+                                <a style="font-size:22px;" href="/blab/product/admin"><i class="fa fa-credit-card"></i> Sell Item</a>
 
                                 <br clear="all"> <br clear="all"> 
 
@@ -76,6 +77,29 @@
                     <!-- CENTER BOX STARTS -->
                     <div class="vpb_vcartl_body_bcenter">
                         <div class="inner_center">
+
+                            <li style="margin-right:10px;font-size:14px !important; font-weight:normal !important;">
+                                <a style="margin-top:4px;text-decoration:none !important;font-size:14px !important; font-weight:normal !important; cursor:pointer;" class="dropdown open" onclick="vpb_display_items_in_cart ('manual');">
+                                    <i id="v_new_messages" class="fa fa-shopping-basket vpb_notifications_icon vasplus_tooltip_notify" aria-hidden="true" style="color:#FFF;font-size:14px !important; font-weight:normal !important;"></i> Cart <span id="message_counter" class="vpb_cartCounter"><span id="totalItemsInCart"><?= count ($arrFavorites) ?></span></span>
+                                </a>
+
+                                <ul id="v_added_items_notification_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="right: 8px; left: auto; border-radius: 0px; border-top: 1px solid rgb(225, 225, 225); font-size: 13px !important; font-family: arial !important; min-width: 330px !important; max-width: 330px !important; width: 100% !important; margin: 0px !important; display: none;" aria-labelledby="v_added_items_notification_box">
+                                    <li class="dropdown-header">
+
+                                        <div style="float:left;">Information</div>
+
+                                        <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                                            <i class="fa fa-times vcart_remove_item vasplus_tooltip_menu" aria-hidden="true" onclick="vpb_close_added_item_notification_box ();" original-title="Close"></i>
+                                        </div>
+                                        <div style="clear:both;"></div>
+                                    </li>
+
+                                    <li class="dropdown-header dropdown-header-plus" style="padding:0px !important;">
+                                        <span id="vpb_display_messages" class="vfriend_inner" style="padding:6px; font-size:14px;">The item has been added to your shopping cart</span>
+                                    </li>
+                                </ul>  
+
+                            </li>
 
                             <!-- Display Group Details -->
                             <div class="vcart_o_detail" style="border-bottom:0px solid !important;">
@@ -294,7 +318,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title"><i class="fa fa-shopping-cart"></i> <span id="items_in_cart">Your Shopping Cart</span></h4>
+                <h4 class="modal-title"><i class="fa fa-shopping-cart"></i> <span id="items_in_cart">Your Favorites List</span></h4>
             </div>
             <div class="modal-body" style="margin:0 auto !important; text-align:center; max-height:400px; overflow-y:auto;" align="center">
                 <div class="vcart_items_wrap">
@@ -302,7 +326,7 @@
                         <div class="vcart_items_wrap_b">
                             Product Details         </div>
                         <div class="vcart_items_wrap_c">
-                            Price (USD)
+
                         </div>
                         <div style="clear:both;"></div>
                     </div>
@@ -310,16 +334,13 @@
                     <div id="vcart_added_items_in_cart"></div>
                 </div>
             </div>
-            <div class="vcart_items_wrap_g">
-                <div class="vcart_items_wrap_h">Grand Total: $<span id="vcart_grand_total">0.00</span> USD</div>
-                <div style="clear:both;"></div>
-            </div>
+
 
             <div class="modal-footer">
                 <div style="float:left; padding-top:6px;"><span id="clearing_status"></span></div>
 
                 <div id="clear_cart_button" style="float:right;">
-                    <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="document.getElementById ('clearing_status').innerHTML = document.getElementById ('v_loading_btn').value;document.getElementById ('clear_cart_button').style.display = 'none';$ ('.vcart_remove_btn').hide ();document.getElementById ('ppcheckoutbtn').click ();">Check-out</span>
+<!--                    <span class="btn btn-default btn btn-success btn-wall-continue" style="padding-top:5px; padding-bottom:7px;" onClick="document.getElementById ('clearing_status').innerHTML = document.getElementById ('v_loading_btn').value;document.getElementById ('clear_cart_button').style.display = 'none';$ ('.vcart_remove_btn').hide ();document.getElementById ('ppcheckoutbtn').click ();">Check-out</span>-->
 
                     <span class="btn btn-danger" onclick="vpb_remove_item_from_cart ('', 'clear-all')">Clear Cart</span>
 
@@ -555,9 +576,9 @@
 
                         <div class="ibox-content">
                             <h3>Private message</h3>
-                            
+
                             <input type="hidden" id="seller" name="seller">
-                             <input type="hidden" id="productId" name="productId">
+                            <input type="hidden" id="productId" name="productId">
 
                             <p class="small" id="sellersName">
                                 Send private message to Alex Smith
@@ -571,6 +592,14 @@
                                 <label>Message</label>
                                 <textarea class="form-control" id="theMessage" placeholder="Your message" rows="8"></textarea>
                             </div>
+
+                            <div class="form-group">
+                                <label>Tags</label>
+                                <select class="form-control" id="tag-select">
+                                    
+                                </select>
+                            </div>
+
                             <button class="btn btn-primary btn-block" onclick="sendMessageToSeller ()">Send</button>
 
                         </div>

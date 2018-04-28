@@ -8,7 +8,21 @@ class ProductController extends ControllerBase
     public function indexAction ()
     {
 
-        $arrCategories = (new ProductCategoryFactory())->getCategories ();
+        Phalcon\Tag::setTitle ("Shop");
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $arrCategories = (new ProductCategoryFactory())->getCategories ();
+            $arrFavorites = (new FavoriteFactory())->getFavoritesForUser ($objUser, new ProductFactory ());
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $arrCategories === false )
         {
@@ -21,7 +35,74 @@ class ProductController extends ControllerBase
             );
         }
 
+        if ( $arrFavorites === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get users favorites"]
+                            ]
+            );
+        }
+
         $this->view->arrCategories = $arrCategories;
+        $this->view->arrFavorites = $arrFavorites;
+    }
+
+    public function getUsersFavoritesAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $arrFavorites = (new FavoriteFactory())->getFavoritesForUser ($objUser, new ProductFactory ());
+            $objUploadFactory = new UploadFactory();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrFavorites === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( !empty ($arrFavorites) )
+        {
+            $arrData = ["count" => count ($arrFavorites)];
+
+            foreach ($arrFavorites as $objFavorite) {
+
+                $arrImages = $objUploadFactory->getImagesForProduct ($objFavorite);
+
+                if ( !empty ($arrImages) && count ($arrImages) > 0 )
+                {
+                    $image = $arrImages[0]->getFileLocation ();
+                }
+                else
+                {
+                    $image = '';
+                }
+
+
+                $arrData['products'][] = array(
+                    "product_name" => $objFavorite->getName (),
+                    "seller" => $objFavorite->getSeller (),
+                    "id" => $objFavorite->getId (),
+                    "user_id" => $objFavorite->getUserId (),
+                    "description" => $objFavorite->getDescription (),
+                    "image" => $image
+                );
+            }
+        }
+
+        $this->ajaxresponse ("success", "success", $arrData);
     }
 
     public function saveNewCategoryAction ()
@@ -312,6 +393,8 @@ class ProductController extends ControllerBase
             );
         }
 
+        $objUser = new User ($_SESSION['user']['user_id']);
+
         if ( !isset ($_POST['searchText']) || !isset ($_POST['category_id']) || !isset ($_POST['page_id']) )
         {
             return $this->dispatcher->forward (
@@ -349,6 +432,45 @@ class ProductController extends ControllerBase
                             ]
             );
         }
+
+        $arrFavorites = (new FavoriteFactory())->getFavoritesForUser ($objUser, new ProductFactory ());
+
+        if ( $arrFavorites === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unable to get favorites for user"]
+                            ]
+            );
+        }
+
+        $arrFavoritesIds = [];
+
+        if ( !empty ($arrFavorites) )
+        {
+            foreach ($arrFavorites as $objFavorite) {
+                $arrFavoritesIds[] = $objFavorite->getId ();
+            }
+        }
+
+        $this->view->arrFavoritesIds = $arrFavoritesIds;
+
+        $arrTags = (new TagFactory())->getTagsForShop ();
+
+        if ( $arrTags === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unable to get tags"]
+                            ]
+            );
+        }
+
+        $this->view->arrTags = $arrTags;
 
         $this->view->objProductFactory = $objProductFactory;
         $this->view->arrProducts = $arrProducts;
@@ -497,6 +619,88 @@ class ProductController extends ControllerBase
         $this->view->objProductFactory = $objProductFactory;
         $this->view->arrProducts = $arrProducts;
         $this->view->pageLimit = $vpb_page_limit;
+    }
+
+    public function addProductToFavoritesAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['productId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objFavoriteFactory = new FavoriteFactory();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objProductFactory = new ProductFactory();
+            $blResponse = $objFavoriteFactory->saveFavoriteForUser ($objUser, new Product ($_POST['productId']));
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $blResponse === false )
+        {
+            $arrErrors = $objFavoriteFactory->getValidationFailures ();
+
+            if ( !empty ($arrErrors) )
+            {
+                $messaage = implode ("<br/>", $arrErrors);
+            }
+            else
+            {
+                $messaage = "Unable to save product to your favorites list";
+            }
+
+            $this->ajaxresponse ("error", $messaage);
+        }
+
+        $arrFavorites = $objFavoriteFactory->getFavoritesForUser ($objUser, $objProductFactory);
+
+        if ( $arrFavorites === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success", ["count" => count ($arrFavorites)]);
+    }
+
+    public function deleteFromFavoritesAction ()
+    {
+
+        $this->view->disable ();
+
+        if ( empty ($_POST['productId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objFavorite = new DeleteFavorite();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $blResponse = $objFavorite->deleteFavoriteFromDatabase ($objUser, new Product ($_POST['productId']));
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $blResponse === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
     }
 
 }
