@@ -131,23 +131,32 @@ class EmailNotification
         $handle = fopen ($file, "r");
         $content = fread ($handle, $file_size);
         fclose ($handle);
+
         $content = chunk_split (base64_encode ($content));
         $uid = md5 (uniqid (time ()));
-        $header = "From: " . $this->sfromEmail . " <" . $this->sfromEmail . ">\r\n";
+        $name = basename ($file);
+
+        $eol = PHP_EOL;
+
+// Basic headers
+        $header = "From: " . $this->sfromEmail . " <" . $this->sfromEmail . ">" . $eol;
+//$header .= "Reply-To: ".$replyto.$eol;
         $header .= "MIME-Version: 1.0\r\n";
-        $header .= "Content-Type: multipart/mixed; boundary=\"" . $uid . "\"\r\n\r\n";
-        $header .= "This is a multi-part message in MIME format.\r\n";
-        $header .= "--" . $uid . "\r\n";
-        $header .= "Content-type:text/plain; charset=iso-8859-1\r\n";
-        $header .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-        $header .= $this->body . "\r\n\r\n";
-        $header .= "--" . $uid . "\r\n";
-        $header .= "Content-Type: application/octet-stream; name=\"" . $filename . "\"\r\n"; // use different content types here
-        $header .= "Content-Transfer-Encoding: base64\r\n";
-        $header .= "Content-Disposition: attachment; filename=\"" . $filename . "\"\r\n\r\n";
-        $header .= $content . "\r\n\r\n";
-        $header .= "--" . $uid . "--";
-        if ( mail (trim ($this->objUser->getEmail ()), $this->header, "", $header) )
+        $header .= "Content-Type: multipart/mixed; boundary=\"" . $uid . "\"";
+
+// Put everything else in $message
+        $message = "--" . $uid . $eol;
+        $message .= "Content-Type: text/html; charset=ISO-8859-1" . $eol;
+        $message .= "Content-Transfer-Encoding: 8bit" . $eol . $eol;
+        $message .= $this->body . $eol;
+        $message .= "--" . $uid . $eol;
+        $message .= "Content-Type: application/pdf; name=\"" . $filename . "\"" . $eol;
+        $message .= "Content-Transfer-Encoding: base64" . $eol;
+        $message .= "Content-Disposition: attachment; filename=\"" . $filename . "\"" . $eol;
+        $message .= $content . $eol;
+        $message .= "--" . $uid . "--";
+
+        if ( mail (trim ($this->objUser->getEmail ()), $this->header, $message, $header) )
         {
             return true;
         }

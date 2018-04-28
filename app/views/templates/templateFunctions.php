@@ -466,7 +466,7 @@ function buildReplies ($comment)
                 <div class="vpb_default_status_wrapper" id="vpb_default_reply_wrapper_' . $arrReply->getId () . '">
                 <span id="vreplies_' . $arrReply->getId () . '">' . $arrReply->getReply () . '</span><span id="vreplies_large_' . $arrReply->getId () . '" style="display:none !important;"></span>                
                                 <br clear="all">                
-                                <div class="vpb_photos_wrapper_medium vasplus-tooltip-attached" id="reply_' . $arrReply->getId () . '" original-title="Click to enlarge">
+                                <div class="vpb_photos_wrapper_medium vasplus-tooltip-attached" id="reply_' . $arrReply->getId () . '" data-toggle="tooltip" data-placement="top" title="" data-original-title="Click to enlarge">
 					<a style="display:none;" class="v_photo_holders" onclick="vpb_popup_photo_box(\'' . $arrReply->getId () . '\', \'1\', \'1\', \'/blab/public/uploads/profile/' . $arrReply->getUsername () . '.jpg\');">
 					  <img src="/blab/public/uploads/profile/' . $arrReply->getUsername () . '.jpg">
 					</a>
@@ -489,7 +489,7 @@ function buildReplies ($comment)
 
             echo '<span class="vpb_wrap_post_contents_b">
                                     <div class="dropdown">
-                     <i id="menu1' . $arrReply->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_replies_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" original-title="Options"></i>
+                     <i id="menu1' . $arrReply->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_replies_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Options"></i>
                       <ul class="dropdown-menu bullet pull-right" role="menu" aria-labelledby="menu1' . $arrReply->getId () . '" style="right: -15px; left: auto; top:18px;border-radius:0px !important;">
                                               	<li><a onclick="vpb_show_editable_item(\'' . $arrReply->getId () . '\', \'reply\');">Edit Reply</a></li>
                         	                            <li><a onclick="vpb_delete_this_wall_item(\'' . $arrReply->getId () . '\', \'reply\');">Delete</a></li>
@@ -533,7 +533,7 @@ function buildReplies ($comment)
 
             if ( count ($arrCommentLikes) > 0 )
             {
-                echo '<span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="color: rgb(59, 89, 152); text-decoration: none;" id="vpb_rlike_wrapper_421" onclick="vpb_load_reply_likes(\'' . $arrReply->getId () . '\', \'michaelhampton\', \'People Who Like This\');" original-title="Click to see likes">
+                echo '<span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="color: rgb(59, 89, 152); text-decoration: none;" id="vpb_rlike_wrapper_421" onclick="vpb_load_reply_likes(\'' . $arrReply->getId () . '\', \'michaelhampton\', \'People Who Like This\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Click to see likes"
                 
                 <i class="fa fa-thumbs-o-up"></i> <span id="vpb_total_rlikes_' . $arrReply->getId () . '">' . count ($arrCommentLikes) . '</span>
                  · </span>';
@@ -541,7 +541,7 @@ function buildReplies ($comment)
 
             echo '<span class="vpb_comment_update_bottom_links pull-left" title="Leave a reply" onclick="vpb_show_reply_box(\'' . $arrReply->getCommentId () . '\');">Reply</span> ·
                                 
-                <span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="display:none;color: #3b5998; text-decoration:none;" id="vpb_rlike_wrapper_' . $arrReply->getId () . '" onclick="vpb_load_reply_likes(\'' . $arrReply->getId () . '\', \'' . $arrReply->getUsername () . '\', \'People Who Like This\');" original-title="Click to see likes">
+                <span class="vpb_comment_update_bottom_links vasplus-tooltip-attached" style="display:none;color: #3b5998; text-decoration:none;" id="vpb_rlike_wrapper_' . $arrReply->getId () . '" onclick="vpb_load_reply_likes(\'' . $arrReply->getId () . '\', \'' . $arrReply->getUsername () . '\', \'People Who Like This\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Click to see likes">
                 
                 <i class="fa fa-thumbs-o-up"></i> <span id="vpb_total_rlikes_' . $arrReply->getId () . '">0</span>
                  · </span> 
@@ -722,7 +722,7 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
             echo '<span class="vpb_wrap_post_contents_b">
                                     
                     <div class="dropdown">
-                     <i id="menu' . $comment->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_coms_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" original-title="Options"></i>
+                     <i id="menu' . $comment->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_coms_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Options"></i>
                       <ul class="dropdown-menu bullet pull-right" role="menu" aria-labelledby="menu' . $comment->getId () . '" style="right: -15px; left: auto; top:18px;border-radius:0px !important;">
                                               	<li><a onclick="vpb_show_editable_item(\'' . $comment->getId () . '\', \'comment\');">Edit Comment</a></li>';
 
@@ -905,11 +905,11 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
                 
                 <div id="vpb_reply_bottom_icons_' . $comment->getId () . '" style="">
                 
-                <span class="vpb_no_radius_cc vasplus-tooltip-attached" style="display:none;" id="remove_reply_photo_' . $comment->getId () . '" onclick="remove_reply_photo(\'' . $comment->getId () . '\');" original-title="Remove photo"><i class="fa fa-times vfooter_icon"></i></span>
+                <span class="vpb_no_radius_cc vasplus-tooltip-attached" style="display:none;" id="remove_reply_photo_' . $comment->getId () . '" onclick="remove_reply_photo(\'' . $comment->getId () . '\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove photo"><i class="fa fa-times vfooter_icon"></i></span>
                 
-                <span id="add_reply_file_clicked_' . $comment->getId () . '" class="vpb_no_radius_cc vasplus-tooltip-attached" onclick="document.getElementById(\'reply_photo_' . $comment->getId () . '\').click();" original-title="Attach a photo"><i class="fa fa-camera vfooter_icon"></i></span>
+                <span id="add_reply_file_clicked_' . $comment->getId () . '" class="vpb_no_radius_cc vasplus-tooltip-attached" onclick="document.getElementById(\'reply_photo_' . $comment->getId () . '\').click();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Attach a photo"><i class="fa fa-camera vfooter_icon"></i></span>
                 
-                <span class="vpb_no_radius_cc vpb_reply_smiley_buttons vasplus-tooltip-attached" id="vpb_show_reply_smiley_button_' . $comment->getId () . '" onclick="vpb_reply_smiley_box(\'' . $comment->getId () . '\');" original-title="Add smiley"><i class="fa fa-smile-o vfooter_icon"></i></span>
+                <span class="vpb_no_radius_cc vpb_reply_smiley_buttons vasplus-tooltip-attached" id="vpb_show_reply_smiley_button_' . $comment->getId () . '" onclick="vpb_reply_smiley_box(\'' . $comment->getId () . '\');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add smiley"><i class="fa fa-smile-o vfooter_icon"></i></span>
                
                </div>
                 

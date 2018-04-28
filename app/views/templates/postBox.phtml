@@ -7,7 +7,7 @@
             <div class="modal-header heading">
                 <div class="vasplus_aa" onclick="vpb_update_status_clicked ();"><i class="fa fa-pencil-square vasplus_aaa"></i> Update Status</div>
 
-                <button id="vpb_close_post_box" type="button" class="close vasplus_tooltip_notify" style="position:absolute;top:10px; right:15px; cursor:pointer; display:none;" original-title="Close" onclick="vpb_close_post_box ();">×</button>
+                <button id="vpb_close_post_box" type="button" class="close vasplus_tooltip_notify" style="position:absolute;top:10px; right:15px; cursor:pointer; display:none;" data-toggle="tooltip" data-placement="top" title="" data-original-title="Close" onclick="vpb_close_post_box ();">×</button>
 
                 <div class="vasplus_bb">&nbsp;</div>
                 <div class="vasplus_aa StartUpload" onclick="vpb_hide_other_boxes ();document.getElementById ('tagged_list').style.display = 'none';document.getElementById ('user_selected_this_location').style.display = 'none';"><i class="fa fa-file-image-o vasplus_aab"></i> Add Photo</div>
@@ -99,7 +99,7 @@
                 <div class="input-group">
                     <span class="input-group-addon vpb_wall_left_text_label">
                         <span class="v_wall_position_info_left">At <span id="the_selected_location"></span></span> 
-                        <span class="v_wall_position_info_right" onclick="vpb_wall_location_box ('remove');" data-toggle="tooltip" original-title="Remove">x</span><div style="clear:both;"></div>
+                        <span class="v_wall_position_info_right" onclick="vpb_wall_location_box ('remove');" data-toggle="tooltip" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove">x</span><div style="clear:both;"></div>
 
                     </span>
                 </div>
@@ -126,15 +126,15 @@
 
             <div class="modal-footer vfooter">
 
-                <span id="add_a_photo_button" class="vfooter_wraper vasplus_tooltip_icons StartUpload"  original-title="Add photos to your post"><i class="fa fa-camera vfooter_icon"></i></span>
+                <span id="add_a_photo_button" class="vfooter_wraper vasplus_tooltip_icons StartUpload" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add photos to your post"><i class="fa fa-camera vfooter_icon"></i></span>
 
-                <span id="add_a_video_button" class="vfooter_wraper vasplus_tooltip_icons" onclick="vpb_hide_other_boxes ();document.getElementById ('v-add-videos-box').click ();document.getElementById ('tagged_list').style.display = 'none';document.getElementById ('user_selected_this_location').style.display = 'none';document.getElementById ('wall_video_action').value = 'popup';" original-title="Add video to your post"><i class="fa fa-youtube-play vfooter_icon"></i></span>
+                <span id="add_a_video_button" class="vfooter_wraper vasplus_tooltip_icons" onclick="vpb_hide_other_boxes ();document.getElementById ('v-add-videos-box').click ();document.getElementById ('tagged_list').style.display = 'none';document.getElementById ('user_selected_this_location').style.display = 'none';document.getElementById ('wall_video_action').value = 'popup';" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add video to your post"><i class="fa fa-youtube-play vfooter_icon"></i></span>
 
-                <span class="vfooter_wraper vasplus_tooltip_icons" id="tag_people_button" onclick="vpb_tag_people_in_post ();" original-title="Tag people in your post"><i class="fa fa-user-plus vfooter_icon"></i></span>
+                <span class="vfooter_wraper vasplus_tooltip_icons" id="tag_people_button" onclick="vpb_tag_people_in_post ();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Tag people in your post"><i class="fa fa-user-plus vfooter_icon"></i></span>
 
-                <span class="vfooter_wraper vasplus_tooltip_icons" id="add_smile_button" onclick="vpb_wall_smiley_box ();" original-title="Add what you're doing or how you're feeling"><i class="fa fa-smile-o vfooter_icon"></i></span>
+                <span class="vfooter_wraper vasplus_tooltip_icons" id="add_smile_button" onclick="vpb_wall_smiley_box ();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add what you're doing or how you're feeling"><i class="fa fa-smile-o vfooter_icon"></i></span>
 
-                <span class="vfooter_wraper vasplus_tooltip_icons" id="add_location_button" onclick="vpb_wall_location_box ('none');" original-title="Add a location to your post"><i class="fa fa-map-marker vfooter_icon"></i></span>
+                <span class="vfooter_wraper vasplus_tooltip_icons" id="add_location_button" onclick="vpb_wall_location_box ('none');" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add a location to your post"><i class="fa fa-map-marker vfooter_icon"></i></span>
 
 <!--<span data-toggle="tooltip" data-placement="top" title="Set date and time of your post" class="vfooter_wraper"><i class="fa fa-clock-o vfooter_icon"></i></span>-->
 
@@ -156,7 +156,7 @@
                     }
                 </script>
 
-                <div class="dropdown btn-group vfooter_wraper_b" id="selected_option_with_title" data-toggle="tooltip" data-placement="top" original-title="Public">
+                <div class="dropdown btn-group vfooter_wraper_b" id="selected_option_with_title" data-toggle="tooltip" data-placement="top" data-toggle="tooltip" data-placement="top" title="" data-original-title="Public">
 
                     <button type="button" class="btn btn-default dropdown-toggle btn-wall-post-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="vpb_hide_popup ();">
                         <span id="selected_option_">

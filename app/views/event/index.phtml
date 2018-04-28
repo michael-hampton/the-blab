@@ -91,8 +91,8 @@ if ( !in_array ($_SESSION['user']['user_id'], $arrMemberIds) && strtolower (trim
                             <?php if ( $objEvent->getUserId () === $_SESSION['user']['user_id'] ): ?> 
                                 <span onclick="vpb_confirm_delete_current_event_details ('<?= $objEvent->getId () ?>', 'michaelhampton', '<?= $objEvent->getEventName () ?>');
                                       " style="float:right!important;
-                                      " class="group_menu_wrapper vasplus_tooltip_icons" original-title="Delete this Group"><i class="fa fa-remove v_edit_group_details"></i></span>
-                                <span onclick="vpb_set_current_event_details (<?= $objEvent->getId () ?>);" style="float:right !important;border-left: 1px solid #e5e5e5;" class="group_menu_wrapper vasplus_tooltip_icons" original-title="Edit Group Details"><i class="fa fa-pencil-square v_edit_group_details"></i></span>
+                                      " class="group_menu_wrapper vasplus_tooltip_icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete this group"><i class="fa fa-remove v_edit_group_details"></i></span>
+                                <span onclick="vpb_set_current_event_details (<?= $objEvent->getId () ?>);" style="float:right !important;border-left: 1px solid #e5e5e5;" class="group_menu_wrapper vasplus_tooltip_icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit group details"><i class="fa fa-pencil-square v_edit_group_details"></i></span>
                             <?php endif; ?>
 
                         </div>
