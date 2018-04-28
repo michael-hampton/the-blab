@@ -33,7 +33,6 @@ class IndexController extends ControllerBase
         return $yourDataArray;
     }
 
-
     /**
      * 
      * @param type $username
@@ -92,8 +91,8 @@ class IndexController extends ControllerBase
         }
 
         $objUser = reset ($objUser);
-        
-         Phalcon\Tag::setTitle("Profile " . $objUser->getFirstName() . ' ' . $objUser->getLastName());
+
+        Phalcon\Tag::setTitle ("Profile " . $objUser->getFirstName () . ' ' . $objUser->getLastName ());
 
         $this->view->arrUser = $objUser;
 
@@ -166,7 +165,7 @@ class IndexController extends ControllerBase
         $this->view->objUser = $objUser;
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -298,7 +297,7 @@ class IndexController extends ControllerBase
     public function indexAction ()
     {
 
-        Phalcon\Tag::setTitle("News Feed");
+        Phalcon\Tag::setTitle ("News Feed");
 
         $objUserFactory = new UserFactory();
         $arrUsers = $objUserFactory->getUsers ();
@@ -398,7 +397,7 @@ class IndexController extends ControllerBase
 
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -469,11 +468,11 @@ class IndexController extends ControllerBase
         }
 
         $this->view->arrFriendRequests = $arrFriendRequests;
-        
+
         try {
-             $blHasGdpr = (new GDPR())->checkUser($objUser);
+            $blHasGdpr = (new GDPR())->checkUser ($objUser);
         } catch (Exception $ex) {
-             return $this->dispatcher->forward (
+            return $this->dispatcher->forward (
                             [
                                 "controller" => "issue",
                                 "action" => "handler",
@@ -481,7 +480,7 @@ class IndexController extends ControllerBase
                             ]
             );
         }
-        
+
         $this->view->blHasGdpr = $blHasGdpr;
     }
 
@@ -694,7 +693,7 @@ class IndexController extends ControllerBase
         $userId = $_SESSION['user']['user_id'];
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -870,31 +869,32 @@ class IndexController extends ControllerBase
         $objUser = new User ($_SESSION['user']['user_id']);
         $target_dir = $this->rootPath . "/blab/public/uploads/" . $_SESSION['user']['username'] . '/';
 
+        $arrIds = $this->multipleUploadValidation ("pictures", $_FILES, $target_dir, $objUser);
 
         try {
+            switch ($uploadType) {
+                case "page":
+                    $objPostFactory = new PagePost (new Page ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    break;
 
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-            $arrIds = $this->multipleUploadValidation ("pictures", $_FILES, $target_dir, $objUser);
+                case "group":
+                    $objPostFactory = new GroupPost (new Group ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    break;
+                case "event":
+                    $objPostFactory = new EventPost (new Event ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    break;
+
+                default:
+                     $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPost = $objPostFactory->createPost ($comment, $objUser, $arrIds);
+                    break;
+            }
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        switch ($uploadType) {
-            case "page":
-                $objPost = $objPostFactory->createPageComment (new Page ($uploadId), $comment, $objUser, $arrIds);
-                break;
-
-            case "group":
-                $objPost = $objPostFactory->createGroupComment (new Group ($uploadId), $comment, $objUser, $arrIds);
-                break;
-            case "event":
-                $objPost = $objPostFactory->createEventComment (new Event ($uploadId), $comment, $objUser, $arrIds);
-                break;
-
-            default:
-                $objPost = $objPostFactory->createPost ($comment, $objUser, $arrIds);
-                break;
         }
 
         if ( $objPost === false )

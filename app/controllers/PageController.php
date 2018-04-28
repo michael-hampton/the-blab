@@ -85,8 +85,6 @@ class PageController extends ControllerBase
             );
         }
 
-       Phalcon\Tag::setTitle("Page " . $url);
-
         $this->view->url = $url;
 
         try {
@@ -100,6 +98,8 @@ class PageController extends ControllerBase
                             ]
             );
         }
+        
+         Phalcon\Tag::setTitle ("Page - " . $objPage->getName ());
 
         if ( empty ($_SESSION['user']['username']) )
         {
@@ -152,13 +152,12 @@ class PageController extends ControllerBase
         }
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new PagePost ($objPage, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $arrPosts = $objPostFactory->getComments ($arrUsers[$_SESSION['user']['user_id']]);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
-        $arrPosts = $objPostFactory->getPostsForPage ($objPage, $arrUsers[$_SESSION['user']['user_id']]);
 
         if ( $arrPosts === false )
         {
@@ -192,13 +191,12 @@ class PageController extends ControllerBase
         $this->view->arrPhotos = $arrPhotos;
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new ReviewPost ($objPage, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $arrReviews = $objPostFactory->getComments (new User ($_SESSION['user']['user_id']));
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
-        $arrReviews = $objPostFactory->getReviewsForPage ($objPage, new User ($_SESSION['user']['user_id']));
 
         if ( $arrReviews === false )
         {
@@ -348,10 +346,12 @@ class PageController extends ControllerBase
             $objPage = new Page ($_POST['pageId']);
 
             $objUser = new User ($_SESSION['user']['user_id']);
+            
+            //$objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
 
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new ReviewPost ($objPage, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
 
-            $objPost = $objPostFactory->createPageComment ($objPage, $_POST['review'], $objUser, null, true);
+            $objPost = $objPostFactory->createComment ($_POST['review'], $objUser, new \JCrowe\BadWordFilter\BadWordFilter());
 
             if ( $objPost === false )
             {
@@ -445,19 +445,17 @@ class PageController extends ControllerBase
 
         $userId = $_SESSION['user']['user_id'];
 
-        $objUser = new User ($userId);
-
-        $objPage = new Page ($_POST['pageUrl']);
-
-
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objUser = new User ($userId);
+
+            $objPage = new Page ($_POST['pageUrl']);
+            $objPostFactory = new PagePost ($objPage, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPost = $objPostFactory->createPageComment ($objPage, $_POST['comment'], $objUser);
+        $objPost = $objPostFactory->createComment ($_POST['comment'], $objUser, new \JCrowe\BadWordFilter\BadWordFilter ());
 
         if ( $objPost === false )
         {
