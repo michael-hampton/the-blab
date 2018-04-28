@@ -8,6 +8,8 @@ class ProductController extends ControllerBase
     public function indexAction ()
     {
 
+        Phalcon\Tag::setTitle ("Shop");
+        
         if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
