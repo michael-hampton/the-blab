@@ -9,7 +9,7 @@ class ProductController extends ControllerBase
     {
 
         Phalcon\Tag::setTitle ("Shop");
-        
+
         if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -65,6 +65,11 @@ class ProductController extends ControllerBase
             $objUploadFactory = new UploadFactory();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrFavorites === false )
+        {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
