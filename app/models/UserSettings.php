@@ -26,7 +26,7 @@ class UserSettings extends BaseUserSettings
      */
     public function __construct (User $objUser)
     {
-        
+
         $this->objUser = $objUser;
         $this->objDb = new Database();
         $this->objDb->connect ();
@@ -89,6 +89,14 @@ class UserSettings extends BaseUserSettings
             $this->profileTelephone = $arrResults[0]['visible_telephone'];
         if ( trim ($arrResults[0]['visible_likes']) !== "" )
             $this->profileLikes = $arrResults[0]['visible_likes'];
+        if ( trim ($arrResults[0]['email_like']) !== "" )
+            $this->emailLike = $arrResults[0]['email_like'];
+        if ( trim ($arrResults[0]['email_tag']) !== "" )
+            $this->emailTag = $arrResults[0]['email_tag'];
+        if ( trim ($arrResults[0]['email_friendRequest']) !== "" )
+            $this->emailFriendRequst = $arrResults[0]['email_friendRequest'];
+        if ( trim ($arrResults[0]['email_post']) !== "" )
+            $this->emailPost = $arrResults[0]['email_post'];
 
         return true;
     }
@@ -124,7 +132,9 @@ class UserSettings extends BaseUserSettings
      * @param type $email
      * @return boolean
      */
-    private function validate ($showGroups, $showEvents, $showPages, $birthday, $likes, $pages, $events, $groups, $telephone, $email)
+    private function validate (
+    $showGroups, $showEvents, $showPages, $birthday, $likes, $pages, $events, $groups, $telephone, $email, $emailLike, $emailPost, $emailFriendRequest, $emailTag
+    )
     {
         if ( trim ($showGroups) === "" )
         {
@@ -165,6 +175,26 @@ class UserSettings extends BaseUserSettings
             $this->validationFailures[] = "Missing required field";
         }
 
+        if ( trim ($emailFriendRequest) === "" )
+        {
+            $this->validationFailures[] = "Missing required field";
+        }
+
+        if ( trim ($emailLike) === "" )
+        {
+            $this->validationFailures[] = "Missing required field";
+        }
+
+        if ( trim ($emailPost) === "" )
+        {
+            $this->validationFailures[] = "Missing required field";
+        }
+
+        if ( trim ($emailTag) === "" )
+        {
+            $this->validationFailures[] = "Missing required field";
+        }
+
         if ( count ($this->validationFailures) > 0 )
         {
             return false;
@@ -189,11 +219,13 @@ class UserSettings extends BaseUserSettings
      * @return boolean
      */
     public function saveUserSettings (
-    $showGroups, $showEvents, $showPages, $birthday, $likes, $pages, $events, $groups, $telephone, $email, $notificationGroups, $notificationEvents, $notificationPages
+    $showGroups, $showEvents, $showPages, $birthday, $likes, $pages, $events, $groups, $telephone, $email, $notificationGroups, $notificationEvents, $notificationPages, $emailLike, $emailPost, $emailFriendRequest, $emailTag
     )
     {
 
-        if ( $this->validate ($showGroups, $showEvents, $showPages, $birthday, $likes, $pages, $events, $groups, $telephone, $email) === false )
+        if ( $this->validate (
+                        $showGroups, $showEvents, $showPages, $birthday, $likes, $pages, $events, $groups, $telephone, $email, $emailLike, $emailPost, $emailFriendRequest, $emailTag
+                ) === false )
         {
             return false;
         }
@@ -212,7 +244,11 @@ class UserSettings extends BaseUserSettings
             "user_id" => $this->objUser->getId (),
             "notification_pages" => $notificationPages,
             "notification_groups" => $notificationGroups,
-            "notification_events" => $notificationEvents
+            "notification_events" => $notificationEvents,
+            "email_like" => $emailLike,
+            "email_tag" => $emailTag,
+            "email_friendRequest" => $emailFriendRequest,
+            "email_post" => $emailPost,
         ];
 
         if ( $this->checkUserExists () === true )

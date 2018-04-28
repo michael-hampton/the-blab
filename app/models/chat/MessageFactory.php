@@ -242,7 +242,7 @@ class MessageFactory
 
         try {
             $dbdate = strtotime ($objRecipient->getLastLogin ());
-            if ( time () - $dbdate <= 15 * 60 )
+            if ( time () - $dbdate > 15 * 60 )
             {
                 $objEmail = new EmailNotification (new User ($userId), $notification, $body);
                 $objEmail->sendEmail ();

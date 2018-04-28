@@ -87,6 +87,31 @@ class BaseUserSettings
      */
     protected $notificationPage;
 
+     /**
+     *
+     * @var type 
+     */
+    protected $emailFriendRequest = 'yes';
+
+     /**
+     *
+     * @var type 
+     */
+
+    protected $emailLike = 'yes';
+
+     /**
+     *
+     * @var type 
+     */
+    protected $emailTag = 'yes';
+
+     /**
+     *
+     * @var type 
+     */
+    protected $emailPost = 'yes';
+
     /**
      *
      * @var type 
@@ -279,7 +304,80 @@ class BaseUserSettings
     {
         $this->feedGroup = $feedGroup;
     }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function getEmailFriendRequest ()
+    {
+        return $this->emailFriendRequest;
+    }
 
+    /**
+     * 
+     * @return type
+     */
+    public function getEmailLike ()
+    {
+        return $this->emailLike;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getEmailTag ()
+    {
+        return $this->emailTag;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getEmailPost ()
+    {
+        return $this->emailPost;
+    }
+
+    /**
+     * 
+     * @param type $emailFriendRequest
+     */
+    public function setEmailFriendRequest ($emailFriendRequest)
+    {
+        $this->emailFriendRequest = $emailFriendRequest;
+    }
+
+    /**
+     * 
+     * @param type $emailLike
+     */
+    public function setEmailLike ($emailLike)
+    {
+        $this->emailLike = $emailLike;
+    }
+
+    /**
+     * 
+     * @param type $emailTag
+     */
+    public function setEmailTag ($emailTag)
+    {
+        $this->emailTag = $emailTag;
+    }
+
+    /**
+     * 
+     * @param type $emailPost
+     */
+    public function setEmailPost ($emailPost)
+    {
+        $this->emailPost = $emailPost;
+    }
+
+    
     /**
      * 
      * @param type $feedEvent
@@ -313,6 +411,24 @@ class BaseUserSettings
     public function getFeedSetting ($action)
     {
         $getter = 'getFeed' . $action;
+        $value = $this->$getter ();
+
+        if ( strtolower (trim ($value)) === 'yes' )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+     /**
+     * 
+     * @param type $action
+     * @return boolean
+     */
+    public function getEmailSetting ($action)
+    {
+        $getter = 'getEmail' . $action;
         $value = $this->$getter ();
 
         if ( strtolower (trim ($value)) === 'yes' )

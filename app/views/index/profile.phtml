@@ -162,13 +162,13 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
 
         <!-- mike -->
-        <?php $this->partial ("templates/searchFriends"); ?>
+        <?php $this->partial ("templates/searchFriends", ["arrFilteredFriendList" => $arrFilteredFriendList, "arrFriendList" => $arrFriendList, "objUser" => $objCurrentUser]); ?>
 
         <div class="vmiddle_other enable_this_box" id="vasplus_notifications" style=" display: none; ">
             <div class="vmiddle_other_title vprofile_o_title">
                 <div style="float:left;">Notifications</div>
                 <div style="float:right; font-weight:normal !important; font-size:13px !important;">
-                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" onclick="vpb_show_status_updates ();" original-title="Close">×</button>
+                    <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" onclick="vpb_show_status_updates ();"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Close">×</button>
                 </div>
                 <div style="clear:both;"></div>
             </div>
@@ -226,7 +226,7 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
                             <div class="input-group vpb-the-friends-wrap" id="vpb_load_more_friends_box">
                                 <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_page_owner_friends (<?= $objUser->getId () ?>);">View more friends</span></div>
-                                <div style="float:right; color:#999;"><span id="v_this_friends_totals">20</span> of <?= count ($arrFriendList) ?></div>
+                                <div style="float:right; color:#999;"><span id="v_this_friends_totals"><?= count($arrFilteredFriendList) ?></span> of <?= count ($arrFriendList) ?></div>
                                 <div style="clear:both;"></div>
                             </div>
 

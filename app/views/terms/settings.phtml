@@ -51,6 +51,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                 <li class="active"><a data-toggle="tab" href="#tab-1">Profile</a></li>
                 <li class=""><a data-toggle="tab" href="#tab-2">News Feed</a></li>
                 <li class=""><a data-toggle="tab" href="#tab-3">Notifications</a></li>
+                <li class=""><a data-toggle="tab" href="#tab-4">Email Notifications</a></li>
             </ul>
         </div>
 
@@ -71,7 +72,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Birthday</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildSelectList ('birthday', $objUserSettings->getProfileBirthday()) ?>
+                                            <?php buildSelectList ('birthday', $objUserSettings->getProfileBirthday ()) ?>
                                         </div>
                                     </div>
 
@@ -79,7 +80,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Telephone Number</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildSelectList ('telephone', $objUserSettings->getProfileTelephone()) ?>
+                                            <?php buildSelectList ('telephone', $objUserSettings->getProfileTelephone ()) ?>
                                         </div>
                                     </div>
 
@@ -87,7 +88,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Birthday</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildSelectList ('email', $objUserSettings->getProfileEmail()) ?>
+                                            <?php buildSelectList ('email', $objUserSettings->getProfileEmail ()) ?>
                                         </div>
                                     </div>
 
@@ -95,7 +96,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Likes</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildSelectList ('likes', $objUserSettings->getProfileLikes()) ?>
+                                            <?php buildSelectList ('likes', $objUserSettings->getProfileLikes ()) ?>
                                         </div>
                                     </div>
 
@@ -103,7 +104,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Pages</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildSelectList ('pages', $objUserSettings->getProfilePage()) ?>
+                                            <?php buildSelectList ('pages', $objUserSettings->getProfilePage ()) ?>
                                         </div>
                                     </div>
 
@@ -111,7 +112,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Events</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildSelectList ('events', $objUserSettings->getProfileEvent()) ?>
+                                            <?php buildSelectList ('events', $objUserSettings->getProfileEvent ()) ?>
                                         </div>
                                     </div>
 
@@ -119,7 +120,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Groups</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildSelectList ('groups', $objUserSettings->getProfileGroup()) ?>
+                                            <?php buildSelectList ('groups', $objUserSettings->getProfileGroup ()) ?>
                                         </div>
                                     </div>
 
@@ -149,7 +150,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Pages</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildYesOrNo ('feed-pages', $objUserSettings->getFeedPage()) ?>
+                                            <?php buildYesOrNo ('feed-pages', $objUserSettings->getFeedPage ()) ?>
                                         </div>
                                     </div>
 
@@ -157,7 +158,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Groups</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildYesOrNo ('feed-groups', $objUserSettings->getFeedGroup()) ?>
+                                            <?php buildYesOrNo ('feed-groups', $objUserSettings->getFeedGroup ()) ?>
                                         </div>
                                     </div>
 
@@ -165,7 +166,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Events</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildYesOrNo ('feed-events', $objUserSettings->getFeedEvent()) ?>
+                                            <?php buildYesOrNo ('feed-events', $objUserSettings->getFeedEvent ()) ?>
                                         </div>
                                     </div>
 
@@ -196,7 +197,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Pages</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildYesOrNo ('notification-pages', $objUserSettings->getNotificationPage()) ?>
+                                            <?php buildYesOrNo ('notification-pages', $objUserSettings->getNotificationPage ()) ?>
                                         </div>
                                     </div>
 
@@ -204,7 +205,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Groups</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildYesOrNo ('notification-groups', $objUserSettings->getNotificationGroup()) ?>
+                                            <?php buildYesOrNo ('notification-groups', $objUserSettings->getNotificationGroup ()) ?>
                                         </div>
                                     </div>
 
@@ -212,7 +213,60 @@ function buildYesOrNo ($id, $selectedValue = "")
                                         <label class = "col-lg-2 control-label">Events</label>
 
                                         <div class = "col-lg-10">
-                                            <?php buildYesOrNo ('notification-events', $objUserSettings->getNotificationEvent()) ?>
+                                            <?php buildYesOrNo ('notification-events', $objUserSettings->getNotificationEvent ()) ?>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary SaveChanges">Save</button>
+                </div>
+            </div>
+
+            <div id="tab-4" class="tab-pane">
+                <div class="panel-body">
+                    <div class = "col-lg-12">
+                        <div class = "ibox float-e-margins">
+                            <div class = "ibox-title">
+                                <h5>What Email Notifications do you want to receive</h5>
+
+                            </div>
+                            <div class = "ibox-content">
+                                <form class = "form-horizontal" name="emailNotificationForm" id="emailNotificationForm">
+
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Friend Requests</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('email-friendRequest', $objUserSettings->getEmailFriendRequest ()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Likes</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('email-like', $objUserSettings->getEmailLike ()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Tagged in Post or Photo</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('email-tag', $objUserSettings->getEmailTag ()) ?>
+                                        </div>
+                                    </div>
+
+                                    <div class = "form-group">
+                                        <label class = "col-lg-2 control-label">Posts to your wall</label>
+
+                                        <div class = "col-lg-10">
+                                            <?php buildYesOrNo ('email-post', $objUserSettings->getEmailPost ()) ?>
                                         </div>
                                     </div>
 
@@ -237,12 +291,10 @@ function buildYesOrNo ($id, $selectedValue = "")
     {
         $ (".SaveChanges").on ("click", function ()
         {
-            var dataString = $ ("#privacyForm, #newsFeedForm, #notificationForm").serialize ();
+            var dataString = $ ("#privacyForm, #newsFeedForm, #notificationForm, #emailNotificationForm").serialize ();
 
             $.post ('/blab/terms/saveSettings', dataString, function (response)
             {
-                alert (response);
-
                 try {
                     var objResponse = $.parseJSON (response);
 
@@ -253,6 +305,7 @@ function buildYesOrNo ($id, $selectedValue = "")
                     }
                     else
                     {
+                        alert("Settings have been updated successfully");
 
                     }
                 } catch (error) {

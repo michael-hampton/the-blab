@@ -92,13 +92,11 @@ class IndexController extends ControllerBase
 
         $objUser = reset ($objUser);
 
+        Phalcon\Tag::setTitle ("Profile " . $objUser->getFirstName () . ' ' . $objUser->getLastName ());
+
         $this->view->arrUser = $objUser;
 
         $arrFriendList = $objUserFactory->getFriendList ($objUser);
-
-        $arrFilteredFriendList = $this->arrayPagination (1, $arrFriendList, 0);
-
-        $this->view->arrFilteredFriendList = $arrFilteredFriendList;
 
         if ( $arrFriendList === false )
         {
@@ -110,6 +108,9 @@ class IndexController extends ControllerBase
                             ]
             );
         }
+
+        $arrFilteredFriendList = $this->arrayPagination ($this->totalFriendsPerLoad, $arrFriendList, 0);
+        $this->view->arrFilteredFriendList = $arrFilteredFriendList;
 
         $this->view->arrFriendList = $arrFriendList;
         $this->view->noPerFriend = 1;
@@ -164,7 +165,7 @@ class IndexController extends ControllerBase
         $this->view->objUser = $objUser;
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -290,10 +291,13 @@ class IndexController extends ControllerBase
         }
 
         $this->view->arrFriendRequests = $arrFriendRequests;
+        $this->view->objCurrentUser = $objCurrentUser;
     }
 
     public function indexAction ()
     {
+
+        Phalcon\Tag::setTitle ("News Feed");
 
         $objUserFactory = new UserFactory();
         $arrUsers = $objUserFactory->getUsers ();
@@ -326,9 +330,9 @@ class IndexController extends ControllerBase
             );
         }
 
-        $this->view->arrFriendList = $objUserFactory->getFriendList ($objUser);
+        $arrFriendList = $objUserFactory->getFriendList ($objUser);
 
-        if ( $this->view->arrFriendList === false )
+        if ( $arrFriendList === false )
         {
             return $this->dispatcher->forward (
                             [
@@ -338,6 +342,11 @@ class IndexController extends ControllerBase
                             ]
             );
         }
+
+        $this->view->arrFriendList = $arrFriendList;
+
+        $arrFilteredFriendList = $this->arrayPagination ($this->totalFriendsPerLoad, $arrFriendList, 0);
+        $this->view->arrFilteredFriendList = $arrFilteredFriendList;
 
         $objEventFactory = new EventFactory();
 
@@ -388,7 +397,7 @@ class IndexController extends ControllerBase
 
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -459,6 +468,20 @@ class IndexController extends ControllerBase
         }
 
         $this->view->arrFriendRequests = $arrFriendRequests;
+
+        try {
+            $blHasGdpr = (new GDPR())->checkUser ($objUser);
+        } catch (Exception $ex) {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to check users gdpr status"]
+                            ]
+            );
+        }
+
+        $this->view->blHasGdpr = $blHasGdpr;
     }
 
     public function autoSuggestAction ()
@@ -670,7 +693,7 @@ class IndexController extends ControllerBase
         $userId = $_SESSION['user']['user_id'];
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -751,8 +774,6 @@ class IndexController extends ControllerBase
 
         echo $html;
     }
-
-    
 
     public function searchAction ()
     {
@@ -848,31 +869,32 @@ class IndexController extends ControllerBase
         $objUser = new User ($_SESSION['user']['user_id']);
         $target_dir = $this->rootPath . "/blab/public/uploads/" . $_SESSION['user']['username'] . '/';
 
+        $arrIds = $this->multipleUploadValidation ("pictures", $_FILES, $target_dir, $objUser);
 
         try {
+            switch ($uploadType) {
+                case "page":
+                    $objPostFactory = new PagePost (new Page ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    break;
 
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-            $arrIds = $this->multipleUploadValidation ("pictures", $_FILES, $target_dir, $objUser);
+                case "group":
+                    $objPostFactory = new GroupPost (new Group ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    break;
+                case "event":
+                    $objPostFactory = new EventPost (new Event ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    break;
+
+                default:
+                     $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPost = $objPostFactory->createPost ($comment, $objUser, $arrIds);
+                    break;
+            }
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        switch ($uploadType) {
-            case "page":
-                $objPost = $objPostFactory->createPageComment (new Page ($uploadId), $comment, $objUser, $arrIds);
-                break;
-
-            case "group":
-                $objPost = $objPostFactory->createGroupComment (new Group ($uploadId), $comment, $objUser, $arrIds);
-                break;
-            case "event":
-                $objPost = $objPostFactory->createEventComment (new Event ($uploadId), $comment, $objUser, $arrIds);
-                break;
-
-            default:
-                $objPost = $objPostFactory->createPost ($comment, $objUser, $arrIds);
-                break;
         }
 
         if ( $objPost === false )

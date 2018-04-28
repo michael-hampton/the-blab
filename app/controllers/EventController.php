@@ -11,6 +11,7 @@ class EventController extends ControllerBase
      */
     public function indexAction ($id)
     {
+
         if ( empty ($_SESSION['user']['user_id']) )
         {
             return $this->dispatcher->forward (
@@ -46,6 +47,7 @@ class EventController extends ControllerBase
         }
 
         $this->view->objEvent = $objEvent;
+        Phalcon\Tag::setTitle ("Event - " . $objEvent->getEventName ());
 
         $memberEventStatus = (new EventMember ($objEvent))->getStatusForUser (new User ($_SESSION['user']['user_id']));
 
@@ -63,15 +65,14 @@ class EventController extends ControllerBase
         $this->view->memberEventStatus = $memberEventStatus;
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new EventPost ($objEvent, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objUser = new User ($_SESSION['user']['user_id']);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objUser = new User ($_SESSION['user']['user_id']);
-
-        $arrPosts = $objPostFactory->getPostsForEvent ($objEvent, $objUser);
+        $arrPosts = $objPostFactory->getComments ($objUser);
 
         if ( $arrPosts === false )
         {
@@ -444,18 +445,16 @@ class EventController extends ControllerBase
 
         $userId = $_SESSION['user']['user_id'];
 
-        $objUser = new User ($userId);
-
-        $objEvent = new Event ($_POST['eventId']);
-
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objEvent = new Event ($_POST['eventId']);
+            $objUser = new User ($userId);
+            $objPostFactory = new EventPost ($objEvent, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPost = $objPostFactory->createEventComment ($objEvent, $_POST['comment'], $objUser);
+        $objPost = $objPostFactory->createComment ($_POST['comment'], $objUser, new \JCrowe\BadWordFilter\BadWordFilter ());
 
         if ( $objPost === false )
         {

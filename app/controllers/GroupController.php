@@ -60,27 +60,23 @@ class GroupController extends ControllerBase
 
         $userId = $_SESSION['user']['user_id'];
 
-        $objUser = new User ($userId);
-
-        $objGroup = new Group ($_POST['groupId']);
-
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-        } catch (Exception $ex) {
-            trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-
-        try {
-
-            $objPost = $objPostFactory->createGroupComment ($objGroup, $_POST['comment'], $objUser);
+            $objUser = new User ($userId);
+            $objGroup = new Group ($_POST['groupId']);
+            $objPostFactory = new GroupPost ($objGroup, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPost = $objPostFactory->createComment ($_POST['comment'], $objUser, new \JCrowe\BadWordFilter\BadWordFilter ());
 
             if ( $objPost === false )
             {
                 $this->ajaxresponse ("error", "Unable to save post");
             }
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
+        try {
+            
             $arrTags = (new TagUserFactory())->getTaggedUsersForPost ($objPost);
 
             if ( !empty ($arrTags) )
@@ -130,6 +126,7 @@ class GroupController extends ControllerBase
      */
     public function indexAction ($groupId)
     {
+
         if ( empty ($_SESSION['user']['username']) || empty ($_SESSION['user']['user_id']) )
         {
             return $this->dispatcher->forward (
@@ -187,6 +184,8 @@ class GroupController extends ControllerBase
 
         $objGroup = new Group ($groupId);
 
+        Phalcon\Tag::setTitle ("Group - " . $objGroup->getGroupName ());
+
         $this->view->hasPermission = true;
 
         if ( $objGroup->checkUserAccess ($objUser) === false )
@@ -208,13 +207,13 @@ class GroupController extends ControllerBase
         }
 
         try {
-            $objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPostFactory = new GroupPost ($objGroup, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $arrPosts = $objPostFactory->getPostsForGroup ($objGroup, $objUser);
+        $arrPosts = $objPostFactory->getComments ($objUser);
 
         if ( $arrPosts === false )
         {

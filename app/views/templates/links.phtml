@@ -7,14 +7,18 @@
 </div>
 
 <ul class="list-group clear-list">
-    <li class="list-group-item fist-item"><a href="/blab/product/index"><i class="fa fa-shopping-cart"></i> Go Shopping</a></li>
-    <li class="list-group-item"><a href="/blab/index/index"><i class="fa fa-newspaper-o"></i> News Feed</a></li>
-    <li class="list-group-item"><a href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Go chat</a></li>
-    <li class="list-group-item"><a href="/blab/page/createPage"><i class="fa fa-envelope-o"></i> Add New Page</a></li>
-    <li class="list-group-item"><a href="/blab/index/profile/<?= $_SESSION['user']['username'] ?>"><i class="fa fa-newspaper-o"></i> My profile</a>
-    <li onclick="retrieveFriendRequests ()" class="list-group-item"><a href="#"><i class="fa fa-user"></i>Friend Requests</a>
+    <li class="list-group-item fist-item"><a style="font-size: 16px;" href="/blab/product/index"><i class="fa fa-shopping-cart"></i> Go Shopping</a></li>
+    <li class="list-group-item"><a style="font-size: 16px;" href="/blab/index/index"><i class="fa fa-institution"></i> News Feed</a></li>
+    <li class="list-group-item"><a style="font-size: 16px;" href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Go chat</a>
+<span class="label label-warning pull-right chat-label">0</span>
+</li>
+    <li class="list-group-item"><a style="font-size: 16px;" href="/blab/page/createPage"><i class="fa fa-envelope-o"></i> Add New Page</a></li>
+    <li class="list-group-item"><a style="font-size: 16px;" href="/blab/index/profile/<?= $_SESSION['user']['username'] ?>"><i class="fa fa-user"></i>My profile</a>
+    <li onclick="retrieveFriendRequests ()" class="list-group-item"><a style="font-size: 16px;" href="#"><i class="fa fa-users"></i></i>Friend Requests</a>
+<span class="label label-warning pull-right request-label">0</span>
+</li>
+<li onclick="vpb_show_notifications_details('michaelhampton');" class="list-group-item"><a style="font-size: 16px;" href="#"><i class="fa fa-bell-o"></i></i>Notifications </a>
+<span class="label label-warning pull-right notification-label">0</span>
+</li>
 
 </ul>
-
-
-

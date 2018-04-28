@@ -5,6 +5,12 @@ article
     margin-top:10px;
 }
 
+@media (max-width: 480px) {
+    .hideMobile {
+        display: none !important;
+    }
+}
+
 .v_load_user_detail
 {
     max-width:400px !important;

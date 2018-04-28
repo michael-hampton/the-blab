@@ -122,7 +122,7 @@
                                 <?php if ( $objGroup->getCreatedBy () === $_SESSION['user']['user_id'] ): ?> 
                                     <span onclick="vpb_confirm_delete_current_group_details ('<?= $objGroup->getId () ?>', 'michaelhampton', '<?= $objGroup->getGroupName () ?>');
                                           " style="float:right!important;
-                                          " class="group_menu_wrapper vasplus_tooltip_icons" original-title="Delete this Group"><i class="fa fa-remove v_edit_group_details"></i></span>
+                                          " class="group_menu_wrapper vasplus_tooltip_icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete this group"><i class="fa fa-remove v_edit_group_details"></i></span>
                                     <span onclick="vpb_set_current_group_details ( < ? = $objGroup - > getId () ? > );" style="float:right !important;border-left: 1px solid #e5e5e5;" class="group_menu_wrapper vasplus_tooltip_icons" original-title="Edit Group Details"><i class="fa fa-pencil-square v_edit_group_details"></i></span>
                                 <?php endif; ?>
 
