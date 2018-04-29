@@ -98,7 +98,7 @@ class BasePostFactory
      * @param type $privacyOption
      * @return \Post|boolean
      */
-    protected function savePost ($comment, User $objUser, array $imageIds = null, $usersLocation = null, $messageType = 3, $privacyOption = null)
+    protected function savePost ($comment, User $objUser, JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, array $imageIds = null, $usersLocation = null, $messageType = 3, $privacyOption = null)
     {
         if ( trim ($comment) === "" )
         {
@@ -117,7 +117,6 @@ class BasePostFactory
             return false;
         }
 
-        $objBadWordFilter = new \JCrowe\BadWordFilter\BadWordFilter();
         $comment = $objBadWordFilter->clean ($comment);
 
         $arrParameters = array(

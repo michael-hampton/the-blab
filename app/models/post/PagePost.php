@@ -49,7 +49,7 @@ class PagePost extends BasePostFactory implements PostInterface
 
         $comment = $objBadWordFilter->clean ($comment);
 
-        $objPost = $this->savePost ($comment, $objUser, $imageIds, null, $postType);
+        $objPost = $this->savePost ($comment, $objUser, $objBadWordFilter, $imageIds, null, $postType);
 
         if ( $objPost === false )
         {

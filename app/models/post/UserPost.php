@@ -50,9 +50,9 @@ class UserPost extends BasePostFactory implements PostInterface
      * @param type $privacyOption
      * @return type
      */
-    public function createPost ($comment, User $objUser, array $imageIds = null, $usersLocation = null, $messageType = 3, $privacyOption = null)
+    public function createPost ($comment, User $objUser, JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, array $imageIds = null, $usersLocation = null, $messageType = 3, $privacyOption = null)
     {
-        return $this->savePost ($comment, $objUser, $imageIds, $usersLocation, $messageType, $privacyOption);
+        return $this->savePost ($comment, $objUser, $objBadWordFilter, $imageIds, $usersLocation, $messageType, $privacyOption);
     }
 
     /**

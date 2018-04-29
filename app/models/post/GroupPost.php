@@ -55,7 +55,7 @@ class GroupPost extends BasePostFactory implements PostInterface
 
         $comment = $objBadWordFilter->clean ($comment);
 
-        $objPost = $this->savePost ($comment, $objUser, $imageIds, null, 1);
+        $objPost = $this->savePost ($comment, $objUser, $objBadWordFilter, $imageIds, null, 1);
 
         if ( $objPost === false )
         {

@@ -48,7 +48,7 @@ class EventPost extends BasePostFactory implements PostInterface
 
         $comment = $objBadWordFilter->clean ($comment);
 
-        $objPost = $this->savePost ($comment, $objUser, $imageIds, null, 6);
+        $objPost = $this->savePost ($comment, $objUser, $objBadWordFilter, $imageIds, null, 6);
 
         if ( $objPost === false )
         {

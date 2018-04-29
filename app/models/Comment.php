@@ -128,7 +128,7 @@ class Comment
      */
     public function getId ()
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
     /**
@@ -363,10 +363,27 @@ class Comment
 
     /**
      * 
+     * @param CommentReplyFactory $objCommentReplyFactory
+     * @param PostAction $objPostAction
      * @return boolean
      */
-    public function delete ()
+    public function delete (CommentReplyFactory $objCommentReplyFactory, PostAction $objPostAction)
     {
+        $blResult = $objCommentReplyFactory->deleteRepliesForComment ($this, $objPostAction);
+
+        if ( $blResult === false )
+        {
+            return false;
+        }
+
+        $blResult2 = $objPostAction->deleteCommentLikes ($this);
+
+        if ( $blResult2 === false )
+        {
+            return false;
+        }
+
+
         $result = $this->db->delete ("comments", "com_id = :commentId", [':commentId' => $this->id]);
 
         if ( $result === false )

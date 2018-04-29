@@ -217,21 +217,8 @@ class CommentFactory
         }
 
         foreach ($arrComments as $objComment) {
-            $blResult = $objCommentReplyFactory->deleteRepliesForComment ($objComment, $objPostAction);
-
-            if ( $blResult === false )
-            {
-                return false;
-            }
-
-            $blResult2 = $objPostAction->deleteCommentLikes ($objComment);
-
-            if ( $blResult2 === false )
-            {
-                return false;
-            }
-
-            $blResult3 = $objComment->delete ();
+         
+            $blResult3 = $objComment->delete ($objCommentReplyFactory, $objPostAction);
 
             if ( $blResult3 === false )
             {

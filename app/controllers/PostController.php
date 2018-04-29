@@ -291,7 +291,7 @@ class PostController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPost = $objPostFactory->createPost ($_POST['comment'], $objUser, null, $_POST['usersLocation'], 3, $_POST['privacyOption']);
+        $objPost = $objPostFactory->createPost ($_POST['comment'], $objUser, new JCrowe\BadWordFilter\BadWordFilter(), null, $_POST['usersLocation'], 3, $_POST['privacyOption']);
 
         if ( $objPost === FALSE )
         {

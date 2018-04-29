@@ -108,7 +108,7 @@ class CommentController extends ControllerBase
 
         $objComment = new Comment ($_POST['item_id']);
 
-        $blResult = $objComment->delete ();
+        $blResult = $objComment->delete (new CommentReplyFactory (), new PostAction ());
 
         if ( $blResult === false )
         {

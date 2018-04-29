@@ -897,7 +897,7 @@ class IndexController extends ControllerBase
 
                 default:
                     $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createPost ($comment, $objUser, $arrIds);
+                    $objPost = $objPostFactory->createPost ($comment, $objUser, new JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
                     break;
             }
         } catch (Exception $ex) {
