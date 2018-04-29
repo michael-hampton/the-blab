@@ -1,7 +1,7 @@
 <?php
 if ( empty ($arrFriendList) )
 {
-    
+
     return;
 }
 ?>
@@ -12,9 +12,14 @@ if ( empty ($arrFriendList) )
             <ul class="list-group clear-list">
                 <?php foreach ($arrFriendList as $objUser) { ?>
                     <li class="list-group-item fist-item">
-                        <a href="/blab/chat/messenger?username=<?= $objUser->getUsername()?>">
+                        <a href="/blab/chat/messenger?username=<?= $objUser->getUsername () ?>">
                             <span class="pull-left">
-                                <img class="img-responsive" style="width:20px; margin-right: 12px;" src="/blab/public/uploads/profile/<?= $objUser->getUsername () ?>.jpg"> </span>
+
+                                <?php
+                                $image = file_exists ($rootPath . '/blab/public/uploads/profile/' . $objUser->getUsername () . '.jpg') ? '/blab/public/uploads/profile/' . $objUser->getUsername () . '.jpg' : '/blab/public/img/avatar.gif';
+                                ?>
+
+                                <img class="img-responsive" style="width:20px; margin-right: 12px;" src="<?= $image ?>"> </span>
                                 <?= $objUser->getFirstname () . ' ' . $objUser->getLastname () ?>
                         </a>
                         </a>

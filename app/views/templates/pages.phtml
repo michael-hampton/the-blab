@@ -22,14 +22,12 @@
             <?php
             if ( !empty ($arrPages) ):
                 foreach ($arrPages as $arrPage):
+                 $image = trim($arrPage->getFileLocation ()) !== "" && file_exists ($rootPath  . $arrPage->getFileLocation () ) ? $arrPage->getFileLocation ()  : '/blab/public/img/avatar.gif';
                     ?>
+                    <a href="/blab/page/index/<?= $arrPage->getUrl () ?>">
+                        <img style="width: 50px;" title="<?= $arrPage->getName () ?>" src="<?= $image ?>">
+                    </a>
 
-                    <li class="col-lg-6" style="list-style: none;">
-                        <a href="/blab/page/index/<?= $arrPage->getUrl () ?>">
-                            <img style="max-width: 50px;" title="<?= $arrPage->getName () ?>" src="<?= $arrPage->getFileLocation () ?>" class="img-responsive">
-                            <?= $arrPage->getName () ?>
-                        </a>
-                    </li>
 
 
                     <?php

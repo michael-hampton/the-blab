@@ -178,4 +178,72 @@ class CommentReplyFactory
         return $arrComments;
     }
 
+    /**
+     * 
+     * @param Comment $objComment
+     * @return boolean|\CommentReply
+     */
+    public function getRepliesByCommentToDelete (Comment $objComment)
+    {
+        $arrResults = $this->objDb->_select ("comment_reply", "comment_id = :commentId", [":commentId" => $objComment->getId ()]);
+
+        if ( $arrResults === false )
+        {
+            return false;
+        }
+
+        if ( empty ($arrResults[0]) )
+        {
+            return [];
+        }
+
+        $arrReplies = [];
+        foreach ($arrResults as $arrResult) {
+            $arrReplies[] = new CommentReply ($arrResult['id']);
+        }
+
+        return $arrReplies;
+    }
+
+    /**
+     * 
+     * @param Comment $objComment
+     * @param PostAction $objPostAction
+     * @return boolean
+     * @throws Exception
+     */
+    public function deleteRepliesForComment (Comment $objComment, PostAction $objPostAction)
+    {
+        $arrReplies = $this->getRepliesByCommentToDelete ($objComment);
+
+        if ( $arrReplies === false )
+        {
+            throw new Exception ("Db query fsailed");
+        }
+
+        if ( empty ($arrReplies[0]) )
+        {
+            return true;
+        }
+
+        foreach ($arrReplies as $objReply) {
+
+            $blResult1 = $objPostAction->deleteReplyLikes ($objReply);
+
+            if ( $blResult1 === false )
+            {
+                return false;
+            }
+
+            $blResult = $objReply->delete ();
+
+            if ( $blResult === false )
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

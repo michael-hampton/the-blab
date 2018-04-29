@@ -469,19 +469,27 @@ class IndexController extends ControllerBase
 
         $this->view->arrFriendRequests = $arrFriendRequests;
 
-        try {
-            $blHasGdpr = (new GDPR())->checkUser ($objUser);
-        } catch (Exception $ex) {
-            return $this->dispatcher->forward (
-                            [
-                                "controller" => "issue",
-                                "action" => "handler",
-                                "params" => ["message" => "unable to check users gdpr status"]
-                            ]
-            );
+        if ( trim (strtolower ($objUser->getCountry ())) === "philippines" )
+        {
+            $this->view->blHasGdpr = true;
         }
+        else
+        {
 
-        $this->view->blHasGdpr = $blHasGdpr;
+            try {
+                $blHasGdpr = (new GDPR())->checkUser ($objUser);
+            } catch (Exception $ex) {
+                return $this->dispatcher->forward (
+                                [
+                                    "controller" => "issue",
+                                    "action" => "handler",
+                                    "params" => ["message" => "unable to check users gdpr status"]
+                                ]
+                );
+            }
+
+            $this->view->blHasGdpr = $blHasGdpr;
+        }
     }
 
     public function autoSuggestAction ()
@@ -875,20 +883,20 @@ class IndexController extends ControllerBase
             switch ($uploadType) {
                 case "page":
                     $objPostFactory = new PagePost (new Page ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter (), $arrIds);
                     break;
 
                 case "group":
                     $objPostFactory = new GroupPost (new Group ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter (), $arrIds);
                     break;
                 case "event":
                     $objPostFactory = new EventPost (new Event ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter (), $arrIds);
                     break;
 
                 default:
-                     $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+                    $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
                     $objPost = $objPostFactory->createPost ($comment, $objUser, $arrIds);
                     break;
             }

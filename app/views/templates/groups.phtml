@@ -20,21 +20,23 @@
 
         <ul class="list-group clear-list" style="padding: 10px;">
             <?php
-            if ( !empty ($arrGroups) ){
-                foreach ($arrGroups as $arrGroup){
+            if ( !empty ($arrGroups) )
+            {
+                foreach ($arrGroups as $arrGroup) {
+                    $image = trim ($arrGroup->getImageLocation ()) !== "" && file_exists ($rootPath . $arrGroup->getImageLocation ()) ? $arrGroup->getImageLocation () : '/blab/public/img/avatar.gif';
                     ?>
 
-                    <li class="col-lg-6" style="list-style: none;">
-                        <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
-                            <img style="max-width: 50px;" title="<?= $arrGroup->getGroupName () ?>" src="<?= $arrGroup->getImageLocation () ?>" class="img-responsive">
-                       
-                            <?= $arrGroup->getGroupName () ?>
-                        </a>
-                    </li>
+
+                    <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
+                        <img style="width: 50px;" title="<?= $arrGroup->getGroupName () ?>" src="<?= $image ?>">
+                    </a>
+
 
                     <?php
                 }
-            } else {
+            }
+            else
+            {
                 echo '<h3>You have no groups</h3>';
             }
             ?>

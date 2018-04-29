@@ -190,12 +190,11 @@ function buildPagination (ProductFactory $objProduct)
                         
                                                   </div>-->
                         <br>
-                        <?php
-                        if ( !in_array ($arrProduct->getId (), $arrFavoritesIds) )
-                        {
-                            ?>
-                            <div class="btn btn-xs btn-info" style="padding:5px 10px;" onclick="vpb_add_item_to_favorites ('<?= $arrProduct->getId () ?>', '<?= $arrProduct->getName () ?>', '<?= $firstImage ?>', '<?= trim ($arrProduct->getSeller ()) ?>');">Add to Favorites</div>
-    <?php } ?>
+                        <?php $display = !in_array ($arrProduct->getId (), $arrFavoritesIds) ? 'block' : 'none' ?>
+
+
+                        <div product-id="<?= $arrProduct->getId() ?>" class="btn btn-xs btn-info addToFavorites" style="padding:5px 10px; display: <?= $display ?>;" onclick="vpb_add_item_to_favorites ('<?= $arrProduct->getId () ?>', '<?= $arrProduct->getName () ?>', '<?= $firstImage ?>', '<?= trim ($arrProduct->getSeller ()) ?>');">Add to Favorites</div>
+
 
                     </div>
 
@@ -203,7 +202,7 @@ function buildPagination (ProductFactory $objProduct)
 
             </div>
         </li>
-<?php endforeach; ?>
+    <?php endforeach; ?>
 </ul>
 
 <script>

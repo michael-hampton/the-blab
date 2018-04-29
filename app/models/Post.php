@@ -680,22 +680,35 @@ class Post
 
     /**
      * 
+     * @param CommentFactory $objCommentFactory
+     * @param CommentReplyFactory $objCommentReplyFactory
+     * @param PostAction $objPostAction
      * @return boolean
      */
-    public function delete ()
+    public function delete (CommentFactory $objCommentFactory, CommentReplyFactory $objCommentReplyFactory, PostAction $objPostAction)
     {
-        $result2 = $this->db->delete ("message_like", "msg_id_fk = :messageId", [':messageId' => $this->id]);
+        try {
+            $blResult = $objCommentFactory->deleteCommentsForPost ($this, $objCommentReplyFactory, $objPostAction);
 
-        if ( $result2 === false )
-        {
-            trigger_error ("DB QUERY FAILED", E_USER_WARNING);
+            if ( $blResult === false )
+            {
+                return false;
+            }
+
+            $blResult3 = $objPostAction->deletePostLikes ($this);
+
+            if ( $blResult3 === false )
+            {
+                return false;
+            }
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
             return false;
         }
 
+        $result2 = $this->db->delete ("messages", "msg_id = :postId", [':postId' => $this->id]);
 
-        $result = $this->db->delete ("messages", "msg_id = :messageId", [':messageId' => $this->id]);
-
-        if ( $result === false )
+        if ( $result2 === false )
         {
             trigger_error ("DB QUERY FAILED", E_USER_WARNING);
             return false;
@@ -824,7 +837,7 @@ class Post
         $this->sharersUsername = $arrResults[0]['sharers_username'];
         $this->postSecurity = $arrResults[0]['post_security'];
         $this->sharersFullname = $arrResults[0]['sharers_fullname'];
-        $this->setImageId($arrResults[0]['image_id']);
+        $this->setImageId ($arrResults[0]['image_id']);
 
         return true;
     }

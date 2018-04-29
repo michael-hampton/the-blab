@@ -263,9 +263,23 @@ article
 
 .d_end{margin-right:0px !important;}
 
+.sadIcon_c 
+{
+	background-image: url('/blab/public/img/d_sads_c.jpg');
+	background-size: 100%;
+	float:left;
+	height: 18px;
+	width: 18px;
+	image-rendering: crisp-edges;
+	line-height: 1;
+	cursor: pointer;
+	margin-right:5px;
+}
+
+
 .loveIcon_c 
 {
-    background-image: url('../img/d_loves_c.jpg');
+    background-image: url('/blab/public/img/d_loves_c.jpg');
     background-size: 100%;
     float:left;
     height: 18px;
@@ -329,7 +343,7 @@ article
 }
 .sadIcon_c 
 {
-    background-image: url('/blab/public/img/img/d_sads_c.jpg');
+    background-image: url('/blab/public/img/d_sads_c.jpg');
     background-size: 100%;
     float:left;
     height: 18px;
@@ -677,6 +691,11 @@ article
     left: 10px;
     transition-delay: 0s;
     background-image: url('/blab/public/img/feelings_like.png');
+}
+.feeling-haha {
+    left: 68px;
+    transition-delay: .05s;
+    background-image: url(/blab/public/img/feelings_haha.png);
 }
 
 .feeling-love {

@@ -157,9 +157,9 @@ class PostController extends ControllerBase
         }
 
         $objPost = new Post ($_POST['item_id']);
-
-        $blResult = $objPost->delete ();
-
+        
+        $blResult = $objPost->delete (new CommentFactory (), new CommentReplyFactory (), new PostAction ());
+        
         if ( $blResult === false )
         {
             $this->ajaxresponse ("error", "Unable to delete");

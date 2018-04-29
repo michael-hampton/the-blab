@@ -209,6 +209,11 @@ class Database
         try {
             $this->log->info ($sql);
             $result = $this->run ($sql, $bind);
+            
+            if($result === false) {
+                return false;
+            }
+            
         } catch (PDOException $ex) {
             $this->log->emergency ($ex->getMessage ());
         }

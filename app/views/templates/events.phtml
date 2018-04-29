@@ -22,9 +22,10 @@
             <?php
             if ( !empty ($arrEvents) ){
                 foreach ($arrEvents as $arrEvent){
+                     $image = trim($arrEvent->getImageLocation ()) !== "" && file_exists ($rootPath  . $arrEvent->getImageLocation () ) ? $arrEvent->getImageLocation ()  : '/blab/public/img/avatar.gif';
                     ?>
                     <a href="/blab/event/index/<?= $arrEvent->getId () ?>">
-                        <img title="<?= $arrEvent->getEventName () ?>" src="<?= $arrEvent->getImageLocation () ?>">
+                        <img style="width: 50px;" title="<?= $arrEvent->getEventName () ?>" src="<?= $image ?>">
                     </a>
                     <?php
                 }

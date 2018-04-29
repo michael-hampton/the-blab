@@ -35,6 +35,35 @@ class CommentFactory
     /**
      * 
      * @param Post $objPost
+     * @return \Comment|boolean
+     */
+    public function getCommentsByPostForDelete (Post $objPost)
+    {
+        $arrResults = $this->db->_select ("comments", "msg_id_fk = :postId", [":postId" => $objPost->getId ()]);
+
+        if ( $arrResults === false )
+        {
+            trigger_error ("Query failed", E_USER_WARNING);
+            return false;
+        }
+
+        if ( empty ($arrResults[0]) )
+        {
+            return [];
+        }
+
+        $arrComments = [];
+
+        foreach ($arrResults as $arrResult) {
+            $arrComments[] = new Comment ($arrResult['com_id']);
+        }
+
+        return $arrComments;
+    }
+
+    /**
+     * 
+     * @param Post $objPost
      * @param UploadFactory $objUploadFactory
      * @param PostActionFactory $objLikes
      * @param CommentReplyFactory $objCommentReplyFactory
@@ -162,6 +191,55 @@ class CommentFactory
         }
 
         return new Comment ($result);
+    }
+
+    /**
+     * 
+     * @param Post $objPost
+     * @param CommentReplyFactory $objCommentReplyFactory
+     * @param PostAction $objPostAction
+     * @return boolean
+     * @throws Exception
+     */
+    public function deleteCommentsForPost (Post $objPost, CommentReplyFactory $objCommentReplyFactory, PostAction $objPostAction)
+    {
+
+        $arrComments = $this->getCommentsByPostForDelete ($objPost);
+
+        if ( $arrComments === false )
+        {
+            throw new Exception ("Db query failed");
+        }
+
+        if ( empty ($arrComments) )
+        {
+            return true;
+        }
+
+        foreach ($arrComments as $objComment) {
+            $blResult = $objCommentReplyFactory->deleteRepliesForComment ($objComment, $objPostAction);
+
+            if ( $blResult === false )
+            {
+                return false;
+            }
+
+            $blResult2 = $objPostAction->deleteCommentLikes ($objComment);
+
+            if ( $blResult2 === false )
+            {
+                return false;
+            }
+
+            $blResult3 = $objComment->delete ();
+
+            if ( $blResult3 === false )
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

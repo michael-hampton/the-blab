@@ -481,7 +481,7 @@ class PostAction
     public function getReactionCounts ($type, Post $objPost)
     {
         $type = strtolower (trim ($type));
-        
+
         switch ($type) {
             case "love":
                 $columnName = "love_count";
@@ -520,6 +520,57 @@ class PostAction
         }
 
         return (int) $result[0][$columnName];
+    }
+
+    /**
+     * 
+     * @param CommentReply $objCommentReply
+     * @return boolean
+     */
+    public function deleteReplyLikes (CommentReply $objCommentReply)
+    {
+        $result = $this->db->delete ("comment_reply_like", "com_id_fk = :commentId", [":commentId" => $objCommentReply->getId ()]);
+
+        if ( $result === false )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 
+     * @param Post $objPost
+     * @return boolean
+     */
+    public function deletePostLikes (Post $objPost)
+    {
+        $result = $this->db->delete ("message_like", "msg_id_fk = :postId", [":postId" => $objPost->getId ()]);
+
+        if ( $result === false )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 
+     * @param Comment $objComment
+     * @return boolean
+     */
+    public function deleteCommentLikes (Comment $objComment)
+    {
+        $result = $this->db->delete ("comment_like", "com_id_fk = :commentId", [":commentId" => $objComment->getId ()]);
+
+        if ( $result === false )
+        {
+            return false;
+        }
+
+        return true;
     }
 
 }
