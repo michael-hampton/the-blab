@@ -680,22 +680,57 @@ class Post
 
     /**
      * 
+     * @param Audit $objAudit
+     * @param User $objUser
+     * @param UserCommentFactory $objCommentFactory
+     * @param PostAction $objPostAction
+     * @return boolean
+     */
+    private function deletePostComments (AuditFactory $objAudit, User $objUser, CommentFactory $objCommentFactory, PostAction $objPostAction, CommentReplyFactory $objCommentReplyFactory)
+    {
+        $arrComments = $objCommentFactory->getCommentsByPostForDelete ($this);
+
+        if ( $arrComments === false )
+        {
+            return false;
+        }
+
+        if ( empty ($arrComments) )
+        {
+            return true;
+        }
+
+        foreach ($arrComments as $objComment) {
+
+            $blResult3 = $objComment->delete ($objAudit, $objUser, $objCommentReplyFactory, $objPostAction);
+
+            if ( $blResult3 === false )
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 
      * @param CommentFactory $objCommentFactory
      * @param CommentReplyFactory $objCommentReplyFactory
      * @param PostAction $objPostAction
      * @return boolean
      */
-    public function delete (CommentFactory $objCommentFactory, CommentReplyFactory $objCommentReplyFactory, PostAction $objPostAction)
+    public function delete (AuditFactory $objAudit, User $objUser, CommentFactory $objCommentFactory, CommentReplyFactory $objCommentReplyFactory, PostAction $objPostAction)
     {
         try {
-            $blResult = $objCommentFactory->deleteCommentsForPost ($this, $objCommentReplyFactory, $objPostAction);
+            $blResult = $this->deletePostComments($objAudit, $objUser, $objCommentFactory, $objPostAction, $objCommentReplyFactory);
 
             if ( $blResult === false )
             {
                 return false;
             }
 
-            $blResult3 = $objPostAction->deletePostLikes ($this);
+            $blResult3 = $objPostAction->deletePostLikes ($objAudit, $objUser, $this);
 
             if ( $blResult3 === false )
             {
@@ -713,6 +748,8 @@ class Post
             trigger_error ("DB QUERY FAILED", E_USER_WARNING);
             return false;
         }
+
+        $objAudit->createAudit ($objUser, "Post {$this->id} deleted", "POST DELETED", "post", $this->id);
 
         return true;
     }

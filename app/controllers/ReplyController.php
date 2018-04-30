@@ -236,7 +236,7 @@ class ReplyController extends ControllerBase
         try {
             $objComment = new Comment ($_POST['comment_id']);
 
-            $arrResults = (new CommentReplyFactory())->getRepliesForComment ($objComment, new UploadFactory (), new PostActionFactory (), 0, null, new User($_SESSION['user']['user_id']));
+            $arrResults = (new CommentReplyFactory())->getRepliesForComment ($objComment, new UploadFactory (), new PostActionFactory (), 0, null, new User ($_SESSION['user']['user_id']));
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage ());
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -294,8 +294,13 @@ class ReplyController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objReply = new CommentReply ($_POST['item_id']);
-        $blResponse = $objReply->delete ();
+        try {
+            $objReply = new CommentReply ($_POST['item_id']);
+            $blResponse = $objReply->delete (new AuditFactory (), new User ($_SESSION['user']['user_id']), new PostAction ());
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $blResponse === false )
         {

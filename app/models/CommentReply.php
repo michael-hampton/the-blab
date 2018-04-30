@@ -412,10 +412,20 @@ class CommentReply
 
     /**
      * 
+     * @param AuditFactory $objAudit
+     * @param User $objUser
+     * @param PostAction $objPostAction
      * @return boolean
      */
-    public function delete ()
+    public function delete (AuditFactory $objAudit, User $objUser, PostAction $objPostAction)
     {
+           $blResult1 = $objPostAction->deleteReplyLikes ($objAudit, $objUser, $this);
+
+            if ( $blResult1 === false )
+            {
+                return false;
+            }
+
         $result = $this->db->delete ("comment_reply", "id = :id", [':id' => $this->id]);
 
         if ( $result === false )
@@ -423,6 +433,8 @@ class CommentReply
             trigger_error ("DB QUERY FAILED", E_USER_WARNING);
             return false;
         }
+        
+        $objAudit->createAudit ($objUser, "Reply {$this->id} deleted", "REPLY DELETED", "comment_reply", $this->id);
 
         return true;
     }

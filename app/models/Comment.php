@@ -361,28 +361,65 @@ class Comment
         $this->dateUpdated = $dateUpdated;
     }
 
-    /**
-     * 
-     * @param CommentReplyFactory $objCommentReplyFactory
-     * @param PostAction $objPostAction
-     * @return boolean
-     */
-    public function delete (CommentReplyFactory $objCommentReplyFactory, PostAction $objPostAction)
+   /**
+    * 
+    * @param AuditFactory $objAudit
+    * @param User $objUser
+    * @param CommentReplyFactory $objCommentReplyFactory
+    * @param Comment $objComment
+    * @param PostAction $objPostAction
+    * @return boolean
+    */
+   private function deleteCommentReplies(AuditFactory $objAudit, User $objUser, CommentReplyFactory $objCommentReplyFactory, Comment $objComment, PostAction $objPostAction)
+   {
+       $arrReplies = $objCommentReplyFactory->getRepliesByCommentToDelete ($objComment);
+
+        if ( $arrReplies === false )
+        {
+            return false;
+        }
+
+        if ( empty ($arrReplies[0]) )
+        {
+            return true;
+        }
+
+        foreach ($arrReplies as $objReply) {
+
+            $blResult = $objReply->delete($objAudit, $objUser, $objPostAction);
+
+            if ( $blResult === false )
+            {
+                return false;
+            }
+        }
+
+        return true;
+   }
+
+   /**
+    * 
+    * @param Audit $objAudit
+    * @param User $objUser
+    * @param CommentReplyFactory $objCommentReplyFactory
+    * @param PostAction $objPostAction
+    * @return boolean
+    */
+    public function delete (AuditFactory $objAudit, User $objUser, CommentReplyFactory $objCommentReplyFactory, PostAction $objPostAction)
     {
-        $blResult = $objCommentReplyFactory->deleteRepliesForComment ($this, $objPostAction);
+        $blResult = $this->deleteCommentReplies($objAudit, $objUser, $objCommentReplyFactory, $this, $objPostAction);
 
         if ( $blResult === false )
         {
             return false;
         }
 
-        $blResult2 = $objPostAction->deleteCommentLikes ($this);
+        $blResult2 = $objPostAction->deleteCommentLikes ($objAudit, $objUser, $this);
 
         if ( $blResult2 === false )
         {
             return false;
         }
-
 
         $result = $this->db->delete ("comments", "com_id = :commentId", [':commentId' => $this->id]);
 
@@ -391,6 +428,8 @@ class Comment
             trigger_error ("DB QUERY FAILED", E_USER_WARNING);
             return false;
         }
+        
+        $objAudit->createAudit ($objUser, "Comment {$this->id} deleted", "COMMENT DELETED", "comment", $this->id);
 
         return true;
     }

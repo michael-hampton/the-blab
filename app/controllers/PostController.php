@@ -156,10 +156,22 @@ class PostController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPost = new Post ($_POST['item_id']);
-        
-        $blResult = $objPost->delete (new CommentFactory (), new CommentReplyFactory (), new PostAction ());
-        
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objPost = new Post ($_POST['item_id']);
+
+            $blResult = $objPost->delete (
+                    new AuditFactory (), new User ($_SESSION['user']['user_id']), new CommentFactory (), new CommentReplyFactory (), new PostAction ()
+            );
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
         if ( $blResult === false )
         {
             $this->ajaxresponse ("error", "Unable to delete");
@@ -291,7 +303,7 @@ class PostController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPost = $objPostFactory->createPost ($_POST['comment'], $objUser, new JCrowe\BadWordFilter\BadWordFilter(), null, $_POST['usersLocation'], 3, $_POST['privacyOption']);
+        $objPost = $objPostFactory->createPost ($_POST['comment'], $objUser, new JCrowe\BadWordFilter\BadWordFilter (), null, $_POST['usersLocation'], 3, $_POST['privacyOption']);
 
         if ( $objPost === FALSE )
         {

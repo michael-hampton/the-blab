@@ -106,9 +106,21 @@ class CommentController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objComment = new Comment ($_POST['item_id']);
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
-        $blResult = $objComment->delete (new CommentReplyFactory (), new PostAction ());
+        try {
+            $objComment = new Comment ($_POST['item_id']);
+
+            $blResult = $objComment->delete (new AuditFactory (), new User ($_SESSION['user']['user_id']), new CommentReplyFactory (), new PostAction ());
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+
 
         if ( $blResult === false )
         {
@@ -161,8 +173,8 @@ class CommentController extends ControllerBase
             });
 
             $likeCommentClass = !empty ($userCommentLikes) && array_key_exists ($_SESSION['user']['username'], $userCommentLikes) ? 'unlike' : $likeCommentClass;
-            $commentLikes = !empty($userCommentLikes) && $userCommentLikes !== null ? implode (',', array_slice ($userCommentLikes, 0, 2)) : '';
-            $likeCommentCount = !empty($userCommentLikes) && $userCommentLikes !== null ? count ($userCommentLikes) - 2 : 0;
+            $commentLikes = !empty ($userCommentLikes) && $userCommentLikes !== null ? implode (',', array_slice ($userCommentLikes, 0, 2)) : '';
+            $likeCommentCount = !empty ($userCommentLikes) && $userCommentLikes !== null ? count ($userCommentLikes) - 2 : 0;
         }
 
         $comment = array(

@@ -524,10 +524,12 @@ class PostAction
 
     /**
      * 
+     * @param AuditFactory $objAudit
+     * @param User $objUser
      * @param CommentReply $objCommentReply
      * @return boolean
      */
-    public function deleteReplyLikes (CommentReply $objCommentReply)
+    public function deleteReplyLikes (AuditFactory $objAudit, User $objUser, CommentReply $objCommentReply)
     {
         $result = $this->db->delete ("comment_reply_like", "com_id_fk = :commentId", [":commentId" => $objCommentReply->getId ()]);
 
@@ -535,16 +537,20 @@ class PostAction
         {
             return false;
         }
+        
+        $objAudit->createAudit ($objUser, "Reply likes {$objCommentReply->getId ()} deleted", "DELETED", "comment_reply_like", $objCommentReply->getId ());
 
         return true;
     }
 
-    /**
-     * 
-     * @param Post $objPost
-     * @return boolean
-     */
-    public function deletePostLikes (Post $objPost)
+   /**
+    * 
+    * @param AuditFactory $objAudit
+    * @param User $objUser
+    * @param Post $objPost
+    * @return boolean
+    */
+    public function deletePostLikes (AuditFactory $objAudit, User $objUser, Post $objPost)
     {
         $result = $this->db->delete ("message_like", "msg_id_fk = :postId", [":postId" => $objPost->getId ()]);
 
@@ -552,16 +558,20 @@ class PostAction
         {
             return false;
         }
+        
+        $objAudit->createAudit ($objUser, "Post likes {$objPost->getId ()} deleted", "DELETED", "post_like", $objPost->getId ());
 
         return true;
     }
 
     /**
      * 
+     * @param AuditFactory $objAudit
+     * @param User $objUser
      * @param Comment $objComment
      * @return boolean
      */
-    public function deleteCommentLikes (Comment $objComment)
+    public function deleteCommentLikes (AuditFactory $objAudit, User $objUser, Comment $objComment)
     {
         $result = $this->db->delete ("comment_like", "com_id_fk = :commentId", [":commentId" => $objComment->getId ()]);
 
@@ -569,6 +579,8 @@ class PostAction
         {
             return false;
         }
+        
+        $objAudit->createAudit ($objUser, "Comment likes {$objComment->getId ()} deleted", "DELETED", "comment_like", $objComment->getId ());
 
         return true;
     }

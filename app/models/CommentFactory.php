@@ -55,7 +55,7 @@ class CommentFactory
         $arrComments = [];
 
         foreach ($arrResults as $arrResult) {
-            $arrComments[] = new Comment ($arrResult['com_id']);
+            $arrComments[] = new Comment ($arrResult['com_id'], new CommentReplyFactory ());
         }
 
         return $arrComments;
@@ -106,7 +106,7 @@ class CommentFactory
 
         foreach ($arrResults as $arrResult) {
 
-            $objComment = new Comment ($arrResult['id']);
+            $objComment = new Comment ($arrResult['id'], new CommentReplyFactory ());
             $objComment->setComment ($arrResult['comment']);
             $objComment->setCreated ($arrResult['date_added']);
             $objComment->setLikes ($arrResult['likes']);
@@ -190,45 +190,8 @@ class CommentFactory
             return false;
         }
 
-        return new Comment ($result);
+        return new Comment ($result, new CommentReplyFactory ());
     }
-
-    /**
-     * 
-     * @param Post $objPost
-     * @param CommentReplyFactory $objCommentReplyFactory
-     * @param PostAction $objPostAction
-     * @return boolean
-     * @throws Exception
-     */
-    public function deleteCommentsForPost (Post $objPost, CommentReplyFactory $objCommentReplyFactory, PostAction $objPostAction)
-    {
-
-        $arrComments = $this->getCommentsByPostForDelete ($objPost);
-
-        if ( $arrComments === false )
-        {
-            throw new Exception ("Db query failed");
-        }
-
-        if ( empty ($arrComments) )
-        {
-            return true;
-        }
-
-        foreach ($arrComments as $objComment) {
-         
-            $blResult3 = $objComment->delete ($objCommentReplyFactory, $objPostAction);
-
-            if ( $blResult3 === false )
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     /**
      *
      * @var type 

@@ -265,15 +265,15 @@ article
 
 .sadIcon_c 
 {
-	background-image: url('/blab/public/img/d_sads_c.jpg');
-	background-size: 100%;
-	float:left;
-	height: 18px;
-	width: 18px;
-	image-rendering: crisp-edges;
-	line-height: 1;
-	cursor: pointer;
-	margin-right:5px;
+    background-image: url('/blab/public/img/d_sads_c.jpg');
+    background-size: 100%;
+    float:left;
+    height: 18px;
+    width: 18px;
+    image-rendering: crisp-edges;
+    line-height: 1;
+    cursor: pointer;
+    margin-right:5px;
 }
 
 
@@ -290,7 +290,18 @@ article
     margin-right:5px;
 }
 
-
+.hahaIcon_c 
+{
+    background-image: url('/blab/public/img/d_hahas_c.jpg');
+    background-size: 100%;
+    float:left;
+    height: 18px;
+    width: 18px;
+    image-rendering: crisp-edges;
+    line-height: 1;
+    cursor: pointer;
+    margin-right:5px;
+}
 
 
 .wowIcon_c 

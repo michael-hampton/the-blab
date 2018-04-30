@@ -205,45 +205,4 @@ class CommentReplyFactory
         return $arrReplies;
     }
 
-    /**
-     * 
-     * @param Comment $objComment
-     * @param PostAction $objPostAction
-     * @return boolean
-     * @throws Exception
-     */
-    public function deleteRepliesForComment (Comment $objComment, PostAction $objPostAction)
-    {
-        $arrReplies = $this->getRepliesByCommentToDelete ($objComment);
-
-        if ( $arrReplies === false )
-        {
-            throw new Exception ("Db query fsailed");
-        }
-
-        if ( empty ($arrReplies[0]) )
-        {
-            return true;
-        }
-
-        foreach ($arrReplies as $objReply) {
-
-            $blResult1 = $objPostAction->deleteReplyLikes ($objReply);
-
-            if ( $blResult1 === false )
-            {
-                return false;
-            }
-
-            $blResult = $objReply->delete ();
-
-            if ( $blResult === false )
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 }
