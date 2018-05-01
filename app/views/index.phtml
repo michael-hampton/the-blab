@@ -142,7 +142,7 @@
                             <li><a href="/blab/terms/index"><i class="fa fa-envelope-o"></i> Terms and Policies</a></li>
 
                             <li><a href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Messages</a></li>
-                             <li><a href="/blab/user/downloadUserData"><i class="fa fa-envelope-o"></i> Download Personal Data</a></li>
+                             <li><a href="/blab/user/downloadUserData" onclick="showSuccessMessage('You request is being processed. You should receive an email shortly')"><i class="fa fa-envelope-o"></i> Download Personal Data</a></li>
 
                             <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#update-password" onclick="vpb_hide_profile_popups ();"><i class="fa fa-edit"></i> Reset Password</a></li>
 
@@ -314,6 +314,12 @@
                 <form name="uploadForm" id="uploadForm" enctype="multipart/form-data" style="min-width: 450px;">
 
                     <input style="display:none;" type="file" name="pictures[]" multiple="multiple" id="fileupload" />
+                    
+                    <select class="form-control" id="upload-privacy">
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                        <option value="friend">Friends Only</option>
+                    </select>
 
                     <textarea placeholder="Say something about the photo(s)" name="uploadComment" id="uploadComment" style="height:100px; width:90%; margin-left:30px; margin-top:30px;" class="form-control mentions"></textarea>
 

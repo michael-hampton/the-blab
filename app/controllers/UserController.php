@@ -286,9 +286,36 @@ class UserController extends ControllerBase
     {
         $this->view->disable ();
 
-        echo "<pre>";
-        print_r ($_POST);
-        die;
+        if (
+                empty ($_POST['my_identity']) ||
+                empty ($_POST['oldpasswd']) ||
+                empty ($_POST['newpasswd']) ||
+                empty ($_POST['verifynewpasswd']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objAccountRecovery = new AccountRecovery();
+        $blResult = $objAccountRecovery->resetPasswordInDb ($_POST['newpasswd'], new UserFactory (), new User ($_SESSION['user']['user_id']));
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "The password has been reset successfully");
     }
 
     public function saveBackgroundImageAction ()

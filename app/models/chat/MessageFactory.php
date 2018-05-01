@@ -13,6 +13,7 @@
  */
 class MessageFactory
 {
+   use MessageEncrypt;
 
     private $db;
 
@@ -50,7 +51,7 @@ class MessageFactory
             $objMessage = new Message ($arrResult['chat_id']);
             $objMessage->setDate ($arrResult['sent_on']);
             $objMessage->setRecipient ($arrResult['sent_to']);
-            $objMessage->setMessage ($arrResult['message']);
+            $objMessage->setMessage ($this->encrypt_decrypt('decrypt', $arrResult['message']));
             $objMessage->setSender ($arrResult['user_id']);
             $objMessage->setAuthor ($arrResult['author']);
             $objMessage->setUsername ($arrResult['username']);
@@ -193,17 +194,18 @@ class MessageFactory
         return $arrResults;
     }
 
-    /**
-     * 
-     * @param type $message
-     * @param User $objRecipient
-     * @param User $objUser
-     * @param type $filename
-     * @param type $messageType
-     * @param type $groupId
-     * @return \Message|boolean
-     */
-    public function sendMessage ($message, User $objRecipient, User $objUser, $filename, $messageType, $groupId = null)
+   /**
+    * 
+    * @param type $message
+    * @param \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter
+    * @param User $objRecipient
+    * @param User $objUser
+    * @param type $filename
+    * @param type $messageType
+    * @param type $groupId
+    * @return \Message|boolean
+    */
+    public function sendMessage ($message, \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, User $objRecipient, User $objUser, $filename, $messageType, $groupId = null)
     {
 
         $userId = $objRecipient->getId ();
@@ -218,8 +220,8 @@ class MessageFactory
             return false;
         }
 
-        $objBadWordFilter = new \JCrowe\BadWordFilter\BadWordFilter();
         $message = $objBadWordFilter->clean ($message);
+        $message = $this->encrypt_decrypt('encrypt', $message);
 
         $result = $this->db->create ('chat', array(
             'message' => $message,
@@ -244,7 +246,7 @@ class MessageFactory
             $dbdate = strtotime ($objRecipient->getLastLogin ());
             if ( time () - $dbdate > 15 * 60 )
             {
-                $objEmail = new EmailNotification (new User ($userId), $notification, $body);
+                $objEmail = new EmailNotification ($objRecipient, $notification, $body);
                 $objEmail->sendEmail ();
             }
 

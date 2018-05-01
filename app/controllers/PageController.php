@@ -6,6 +6,29 @@ use Phalcon\Dispatcher;
 class PageController extends ControllerBase
 {
 
+    public function reportPageAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['group_id']) || empty ($_POST['group_name']) || empty ($_POST['report_group_data']) || empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objUser = new User ($_SESSION['user']['user_id']);
+
+        $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . "just reported group {$_POST['group_name']}";
+        $message = $_POST['report_group_data'];
+
+        if ( !mail (EMAIL_ADDRESS, $subject, $message) )
+        {
+            trigger_error ("Failed to send email reporting page {$_POST['group_name']}", E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
+    }
+
     public function getAllPagesAction ()
     {
         $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
@@ -98,8 +121,8 @@ class PageController extends ControllerBase
                             ]
             );
         }
-        
-         Phalcon\Tag::setTitle ("Page - " . $objPage->getName ());
+
+        Phalcon\Tag::setTitle ("Page - " . $objPage->getName ());
 
         if ( empty ($_SESSION['user']['username']) )
         {
@@ -346,12 +369,12 @@ class PageController extends ControllerBase
             $objPage = new Page ($_POST['pageId']);
 
             $objUser = new User ($_SESSION['user']['user_id']);
-            
+
             //$objPostFactory = new PostFactory (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
 
             $objPostFactory = new ReviewPost ($objPage, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
 
-            $objPost = $objPostFactory->createComment ($_POST['review'], $objUser, new \JCrowe\BadWordFilter\BadWordFilter());
+            $objPost = $objPostFactory->createComment ($_POST['review'], $objUser, new \JCrowe\BadWordFilter\BadWordFilter ());
 
             if ( $objPost === false )
             {

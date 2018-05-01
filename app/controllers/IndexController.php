@@ -856,7 +856,7 @@ class IndexController extends ControllerBase
     {
         $this->view->disable ();
 
-        if ( !isset ($_POST['uploadComment']) )
+        if ( empty ($_POST['uploadComment']) || empty ($_POST['privacy']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
@@ -897,7 +897,7 @@ class IndexController extends ControllerBase
 
                 default:
                     $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createPost ($comment, $objUser, new JCrowe\BadWordFilter\BadWordFilter(), $arrIds);
+                    $objPost = $objPostFactory->createPost ($comment, $objUser, new JCrowe\BadWordFilter\BadWordFilter (), $arrIds, null, 3, $_POST['privacy']);
                     break;
             }
         } catch (Exception $ex) {

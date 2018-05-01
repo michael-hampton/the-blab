@@ -6,6 +6,7 @@ $totalCommentsToDisplay = 1;
 
 $friendIds = [];
 $requestIds = [];
+$arrPageFriendIds = [];
 
 foreach ($arrFriendRequests as $objFriendRequest) {
     $requestIds[] = $objFriendRequest->getId ();
@@ -14,6 +15,12 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 foreach ($arrCurrentUserFreindList as $friend) {
     $friendIds[] = $friend->getId ();
 }
+
+foreach ($arrFriendList as $objFriend) {
+    $arrPageFriendIds[] = $objFriend->getId ();
+}
+
+$postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true : false;
 ?>
 
 <input type="hidden" id="userId" name="userId" value="<?= $arrUser->getId () ?>">
@@ -226,7 +233,7 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
                             <div class="input-group vpb-the-friends-wrap" id="vpb_load_more_friends_box">
                                 <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_page_owner_friends (<?= $objUser->getId () ?>);">View more friends</span></div>
-                                <div style="float:right; color:#999;"><span id="v_this_friends_totals"><?= count($arrFilteredFriendList) ?></span> of <?= count ($arrFriendList) ?></div>
+                                <div style="float:right; color:#999;"><span id="v_this_friends_totals"><?= count ($arrFilteredFriendList) ?></span> of <?= count ($arrFriendList) ?></div>
                                 <div style="clear:both;"></div>
                             </div>
 
@@ -352,7 +359,12 @@ foreach ($arrCurrentUserFreindList as $friend) {
 
                         <div id="vasplus_wall_status_updates">
 
-                            <?php $this->partial ("templates/postBox", ["form" => "commentform"]); ?>
+                            <?php
+                            if ( $postPermission === true )
+                            {
+                                $this->partial ("templates/postBox", ["form" => "commentform"]);
+                            }
+                            ?>
 
                             <div class="row">
                                 <?php $this->partial ("templates/sortingBox"); ?>
@@ -399,7 +411,7 @@ foreach ($arrCurrentUserFreindList as $friend) {
         </div>
     </div>
 
-   
+
 
     <script>
         var profileUser = <?= $objUser->getId () ?>;

@@ -65,6 +65,46 @@ class LoginModel
         return( $newvalue );
     }
 
+    private function lockAccount($username)
+    {
+        $result = $this->db->_select ('users', "username = :username", array(
+            ':username' => $username,
+                )
+        );
+
+        if ( empty ($result))
+        {
+            return false;
+        }
+
+        $count = $result[0]['login_attempts'];
+
+        if((int)$count >= 3){
+            $result = $this->db->update ("users", ["is_active" => 0], "username = :username", [":username" => $username]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            throw new Exception("Db query failed");
+        }
+
+        return false;
+
+       } 
+
+       $newCount = (int)$count + 1;
+
+       $result = $this->db->update ("users", ["login_attempts" => $newCount], "username = :username", [":username" => $username]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            throw new Exception("Db query failed");
+        }
+
+        return false;
+    }
+
     /**
      * 
      * @param type $username

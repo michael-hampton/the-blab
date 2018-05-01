@@ -85,7 +85,7 @@ if ( !in_array ($_SESSION['user']['user_id'], $arrMemberIds) && strtolower (trim
 
                             <span id="g_videos" class="group_menu_wrapper" onclick="<?= ($permission === true ? 'vpb_show_event_videos();' : '') ?>">Videos</span>
 
-                            <span id="g_videos" class="group_menu_wrapper" onclick="vpb_shoq_report_this_event_box ('Michael hampton', 'michaelhampton', 'bluetiger_uan@yahoo.com', '<?= $objEvent->getId () ?>', '<?= $objEvent->getEventName () ?>')">Report Group</span>             
+                            <span id="g_videos" class="group_menu_wrapper" onclick="vpb_shoq_report_this_event_box ('Michael hampton', 'michaelhampton', 'bluetiger_uan@yahoo.com', '<?= $objEvent->getId () ?>', '<?= $objEvent->getEventName () ?>')">Report Event</span>             
                             <span id="vpb_get_all_the_group_confirmation_box" class="group_menu_wrapper"></span> 
 
                             <?php if ( $objEvent->getUserId () === $_SESSION['user']['user_id'] ): ?> 

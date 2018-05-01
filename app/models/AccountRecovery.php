@@ -53,6 +53,10 @@ class AccountRecovery
         $this->db->connect ();
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     private function generateToken ()
     {
 
@@ -218,6 +222,32 @@ class AccountRecovery
 
     /**
      * 
+     * @param type $newPassword
+     * @param UserFactory $objUserFactory
+     * @return boolean
+     */
+    public function resetPasswordInDb ($newPassword, UserFactory $objUserFactory, User $objUser){
+        $password = $objUserFactory->blowfishCrypt ($newPassword, 12);
+
+        if ( $password === false )
+        {
+            trigger_error ("Unable to generate new password", E_USER_WARNING);
+            return false;
+        }
+
+        $result = $this->db->update ("users", ["password" => $password], "uid = :userId", [":userId" => $objUser->getId ()]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 
      * @param type $selector
      * @param type $newPassword
      * @param UserFactory $objUserFactory
@@ -232,19 +262,7 @@ class AccountRecovery
             return false;
         }
         
-        $password = $objUserFactory->blowfishCrypt ($newPassword, 12);
-
-        if ( $password === false )
-        {
-            trigger_error ("Unable to generate new password", E_USER_WARNING);
-            return false;
-        }
-
-        $result = $this->db->update ("users", ["password" => $password], "uid = :userId", [":userId" => $this->objUser->getId ()]);
-
-        if ( $result === false )
-        {
-            trigger_error ("Db query failed", E_USER_WARNING);
+        if($this->resetPasswordInDb ($newPassword, $objUserFactory, $this->objUser) === false){
             return false;
         }
 

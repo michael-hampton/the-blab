@@ -160,9 +160,25 @@ class EventController extends ControllerBase
     {
         $this->view->disable ();
 
-        echo "<pre>";
-        print_r ($_POST);
-        die;
+        $this->view->disable ();
+
+        if ( empty ($_POST['group_id']) || empty ($_POST['group_name']) || empty ($_POST['report_group_data']) || empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objUser = new User ($_SESSION['user']['user_id']);
+
+        $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . "just reported group {$_POST['group_name']}";
+        $message = $_POST['report_group_data'];
+
+        if ( !mail (EMAIL_ADDRESS, $subject, $message) )
+        {
+            trigger_error ("Failed to send email reporting event {$_POST['group_name']}", E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
     }
 
     public function getEventStatusListAction ()

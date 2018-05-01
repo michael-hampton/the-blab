@@ -220,9 +220,14 @@ class ChatController extends ControllerBase
                 $this->ajaxresponse ("error", "Cant upload file");
             }
         }
-
-        $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new User ($_POST['group_username']), $objUser, $fileName, $type, null);
-
+        
+         try {
+            $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new User ($_POST['group_username']), $objUser, $fileName, $type, null);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+        
         if ( $blResponse === false )
         {
             $this->ajaxresponse ("error", "Cant save message");
@@ -274,7 +279,7 @@ class ChatController extends ControllerBase
         try {
             $objMessage = new MessageFactory();
 
-            $blResult = $objMessage->sendMessage ($_POST['message'], new User ($_POST['group_username']), $objUser, '', 'text', null);
+            $blResult = $objMessage->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new User ($_POST['group_username']), $objUser, '', 'text', null);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -426,7 +431,7 @@ class ChatController extends ControllerBase
         if ( $_POST['group_type'] == "user" )
         {
             try {
-                $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new User ($_POST['group_id']), $objUser, $fileName, $type, null);
+                $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new User ($_POST['group_id']), $objUser, $fileName, $type, null);
             } catch (Exception $ex) {
                 trigger_error ($ex->getMessage (), E_USER_WARNING);
                 $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -465,12 +470,12 @@ class ChatController extends ControllerBase
 
             $groupId = isset ($_POST['group_id']) && trim ($_POST['group_id']) !== "" && is_numeric ($_POST['group_id']) ? $_POST['group_id'] : null;
 
-            $blResponse = (new MessageFactory())->sendMessage ($_POST['msg'], new User($_POST['userId']), $objUser, $_POST['filename'], $_POST['type'], $groupId);
+            $blResponse = (new MessageFactory())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), new User ($_POST['userId']), $objUser, $_POST['filename'], $_POST['type'], $groupId);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
+
         if ( $blResponse === FALSE )
         {
             $this->ajaxresponse ("error", "CANT SAVE");
@@ -979,15 +984,18 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objUser = new User ($_SESSION['user']['user_id']);
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
 
-        $blResponse = (new Message())->sendMessage ($_POST['msg'], $_POST['userId'], $objUser);
+            $blResponse = (new Message())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), $_POST['userId'], $objUser);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $blResponse === FALSE )
         {
             $this->ajaxresponse ("error", "CANT SAVE");
-
-            die;
         }
     }
 
