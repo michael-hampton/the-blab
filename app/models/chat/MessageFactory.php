@@ -198,6 +198,7 @@ class MessageFactory
     * 
     * @param type $message
     * @param \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter
+    * @param EmailNotificationFactory $objEmailFactory
     * @param User $objRecipient
     * @param User $objUser
     * @param type $filename
@@ -205,7 +206,7 @@ class MessageFactory
     * @param type $groupId
     * @return \Message|boolean
     */
-    public function sendMessage ($message, \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, User $objRecipient, User $objUser, $filename, $messageType, $groupId = null)
+    public function sendMessage ($message, \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, EmailNotificationFactory $objEmailFactory, User $objRecipient, User $objUser, $filename, $messageType, $groupId = null)
     {
 
         $userId = $objRecipient->getId ();
@@ -246,7 +247,8 @@ class MessageFactory
             $dbdate = strtotime ($objRecipient->getLastLogin ());
             if ( time () - $dbdate > 15 * 60 )
             {
-                $objEmail = new EmailNotification ($objRecipient, $notification, $body);
+                //$objEmail = new EmailNotification ($objRecipient, $notification, $body);
+                $objEmail = $objEmailFactory->createNotification($objRecipient, $notification, $body);
                 $objEmail->sendEmail ();
             }
 

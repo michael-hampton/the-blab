@@ -220,6 +220,19 @@ class AccountRecovery
         return false;
     }
 
+    private function lockAccountRecoveryToken($selector)            
+    {
+         $result = $this->db->update ("account_recovery", ["is_locked" => 1], "selector = :selector", [":selector" => $selector]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * 
      * @param type $newPassword

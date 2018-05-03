@@ -429,6 +429,7 @@ class BaseUserSettings
     public function getEmailSetting ($action)
     {
         $getter = 'getEmail' . $action;
+        
         $value = $this->$getter ();
 
         if ( strtolower (trim ($value)) === 'yes' )

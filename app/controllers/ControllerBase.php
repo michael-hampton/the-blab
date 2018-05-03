@@ -18,7 +18,7 @@ class ControllerBase extends \Phalcon\Mvc\Controller
     protected $arrUserSettings;
     
     /**
-     *
+     * The
      * @var type 
      */
     protected $totalFriendsPerLoad = 50;
@@ -208,7 +208,9 @@ header ("Location: /blab/user/login");
 // if everything is ok, try to upload file
             }
 
-            if ( move_uploaded_file ($_FILES[$keyname]["tmp_name"][$key], $target_file) )
+            if($this->compress($_FILES[$keyname]["tmp_name"][$key], $target_file, 80))
+
+            //if ( move_uploaded_file ($_FILES[$keyname]["tmp_name"][$key], $target_file))
             {
                 $savedLocation = str_replace ($this->rootPath, "", $target_file);
 
@@ -317,4 +319,25 @@ header ("Location: /blab/user/login");
         return $imageLocation;
     }
 
+    protected function compress($source, $destination, $quality) {
+
+    $info = getimagesize($source);
+
+    if ($info['mime'] == 'image/jpeg') {
+        $image = imagecreatefromjpeg($source);
+    }
+    elseif ($info['mime'] == 'image/gif') {
+        $image = imagecreatefromgif($source);
+    }
+    elseif ($info['mime'] == 'image/png') {
+        $image = imagecreatefrompng($source);
+    }
+
+    if(!isset($image)){
+        return false;
+    }
+
+    return imagejpeg($image, $destination, $quality);
+
+}
 }

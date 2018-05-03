@@ -55,7 +55,7 @@ class CommentFactory
         $arrComments = [];
 
         foreach ($arrResults as $arrResult) {
-            $arrComments[] = new Comment ($arrResult['com_id'], new CommentReplyFactory ());
+            $arrComments[] = new Comment ($arrResult['com_id']);
         }
 
         return $arrComments;
@@ -106,7 +106,7 @@ class CommentFactory
 
         foreach ($arrResults as $arrResult) {
 
-            $objComment = new Comment ($arrResult['id'], new CommentReplyFactory ());
+            $objComment = new Comment ($arrResult['id']);
             $objComment->setComment ($arrResult['comment']);
             $objComment->setCreated ($arrResult['date_added']);
             $objComment->setLikes ($arrResult['likes']);
@@ -190,7 +190,7 @@ class CommentFactory
             return false;
         }
 
-        return new Comment ($result, new CommentReplyFactory ());
+        return new Comment ($result);
     }
     /**
      *

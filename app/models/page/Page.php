@@ -387,7 +387,6 @@ class Page
         $result = $this->objDatabase->update ("page", [
             "description" => $this->description,
             "page_name" => $this->name,
-            "url" => $this->url,
             "category_id" => $this->categories,
             "page_type_id" => $this->pageType,
             "address" => $this->address,

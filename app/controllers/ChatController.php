@@ -222,7 +222,7 @@ class ChatController extends ControllerBase
         }
         
          try {
-            $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new User ($_POST['group_username']), $objUser, $fileName, $type, null);
+            $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory(), new User ($_POST['group_username']), $objUser, $fileName, $type, null);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -279,7 +279,7 @@ class ChatController extends ControllerBase
         try {
             $objMessage = new MessageFactory();
 
-            $blResult = $objMessage->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new User ($_POST['group_username']), $objUser, '', 'text', null);
+            $blResult = $objMessage->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory(), new User ($_POST['group_username']), $objUser, '', 'text', null);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -431,7 +431,7 @@ class ChatController extends ControllerBase
         if ( $_POST['group_type'] == "user" )
         {
             try {
-                $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new User ($_POST['group_id']), $objUser, $fileName, $type, null);
+                $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory(), new User ($_POST['group_id']), $objUser, $fileName, $type, null);
             } catch (Exception $ex) {
                 trigger_error ($ex->getMessage (), E_USER_WARNING);
                 $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -470,7 +470,7 @@ class ChatController extends ControllerBase
 
             $groupId = isset ($_POST['group_id']) && trim ($_POST['group_id']) !== "" && is_numeric ($_POST['group_id']) ? $_POST['group_id'] : null;
 
-            $blResponse = (new MessageFactory())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), new User ($_POST['userId']), $objUser, $_POST['filename'], $_POST['type'], $groupId);
+            $blResponse = (new MessageFactory())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory(), new User ($_POST['userId']), $objUser, $_POST['filename'], $_POST['type'], $groupId);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);

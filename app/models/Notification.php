@@ -13,29 +13,45 @@
  */
 class Notification
 {
+
     /**
      *
      * @var type 
      */
     private $dateAdded;
-    
+
     /**
      *
      * @var type 
      */
     private $message;
-    
+
     /**
      *
      * @var type 
      */
     private $userId;
-    
+
     /**
      *
      * @var type 
      */
     private $hasRead;
+
+    /**
+     *
+     * @var type 
+     */
+    private $db;
+
+    /**
+     * 
+     */
+    public function __construct ()
+    {
+        $this->db = new Database();
+        $this->db->connect ();
+    }
 
     /**
      * 
@@ -70,7 +86,7 @@ class Notification
      */
     public function getHasRead ()
     {
-        return (int)$this->hasRead;
+        return (int) $this->hasRead;
     }
 
     /**
@@ -109,5 +125,21 @@ class Notification
         $this->hasRead = $hasRead;
     }
 
+    /**
+     * 
+     * @param User $objUser
+     * @return boolean
+     */
+    public function getUnreadCountForUser (User $objUser)
+    {
+        $result = $this->db->_query ("SELECT COUNT(*) AS count FROM notifications WHERE has_read = 0 AND user_id = :userId", [":userId" => $objUser->getId ()]);
 
+        if ( $result === false || !isset ($result[0]['count']) )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return (int) $result[0]['count'];
+    }
 }

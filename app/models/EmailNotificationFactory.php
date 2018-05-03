@@ -13,9 +13,19 @@
  */
 class EmailNotificationFactory
 {
-
-    public function createNotification()
+    
+    /**
+     * 
+     * @param User $objUser
+     * @param type $header
+     * @param type $body
+     * @return \EmailNotification
+     */
+    public function createNotification (User $objUser, $header, $body)
     {
-        
+        $objEmail = new EmailNotification ($objUser, $header, $body);
+
+        return $objEmail;
     }
+
 }

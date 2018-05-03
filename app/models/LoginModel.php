@@ -65,41 +65,47 @@ class LoginModel
         return( $newvalue );
     }
 
-    private function lockAccount($username)
+    /**
+     * 
+     * @param type $username
+     * @return boolean
+     * @throws Exception
+     */
+    private function lockAccount ($username)
     {
         $result = $this->db->_select ('users', "username = :username", array(
             ':username' => $username,
                 )
         );
 
-        if ( empty ($result))
+        if ( empty ($result) )
         {
             return false;
         }
 
         $count = $result[0]['login_attempts'];
 
-        if((int)$count >= 3){
+        if ( (int) $count >= 3 )
+        {
             $result = $this->db->update ("users", ["is_active" => 0], "username = :username", [":username" => $username]);
 
-        if ( $result === false )
-        {
-            trigger_error ("Db query failed", E_USER_WARNING);
-            throw new Exception("Db query failed");
+            if ( $result === false )
+            {
+                trigger_error ("Db query failed", E_USER_WARNING);
+                throw new Exception ("Db query failed");
+            }
+
+            return false;
         }
 
-        return false;
+        $newCount = (int) $count + 1;
 
-       } 
-
-       $newCount = (int)$count + 1;
-
-       $result = $this->db->update ("users", ["login_attempts" => $newCount], "username = :username", [":username" => $username]);
+        $result = $this->db->update ("users", ["login_attempts" => $newCount], "username = :username", [":username" => $username]);
 
         if ( $result === false )
         {
             trigger_error ("Db query failed", E_USER_WARNING);
-            throw new Exception("Db query failed");
+            throw new Exception ("Db query failed");
         }
 
         return false;
@@ -109,16 +115,10 @@ class LoginModel
      * 
      * @param type $username
      * @param type $password
-     * @param UserFactory $objUserFactory
      * @return boolean
      */
-    public function login ($username, $password, UserFactory $objUserFactory)
-    {
-        if ( session_id () === "" )
-        {
-            session_start ();
-        }
-
+    public function validatePassword ($username, $password)
+    {        
         if ( trim ($username) === "" || !is_string ($username) )
         {
             $this->validationFailures[] = "Username cannot be empty";
@@ -151,25 +151,57 @@ class LoginModel
         }
         else
         {
+            
             return false;
         }
 
-           try {
-            $days = 60;
+        return true;
+    }
 
-            $value = $this->encryptCookie ($username);
-            $value2 = $this->encryptCookie ($password);
+    /**
+     * 
+     * @param type $username
+     * @param type $password
+     * @param UserFactory $objUserFactory
+     * @return boolean
+     */
+    public function login ($username, $password, UserFactory $objUserFactory)
+    {
+        if ( session_id () === "" )
+        {
+            session_start ();
+        }
 
-            $arrUser = array('username' => $value, 'password' => $value2);
+        if ( $this->validatePassword ($username, $password) === false )
+        {
+            $this->lockAccount ($username);
+            
+            return false;
+        }
 
-            setcookie ("blab_rememberme", json_encode ($arrUser), time () + ($days * 24 * 60 * 60 * 1000));
-           } catch(Exception $e) {
 
-            }
-        
+        try {
+            $this->createCookie ($username, $password);
+        } catch (Exception $e) {
+            
+        }
 
         $_SESSION['user']['user_id'] = $result[0]['uid'];
         $_SESSION['user']['username'] = $result[0]['username'];
+
+        return true;
+    }
+
+    private function createCookie ($username, $password)
+    {
+        $days = 60;
+
+        $value = $this->encryptCookie ($username);
+        $value2 = $this->encryptCookie ($password);
+
+        $arrUser = array('username' => $value, 'password' => $value2);
+
+        setcookie ("blab_rememberme", json_encode ($arrUser), time () + ($days * 24 * 60 * 60 * 1000));
 
         return true;
     }

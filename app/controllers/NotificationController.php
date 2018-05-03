@@ -41,6 +41,31 @@ class NotificationController extends ControllerBase
         }
     }
 
+//    public function fetch ()
+//    {
+//        try {
+//            $this->view->disable ();
+//
+//            if ( !isset ($_SESSION['user']['user_id']) )
+//            {
+//                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+//            }
+//
+//            $userId = $_SESSION['user']['user_id'];
+//
+//            $objUser = new User ($userId);
+//
+//            $objNotification = new Notification();
+//            
+//            $count = $objNotification->getUnreadCountForUser($objUser);
+//            
+//            
+//        } catch (Exception $ex) {
+//            trigger_error ($ex->getMessage (), E_USER_WARNING);
+//            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+//        }
+//    }
+
     public function fetchAction ()
     {
         $this->view->disable ();
@@ -70,6 +95,9 @@ class NotificationController extends ControllerBase
 
         $count = 0;
         $html = '';
+
+//while($count < 1) {
+//sleep(15);
 
         if ( !empty ($arrNotifications) )
         {
@@ -106,6 +134,11 @@ class NotificationController extends ControllerBase
                                 </a>
                             </div>';
         }
+
+        //if($count === 0) {
+        //sleep(15);
+        //}
+        //}
 
         $arrTest = array("notification" => $html, "unseen_notification" => $count);
 

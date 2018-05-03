@@ -19,9 +19,16 @@ class LikeController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objUser = new User ($_SESSION['user']['user_id']);
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
 
-        $objPostAction = new PostAction();
+            $objPostAction = new PostAction();
+
+            $objUserSettings = new UserSettings ($objUser);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $_POST['commentId'] != 'null' && $_POST['commentId'] !== NULL )
         {
@@ -41,8 +48,13 @@ class LikeController extends ControllerBase
                 $message = 'Comment: ' . $objComment->getComment ();
                 $objNotification = new NotificationFactory();
                 $objOwner = new User ($objComment->getUserId ());
-                $objEmail = new EmailNotification ($objOwner, $subject, $message);
-                $objEmail->sendEmail ();
+
+                if ( $objUserSettings->getEmailSetting ('like') === true )
+                {
+                    $objEmail = new EmailNotification ($objOwner, $subject, $message);
+                    $objEmail->sendEmail ();
+                }
+
                 $objNotification->createNotification ($objOwner, $subject);
             } catch (Exception $ex) {
                 trigger_error ($ex->getMessage (), E_USER_WARNING);
@@ -69,8 +81,13 @@ class LikeController extends ControllerBase
                     $message = 'Post: ' . $objPost->getMessage ();
                     $objNotification = new NotificationFactory();
                     $objOwner = new User ($objPost->getUserId ());
-                    $objEmail = new EmailNotification ($objOwner, $subject, $message);
-                    $objEmail->sendEmail ();
+
+                    if ( $objUserSettings->getEmailSetting ('like') === true )
+                    {
+                        $objEmail = new EmailNotification ($objOwner, $subject, $message);
+                        $objEmail->sendEmail ();
+                    }
+
                     $objNotification->createNotification ($objOwner, $subject);
                 } catch (Exception $ex) {
                     trigger_error ($ex->getMessage (), E_USER_WARNING);

@@ -874,12 +874,16 @@ class IndexController extends ControllerBase
         $uploadType = $_POST['selectedImageType'];
         $uploadId = $_POST['selectedImageId'];
         $comment = $_POST['uploadComment'];
-        $objUser = new User ($_SESSION['user']['user_id']);
+
         $target_dir = $this->rootPath . "/blab/public/uploads/" . $_SESSION['user']['username'] . '/';
 
-        $arrIds = $this->multipleUploadValidation ("pictures", $_FILES, $target_dir, $objUser);
-
         try {
+
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objUserSettings = new UserSettings ($objUser);
+
+            $arrIds = $this->multipleUploadValidation ("pictures", $_FILES, $target_dir, $objUser);
+
             switch ($uploadType) {
                 case "page":
                     $objPostFactory = new PagePost (new Page ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
@@ -934,8 +938,11 @@ class IndexController extends ControllerBase
 
                 $blResult = $objNotification->createNotification ($objNewUser, $message);
 
-                $objEmail = new EmailNotification ($objNewUser, $message, $comment);
-                $objEmail->sendEmail ();
+                if ( $objUserSettings->getEmailSetting ('tag') === true )
+                {
+                    $objEmail = new EmailNotification ($objNewUser, $message, $comment);
+                    $objEmail->sendEmail ();
+                }
             }
 
             $arrTags = (new TagUserFactory())->getTaggedUsersForPost ($objPost);

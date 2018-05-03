@@ -29,16 +29,17 @@
                         </p>
                         <p>Login in. To see it in action.</p>
                         <form class="m-t" role="form" action="index.html">
+                            <input type="hidden" id="token" name="token" value="<?= $token ?>">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="username" placeholder="Username" required="" value="<?= (!empty($username) ? $username : '') ?>">
+                                <input type="text" class="form-control" id="username" placeholder="Username" required="" value="<?= (!empty ($username) ? $username : '') ?>">
                             </div>
                             <div class="form-group">
-                                <input type="password" class="form-control" id="password" placeholder="Password" required="" value="<?= (!empty($password) ? $password : '') ?>">
+                                <input type="password" class="form-control" id="password" placeholder="Password" required="" value="<?= (!empty ($password) ? $password : '') ?>">
                             </div>
                             <button type="button" class="btn btn-primary block full-width m-b login-btn">Login</button>
 
                             <a href="/blab/user/forgotPassword"><small>Forgot password?</small></a>
-<p><small>Your username is firstname.lastname for example michael.hampton and the password you used when signing up.</small>
+                            <p><small>Your username is firstname.lastname for example joe.bloggs and the password you used when signing up.</small>
                         </form>
                     </div>
                 </div>
@@ -52,16 +53,17 @@
                         <p>Create account to see it in action.</p>
                         <form class="m-t" role="form" id="newUserForm">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="firstname" placeholder="First Name" required="required">
+                                <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name" required="required">
                             </div>
 
                             <div class="form-group">
-                                <input type="text" class="form-control" name="lastname" placeholder="Last Name" required="required">
+                                <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last Name" required="required">
                             </div>
 
                             <div class="form-group">
                                 <input type="email" name="youremail" class="form-control" placeholder="Email" required="required">
                             </div>
+
 
                             <div class="form-group">
                                 <input type="email" name="reenteremail" class="form-control" placeholder="Re-enter your Email" required="required">
@@ -69,6 +71,11 @@
 
                             <div class="form-group">
                                 <input type="password" name="password" class="form-control" placeholder="Password" required="required">
+                            </div>
+
+                            <div class="form-group">
+                                Your new username will be:
+                                <input type="text" class="form-control" id="username-preview" readonly="readonly">
                             </div>
 
                             <!--                            <label for="">
@@ -129,17 +136,29 @@
 
     <script>
 
+        $ ("#firstname").on ("keyup", function ()
+        {
+            generateUseername ();
+        });
+
+        $ ("#lastname").on ("keyup", function ()
+        {
+            generateUseername ();
+        });
+
         $ (".login-btn").on ("click", function ()
         {
             var password = $ ("#password").val ();
             var username = $ ("#username").val ();
+            var token = $ ("#token").val ();
 
             $.ajax ({
                 url: '/blab/user/doLogin',
                 type: 'POST',
-                data: {username: username, password: password},
+                data: {username: username, password: password, "token": token},
                 success: function (response)
-                {                    
+                {
+
                     if (response === 'ERROR')
                     {
                         showErrorMessage ("Unable to login");
@@ -171,6 +190,16 @@
 
             return false;
         });
+
+        function generateUseername ()
+        {
+            var lastname = $.trim ($ ("#lastname").val ());
+            var firstname = $.trim ($ ("#firstname").val ());
+
+            var username = $.trim (firstname + '.' + lastname).toLowerCase ();
+
+            $ ("#username-preview").val (username);
+        }
 
         function formatResponse (response)
         {

@@ -364,7 +364,7 @@ class ProductController extends ControllerBase
             $message = $objUser->getUsername () . " sent you a message about your product " . $objProduct->getName ();
             $message .= "<br><br>" . $_POST['message'];
 
-            $blResult = $objMessage->sendMessage ($message, new User ($_POST['userId']), $objUser, "", "text");
+            $blResult = $objMessage->sendMessage ($message, new \JCrowe\BadWordFilter\BadWordFilter(), new EmailNotificationFactory(), new User ($_POST['userId']), $objUser, "", "text");
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);

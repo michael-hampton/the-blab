@@ -39,14 +39,17 @@ class FriendRequest
         return true;
     }
 
-    /**
-     * 
-     * @param User $objUser
-     * @param type $friendId
-     * @return boolean
-     */
-    public function sendRequest (User $objUser, $friendId, NotificationFactory $objNotification)
+   /**
+    * 
+    * @param User $objUser
+    * @param UserSettings $objUserSettings
+    * @param type $friendId
+    * @param NotificationFactory $objNotification
+    * @return boolean
+    */
+    public function sendRequest (User $objUser, UserSettings $objUserSettings, $friendId, NotificationFactory $objNotification)
     {
+
         $result = $this->db->create ('friends', array(
             'friend_two' => $friendId,
             'friend_one' => $objUser->getId (),
@@ -64,8 +67,12 @@ class FriendRequest
         $objRecipient = new User ($friendId);
 
         $objNotification->createNotification ($objRecipient, $notification);
-        $objEmail = new EmailNotification ($objRecipient, $notification, $notification);
-        $objEmail->sendEmail ();
+
+        if ( $objUserSettings->getEmailSetting ('friendRequest') === true )
+        {
+            $objEmail = new EmailNotification ($objRecipient, $notification, $notification);
+            $objEmail->sendEmail ();
+        }
 
         return true;
     }

@@ -294,9 +294,10 @@ class PostController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objUser = new User ($_SESSION['user']['user_id']);
-
         try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objUserSettings = new UserSettings ($objUser);
+
             $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
@@ -352,7 +353,14 @@ class PostController extends ControllerBase
 
             try {
                 $objProfileUser = new User ((int) $_POST['profileUser']);
-                $objEmail = new EmailNotification ($objProfileUser, $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' posted on your wall', $_POST['comment']);
+
+                if ( $objUserSettings->getEmailSetting ("post") === true )
+                {
+                    $objEmail = new EmailNotification ($objProfileUser, $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' posted on your wall', $_POST['comment']);
+                    $objEmail->sendEmail ();
+                }
+
+
                 (new NotificationFactory())->createNotification ($objProfileUser, $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' posted on your wall ' . $_POST['comment']);
             } catch (Exception $ex) {
                 trigger_error ($ex->getMessage (), E_USER_WARNING);

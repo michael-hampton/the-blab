@@ -64,7 +64,7 @@ class FriendController extends ControllerBase
 
         $objUser = new User ($_SESSION['user']['user_id']);
 
-        $blResponse = (new FriendRequest())->sendRequest ($objUser, $friendId, new NotificationFactory ());
+        $blResponse = (new FriendRequest())->sendRequest ($objUser, new UserSettings($objUser), $friendId, new NotificationFactory ());
 
         if ( $blResponse === false )
         {
@@ -122,7 +122,7 @@ class FriendController extends ControllerBase
 
         switch ($_POST['action']) {
             case "addfriend":
-                $objFriend->sendRequest ($objUser, $_POST['friend'], new NotificationFactory ());
+                $objFriend->sendRequest ($objUser, new UserSettings($objUser), $_POST['friend'], new NotificationFactory ());
                 break;
             case "cancelrequest":
                 $objFriend->cancelRequest ($objUser, $_POST['friend']);

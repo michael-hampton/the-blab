@@ -60,6 +60,16 @@ class UserController extends ControllerBase
             die;
         }
 
+        if ( empty ($_POST['token']) || $_SESSION['token'] != $_POST['token'] )
+        {
+            trigger_error ("Possible CSRF attack {$_POST['username']}", E_USER_WARNING);
+            die ("ERROR");
+        }
+        else
+        {
+            
+        }
+
         $objLogin = new LoginModel();
 
         $username = $_POST['username'];
@@ -100,6 +110,20 @@ class UserController extends ControllerBase
 
         $this->view->username = $username;
         $this->view->password = $password;
+
+        if ( empty ($_SESSION['token']) )
+        {
+            if ( function_exists ('mcrypt_create_iv') )
+            {
+                $_SESSION['token'] = bin2hex (mcrypt_create_iv (32, MCRYPT_DEV_URANDOM));
+            }
+            else
+            {
+                $_SESSION['token'] = bin2hex (openssl_random_pseudo_bytes (32));
+            }
+        }
+
+        $this->view->token = $_SESSION['token'];
 
         if ( !empty ($_SESSION['user']['username']) && !empty ($_SESSION['user']['user_id']) )
         {
@@ -301,16 +325,23 @@ class UserController extends ControllerBase
         }
 
         try {
-            
+
+            $objLoginModel = new LoginModel();
+            $blResult = $objLoginModel->validatePassword ($_SESSION['user']['username'], $_POST['oldpasswd']);
+
+            if ( $blResult === false )
+            {
+                $this->ajaxresponse ("error", "Invalid password");
+            }
+
+            $objAccountRecovery = new AccountRecovery();
+            $blResult2 = $objAccountRecovery->resetPasswordInDb ($_POST['newpasswd'], new UserFactory (), new User ($_SESSION['user']['user_id']));
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objAccountRecovery = new AccountRecovery();
-        $blResult = $objAccountRecovery->resetPasswordInDb ($_POST['newpasswd'], new UserFactory (), new User ($_SESSION['user']['user_id']));
-
-        if ( $blResult === false )
+        if ( $blResult2 === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }

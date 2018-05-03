@@ -169,7 +169,7 @@ class EventController extends ControllerBase
 
         $objUser = new User ($_SESSION['user']['user_id']);
 
-        $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . "just reported group {$_POST['group_name']}";
+        $subject = $objUser->getFirstName () . ' ' . $objUser->getLastName () . "just reported event {$_POST['group_name']}";
         $message = $_POST['report_group_data'];
 
         if ( !mail (EMAIL_ADDRESS, $subject, $message) )
