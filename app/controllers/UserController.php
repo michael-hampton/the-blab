@@ -70,12 +70,16 @@ class UserController extends ControllerBase
             
         }
 
-        $objLogin = new LoginModel();
-
         $username = $_POST['username'];
         $password = $_POST['password'];
 
-        $blResult = $objLogin->login ($username, $password, new UserFactory ());
+        try {
+            $objLogin = new LoginModel();
+            $blResult = (new UserSession())->createUserSession ($objLogin, $username, $password, new UserFactory ());
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            die ("ERROR");
+        }
 
         if ( $blResult === FALSE )
         {

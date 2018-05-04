@@ -18,7 +18,8 @@ $loader->registerDirs (
             APP_PATH . $config->application->pageDir,
             APP_PATH . $config->application->productDir,
             APP_PATH . $config->application->chatDir,
-            APP_PATH . $config->application->postDir
+            APP_PATH . $config->application->postDir,
+            APP_PATH . $config->application->userDir
         )
 )->register ();
 

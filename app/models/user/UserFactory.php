@@ -447,7 +447,6 @@ class UserFactory
             return [];
         }
 
-
         $arrUsers = [];
 
         foreach ($arrResults as $arrResult) {
@@ -592,6 +591,16 @@ class UserFactory
         }
 
         return $arrUsers;
+    }
+    
+    /**
+     * 
+     * @param type $userId
+     * @return \User
+     */
+    public function getUserById($userId)
+    {
+        return new User($userId);
     }
 
     /**

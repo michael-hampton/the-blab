@@ -5,9 +5,27 @@ use Phalcon\Mvc\View;
 class AdvertController extends ControllerBase
 {
 
+    public function createBusinessAdvertAction ()
+    {
+        return $this->dispatcher->forward (
+                        [
+                            "controller" => "advert",
+                            "action" => "createAdvert",
+                            "params" => ["type" => "advert"]
+                        ]
+        );
+    }
+
     public function createAdvertAction ()
     {
-        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        $type = $this->dispatcher->getParam ("type", "string");
+        
+        if(  trim ($type) !== "profile") {
+            $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+        }
+        
+        $this->view->type = $type;
 
         $arrCountries = (new Location())->getCountries ();
 
@@ -143,7 +161,7 @@ class AdvertController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
+        
         $this->view->arrAdverts = $arrAdverts;
     }
 
@@ -205,11 +223,11 @@ class AdvertController extends ControllerBase
     {
         $this->view->disable ();
 
-        if (empty($_POST['advertId']) || !is_numeric ($_POST['advertId']) )
+        if ( empty ($_POST['advertId']) || !is_numeric ($_POST['advertId']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
+
         $id = $_POST['advertId'];
 
         $blResponse = (new Advert ($id))->delete ();
@@ -220,6 +238,18 @@ class AdvertController extends ControllerBase
         }
 
         $this->ajaxresponse ("success", "success");
+    }
+
+    public function createProfileBannerAction ()
+    {
+
+        return $this->dispatcher->forward (
+                        [
+                            "controller" => "advert",
+                            "action" => "createAdvert",
+                            "params" => ["type" => "profile"]
+                        ]
+        );
     }
 
 }

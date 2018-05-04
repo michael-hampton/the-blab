@@ -192,19 +192,19 @@ $postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true
 
                         <?php
                         $this->partial ("templates/profileUpload", ["arrUser" => $arrUser, "friendIds" => $friendIds, "requestIds" => $requestIds]);
-                        $this->partial ("templates/links");
-                        $this->partial ("templates/events", ["arrEvents" => $arrEvents]);
-
-                        $this->partial (
-                                "templates/groups", ["arrGroups" => $arrGroups
-                                ]
-                        );
 
 
                         $this->partial (
                                 "templates/friends", ["arrFriendList" => $arrFriendList
                                 ]
                         );
+                        
+                         $this->partial (
+                                "templates/photos", ["arrPhotos" => $arrPhotos
+                                ]
+                        );
+
+                        $this->partial ("templates/links");
 
 //                $this->partial (
 //                        "templates/chatList", ["arrUsers" => $arrChatUsers, "arrChatGroups" => $arrChatGroups
@@ -386,24 +386,34 @@ $postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true
                     </div>
 
                     <div class="col-md-3 l-sidebar">
-                        <div id="vpb_get_all_the_users_groups">
+
+                        <?php
+                        $this->partial ("templates/events", ["arrEvents" => $arrEvents]);
+
+                        $this->partial (
+                                "templates/groups", ["arrGroups" => $arrGroups
+                                ]
+                        );
+                        ?>
+
+                        <div id = "vpb_get_all_the_users_groups">
 
                         </div>
-                        <br clear="all">
+                        <br clear = "all">
                     </div>
                 </div>
 
-                <div id="vpb_loading_status_updates"></div>
+                <div id = "vpb_loading_status_updates"></div>
 
-                <div class="sk-spinner sk-spinner-wave" style="display:none;">
-                    <div class="sk-rect1"></div>
-                    <div class="sk-rect2"></div>
-                    <div class="sk-rect3"></div>
-                    <div class="sk-rect4"></div>
-                    <div class="sk-rect5"></div>
+                <div class = "sk-spinner sk-spinner-wave" style = "display:none;">
+                    <div class = "sk-rect1"></div>
+                    <div class = "sk-rect2"></div>
+                    <div class = "sk-rect3"></div>
+                    <div class = "sk-rect4"></div>
+                    <div class = "sk-rect5"></div>
                 </div>
 
-                <div class="chatWindow" style="display:none;">
+                <div class = "chatWindow" style = "display:none;">
 
                 </div>
 
@@ -414,7 +424,8 @@ $postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true
 
 
     <script>
-        var profileUser = <?= $objUser->getId () ?>;
+        var profileUser = < ? = $objUser - > getId ()
+                ? > ;
     </script>
 
     <script src="/blab/public/js/geocomplete.js"></script>

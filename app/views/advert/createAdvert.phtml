@@ -1,6 +1,8 @@
 <form class="form-horizontal">
-    <p>Create a new advert.</p>
+    <p>Create a new Banner.</p>
 
+    <input type="hidden" id="bannerType" name="bannerType" value="<?= $type ?>">
+    
     <div class="form-group">
         <label class="col-lg-2 control-label">Title</label>
 
@@ -8,6 +10,10 @@
             <input type="text" placeholder="Title" id="advertTitle" name="advertTitle" class="form-control">
         </div>
     </div>
+    
+    
+    <?php if(  trim ($type) !== "profile") { ?>
+    
     <div class="form-group">
         <label class="col-lg-2 control-label">Location</label>
 
@@ -55,6 +61,8 @@
             </select>
         </div>
     </div>
+    
+    <?php } ?>
 </form>
 
 <div class="row">
@@ -67,7 +75,9 @@
 <div id="dvPreview">
 </div>
 
-<button type="button" class="btn btn-w-m btn-primary Save">Save</button>
+<?php $calss = trim ($type) !== "profile" ? 'Save' : 'saveProlfileBanner'; ?>
+
+<button type="button" class="btn btn-w-m btn-primary <?= $calss ?>">Save</button>
 
 
 
@@ -98,6 +108,7 @@
         var advertLanguage = $ ("#advertLanguage").val ();
         var advertTitle = $ ("#advertTitle").val ();
         var advertGender = $ ("#advertGender").val ();
+        var bannerType = $("#bannerType").val();
 
         if (advertLocation === '')
         {
@@ -123,11 +134,19 @@
             return false;
 
         }
+        
+        if (bannerType === '')
+        {
+            alert ("Something went wrong");
+            return false;
+
+        }
 
         data.append ("advertGender", advertGender);
         data.append ("advertTitle", advertTitle);
         data.append ("advertLanguage", advertLanguage);
         data.append ("advertLocation", advertLocation);
+        data.append ("bannerType", bannerType);
 
         $.ajax ({
             url: '/blab/advert/saveAdvert',

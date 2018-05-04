@@ -98,10 +98,10 @@ class AdvertFactory
 
         if ( $objUser !== null )
         {
-            $where = " AND user_id = :userId";
+            $where .= " AND user_id = :userId";
             $arrWhere[":userId"] = $objUser->getId ();
         }
-
+        
         $arrResults = $this->db->_select ("advert", $where, $arrWhere, "*", "title ASC");
 
         if ( $arrResults === false )
