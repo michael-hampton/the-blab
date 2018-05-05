@@ -192,9 +192,10 @@ class UserSession
      * @param type $username
      * @param type $password
      * @param UserFactory $objUserFactory
+     * @param type $blRememberMe
      * @return boolean
      */
-    public function createUserSession (LoginModel $objLogin, $username, $password, UserFactory $objUserFactory)
+    public function createUserSession (LoginModel $objLogin, $username, $password, UserFactory $objUserFactory, $blRememberMe)
     {
 
         $objUser = $objLogin->login ($username, $password, $objUserFactory);
@@ -215,11 +216,14 @@ class UserSession
             return false;
         }
 
-        $this->createCookie ($username, $password);
+        if ( (bool) $blRememberMe !== false )
+        {
+            $this->createCookie ($username, $password);
+        }
 
         $_SESSION['user']['user_id'] = $result[0]['uid'];
         $_SESSION['user']['username'] = $result[0]['username'];
-        
+
         return true;
     }
 

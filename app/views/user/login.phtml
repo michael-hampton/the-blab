@@ -15,6 +15,56 @@
         <link href="/blab/public/css/style.css" rel="stylesheet">
         <link href="/blab/public/css/sweetalert.css" rel="stylesheet">
 
+        <style>
+            .control {
+                display: block;
+                position: relative;
+                padding-left: 30px;
+                margin-bottom: 15px;
+                cursor: pointer;
+                font-size: 18px;
+            }
+
+            .control input {
+                position: absolute;
+                z-index: -1;
+                opacity: 0;
+            }
+
+            .control__indicator {
+                position: absolute;
+                top: 2px;
+                left: 0;
+                height: 20px;
+                width: 20px;
+                background: #e6e6e6;
+            }
+
+            .control input:checked ~ .control__indicator {
+                background: #2aa1c0;
+            }
+
+            .control--checkbox .control__indicator:after {
+                left: 8px;
+                top: 4px;
+                width: 3px;
+                height: 8px;
+                border: solid #fff;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+
+            .control input:checked ~ .control__indicator:after {
+                display: block;
+            }
+
+            .control__indicator:after {
+                content: '';
+                position: absolute;
+                display: none;
+            }
+        </style>
+
     </head>
 
     <body class="gray-bg">
@@ -37,6 +87,18 @@
                                 <input type="password" class="form-control" id="password" placeholder="Password" required="" value="<?= (!empty ($password) ? $password : '') ?>">
                             </div>
                             <button type="button" class="btn btn-primary block full-width m-b login-btn">Login</button>
+
+                            <label class="control control--checkbox">
+
+                                <?php $remembered = !empty ($_COOKIE['blab_rememberme']) ? 'checked="checked"' : ''; ?>
+
+                                <input type="checkbox" name="rememberMe" id="rememberMe" <?= $remembered ?>>
+                                <div class="control__indicator"></div>
+
+                                Remember Me
+
+                            </label>
+
 
                             <a href="/blab/user/forgotPassword"><small>Forgot password?</small></a>
                             <p><small>Your username is firstname.lastname for example joe.bloggs and the password you used when signing up.</small>
@@ -110,9 +172,16 @@
 
                             <div class="form-group">
                                 <span class="help-block">
-                                    <a href="/blab/terms">
-                                        By clicking Create my account, you agree to our Terms and that you have read our Data Use Policy, including our Cookie Use.
-                                    </a>
+
+
+                                    <label class="control control--checkbox" style="font-size:12px !important;">
+
+                                        <input type="checkbox" name="acceptedTerms" id="acceptedTerms">
+                                        <div class="control__indicator"></div>
+                                        <a href="/blab/terms">
+                                            Please state that you have read and agreed to our <a href="/blab/terms/terms">terms before you continue</a>. You can also see our <a href="/blab/terms/privacy">privacy satetment here</a> 
+                                        </a>
+                                    </label>
 
                                 </span>
                             </div>
@@ -148,16 +217,25 @@
 
         $ (".login-btn").on ("click", function ()
         {
-            var password = $ ("#password").val ();
-            var username = $ ("#username").val ();
-            var token = $ ("#token").val ();
+            var password = $.trim ($ ("#password").val ());
+            var username = $.trim ($ ("#username").val ());
+            var token = $.trim ($ ("#token").val ());
+
+            if (password === '' || username === '' || token === '')
+            {
+                showErrorMessage ('Please ensure that both username and password are filled in');
+                return false;
+            }
+
+            var checked = $ ("input#rememberMe:eq(0)").is (":checked") ? 1 : 0;
 
             $.ajax ({
                 url: '/blab/user/doLogin',
                 type: 'POST',
-                data: {username: username, password: password, "token": token},
+                data: {username: username, password: password, "token": token, "checked": checked},
                 success: function (response)
                 {
+                    alert (response);
 
                     if (response === 'ERROR')
                     {
@@ -176,7 +254,23 @@
 
         $ (".signup-btn").on ("click", function ()
         {
+            if ($.trim ($ ("[name='youremail']").val ()) !== $.trim ($ ("[name='reenteremail']").val ()))
+            {
+                showErrorMessage ('Email addresses must match');
+                return false;
+            }
+
             var FormData = $ ("#newUserForm").serialize ();
+
+            if ($ ('input#acceptedTerms').prop ('checked'))
+            {
+
+            }
+            else
+            {
+                showErrorMessage ('Please read and accept our terms before joining The Blab');
+                return false;
+            }
 
             $.ajax ({
                 url: '/blab/user/saveNewUser',

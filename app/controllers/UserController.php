@@ -65,9 +65,10 @@ class UserController extends ControllerBase
             trigger_error ("Possible CSRF attack {$_POST['username']}", E_USER_WARNING);
             die ("ERROR");
         }
-        else
+
+        if ( !isset ($_POST['checked']) )
         {
-            
+            die ("ERROR");
         }
 
         $username = $_POST['username'];
@@ -75,7 +76,7 @@ class UserController extends ControllerBase
 
         try {
             $objLogin = new LoginModel();
-            $blResult = (new UserSession())->createUserSession ($objLogin, $username, $password, new UserFactory ());
+            $blResult = (new UserSession())->createUserSession ($objLogin, $username, $password, new UserFactory (), (bool) $_POST['checked']);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             die ("ERROR");
