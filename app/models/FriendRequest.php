@@ -23,12 +23,12 @@ class FriendRequest
     /**
      * 
      * @param User $objUser
-     * @param type $friendId
+     * @param User $objFriend
      * @return boolean
      */
-    public function cancelRequest (User $objUser, $friendId)
+    public function cancelRequest (User $objUser, User $objFriend)
     {
-        $result = $this->db->delete ("friends", "friend_two = :friend AND friend_one = :userId", [":friend" => $friendId, ":userId" => $objUser->getId ()]);
+        $result = $this->db->delete ("friends", "friend_two = :friend AND friend_one = :userId", [":friend" => $objFriend->getId (), ":userId" => $objUser->getId ()]);
 
         if ( $result === FALSE )
         {
@@ -39,19 +39,20 @@ class FriendRequest
         return true;
     }
 
-   /**
-    * 
-    * @param User $objUser
-    * @param UserSettings $objUserSettings
-    * @param type $friendId
-    * @param NotificationFactory $objNotification
-    * @return boolean
-    */
-    public function sendRequest (User $objUser, UserSettings $objUserSettings, $friendId, NotificationFactory $objNotification)
+    /**
+     * 
+     * @param User $objUser
+     * @param UserSettings $objUserSettings
+     * @param EmailNotificationFactory $objEmailNotificationFactory
+     * @param User $objFriend
+     * @param NotificationFactory $objNotification
+     * @return boolean
+     */
+    public function sendRequest (User $objUser, UserSettings $objUserSettings, EmailNotificationFactory $objEmailNotificationFactory, User $objFriend, NotificationFactory $objNotification)
     {
 
         $result = $this->db->create ('friends', array(
-            'friend_two' => $friendId,
+            'friend_two' => $objFriend->getId (),
             'friend_one' => $objUser->getId (),
             'status' => '1'
         ));
@@ -70,7 +71,7 @@ class FriendRequest
 
         if ( $objUserSettings->getEmailSetting ('friendRequest') === true )
         {
-            $objEmail = new EmailNotification ($objRecipient, $notification, $notification);
+            $objEmail = $objEmailNotificationFactory->createNotification ($objRecipient, $notification, $notification);
             $objEmail->sendEmail ();
         }
 
@@ -80,12 +81,12 @@ class FriendRequest
     /**
      * 
      * @param User $objUser
-     * @param type $friendId
+     * @param User $objFriend
      * @return boolean
      */
-    public function acceptRequest (User $objUser, $friendId)
+    public function acceptRequest (User $objUser, User $objFriend)
     {
-        $result = $this->db->update ("friends", ["status" => 2], "friend_two + :1 AND friend_one = :2", [':1' => $objUser->getId (), ':2' => $friendId]
+        $result = $this->db->update ("friends", ["status" => 2], "friend_two + :1 AND friend_one = :2", [':1' => $objUser->getId (), ':2' => $objFriend->getId ()]
         );
 
         if ( $result === FALSE )

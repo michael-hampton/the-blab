@@ -4164,7 +4164,8 @@ But what about when the browser window starts getting narrow? 5 columns might be
     box-shadow: 0 0 3px rgba(86, 96, 117, 0.7);
     float: left;
     font-size: 12px;
-    left: 0;
+    left: -180px !important;
+    max-width: 348px !important;
     list-style: none outside none;
     padding: 0;
     position: absolute;

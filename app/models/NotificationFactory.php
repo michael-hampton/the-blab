@@ -1,11 +1,4 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of Notification
  *
@@ -110,12 +103,13 @@ class NotificationFactory
 
     /**
      * 
-     * @param FriendFactory $objFriend
+     * @param UserFactory $objUserFactory
      * @param User $objUser
+     * @param EmailNotificationFactory $objEmailNotificationFactory
      * @param type $notification
      * @return boolean
      */
-    public function sendNotificationToFriends (UserFactory $objUserFactory, User $objUser, $notification)
+    public function sendNotificationToFriends (UserFactory $objUserFactory, User $objUser, EmailNotificationFactory $objEmailNotificationFactory, $notification)
     {
         $arrFriends = $objUserFactory->getFriendList ($objUser);
 
@@ -132,9 +126,8 @@ class NotificationFactory
                 return false;
             }
 
-        $objEmail = new EmailNotification ($arrFriend, $notification, $notification);
-        $objEmail->sendEmail ();
-
+            $objEmail = $objEmailNotificationFactory ($arrFriend, $notification, $notification);
+            $objEmail->sendEmail ();
         }
 
         return true;
@@ -167,14 +160,14 @@ class NotificationFactory
 
         return true;
     }
-    
-   /**
-    * 
-    * @param EventMemberFactory $objEventMembers
-    * @param Event $objEvent
-    * @param type $notification
-    * @return boolean
-    */
+
+    /**
+     * 
+     * @param EventMemberFactory $objEventMembers
+     * @param Event $objEvent
+     * @param type $notification
+     * @return boolean
+     */
     public function sendNotificationToEventMembers (EventMemberFactory $objEventMembers, Event $objEvent, $notification)
     {
         $arrMembers = $objEventMembers->getEventMembers ($objEvent);

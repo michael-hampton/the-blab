@@ -1,0 +1,39 @@
+<?php
+
+if ( !empty ($arrNotifications) )
+{
+    $html = '<div id="notificationTitle">Notifications '
+            . ' <div style="cursor:pointer;" class="pull-right closeNotification">x</div>'
+            . '<div style="float:right; font-weight:normal !important; font-size:13px !important;">
+<span id="view_all_notifications" style="" class="vpb_hover_b" onclick="vpb_show_notifications_details(\'michaelhampton\');">View All</span>
+</div>'
+            . '</div>';
+
+    //$html .= '<div id="notificationsBody" class="notifications">';
+
+
+    foreach ($arrNotifications as $arrNotification) {
+        $html .= '<li>
+				<a href="#">
+					<strong>' . $arrNotification->getMessage () . '</strong><br>
+					<small><em>' . $arrNotification->getDateAdded () . '</em></small>
+				</a>
+			</li><li class="divider"></li>';
+
+        if ( $arrNotification->getHasRead () === 0 )
+        {
+            $count++;
+        }
+    }
+
+    //$html .= '</div>';
+
+    $html .= "<button id='prev' >Prev</button>";
+    $html .= '<div id="next" class="text-center link-block">
+                                <a href="#">
+                                    <i class="fa fa-envelope"></i> <strong>Next</strong>
+                                </a>
+                            </div>';
+}
+
+echo $html;

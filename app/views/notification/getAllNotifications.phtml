@@ -1,0 +1,15 @@
+<?php
+
+foreach ($arrNotifications as $arrNotification) {
+    echo '<div style="padding:10px;" id="vpb_display_vnotifications"><script type="text/javascript">$("#v_no_new_notification").show();</script><div class="input-group vpb_popup_fb_box">
+							<div style="display:inline-block;vertical-align:middle !important;">
+								<div style="display:inline-block;vertical-align:top !important;margin-right:8px; cursor:pointer; max-width:50px; width:auto;"><img src="" class="" border="0" align="absmiddle" onclick="window.location.href=\'http://www.vasplus.info/wall/victor\';"></div>
+								<div class="vpb_popup_fb_box_acbd"><span class="vpb_hover" title="Victor Olu" onclick="window.location.href=\'http://www.vasplus.info/wall/victor\';">' . $arrNotification->getMessage () . '</span><br>
+	<i class="fa fa-clock-o"></i> <span class="fb_box_acbd" title="Wednesday 28th of February 2018 08:22:53 am">' . $arrNotification->getDateAdded () . '</span></div>
+								
+								<div style="clear:both;"></div>
+							</div>
+								
+								<div style="clear:both;"></div>
+							  </div></div>';
+}

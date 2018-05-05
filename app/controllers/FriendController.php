@@ -62,9 +62,14 @@ class FriendController extends ControllerBase
 
         $friendId = $_POST['friendId'];
 
-        $objUser = new User ($_SESSION['user']['user_id']);
-
-        $blResponse = (new FriendRequest())->sendRequest ($objUser, new UserSettings($objUser), $friendId, new NotificationFactory ());
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objFriend = new User ($friendId);
+            $blResponse = (new FriendRequest())->sendRequest ($objUser, new UserSettings ($objUser), new EmailNotificationFactory (), $objFriend, new NotificationFactory ());
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ('error', $this->defaultErrrorMessage);
+        }
 
         if ( $blResponse === false )
         {
@@ -78,21 +83,22 @@ class FriendController extends ControllerBase
     {
         $this->view->disable ();
 
-        if ( empty ($_POST['friendId']) )
+        if ( empty ($_POST['friendId']) || empty($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
         $friendId = $_POST['friendId'];
 
-        if ( empty ($_SESSION['user']['user_id']) )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objFriend = new User ($friendId);
+
+            $blResponse = (new FriendRequest())->acceptRequest ($objUser, $objFriend);
+        } catch (Exception $ex) {
+            trigger_error($ex->getMessage(), E_USER_WARNING);
+            $this->ajaxresponse("error", $this->defaultErrrorMessage);
         }
-
-        $objUser = new User ($_SESSION['user']['user_id']);
-
-        $blResponse = (new FriendRequest())->acceptRequest ($objUser, $friendId);
 
         if ( $blResponse === FALSE )
         {
@@ -116,19 +122,27 @@ class FriendController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objFriend = new FriendRequest();
-
-        $objUser = new User ($_SESSION['user']['user_id']);
+        try {
+            $objFriend = new FriendRequest();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objUserSettings = new UserSettings ($objUser);
+            $objNotificationFactory = new NotificationFactory ();
+            $objRecipient = new User ($_POST['friend']);
+            $objEmailFactory = new EmailNotificationFactory();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         switch ($_POST['action']) {
             case "addfriend":
-                $objFriend->sendRequest ($objUser, new UserSettings($objUser), $_POST['friend'], new NotificationFactory ());
+                $objFriend->sendRequest ($objUser, $objUserSettings, $objEmailFactory, $objRecipient, $objNotificationFactory);
                 break;
             case "cancelrequest":
-                $objFriend->cancelRequest ($objUser, $_POST['friend']);
+                $objFriend->cancelRequest ($objUser, $objRecipient);
                 break;
             case "unfriend":
-                $objFriend->cancelRequest ($objUser, $_POST['friend']);
+                $objFriend->cancelRequest ($objUser, $objRecipient);
                 break;
         }
     }
@@ -152,9 +166,14 @@ class FriendController extends ControllerBase
 
         $userId = $_GET['userId'];
 
-        $objUser = new User ($userId);
+        try {
+            $objUser = new User ($userId);
 
-        $objUserFactory = new UserFactory();
+            $objUserFactory = new UserFactory();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         $arrFriends = $objUserFactory->getFriendList ($objUser);
 
@@ -206,7 +225,6 @@ class FriendController extends ControllerBase
         $this->view->rootPath = $this->rootPath;
 
         $this->view->arrFriends = $arrFriends;
-        
     }
 
     public function suggestFriendsForShareAction ()
@@ -226,10 +244,8 @@ class FriendController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
-        $this->view->arrFriends = $arrFriends;
 
-       
+        $this->view->arrFriends = $arrFriends;
     }
 
     public function readFriendListAction ()
