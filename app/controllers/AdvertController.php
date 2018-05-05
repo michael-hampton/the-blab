@@ -5,27 +5,13 @@ use Phalcon\Mvc\View;
 class AdvertController extends ControllerBase
 {
 
-    public function createBusinessAdvertAction ()
-    {
-        return $this->dispatcher->forward (
-                        [
-                            "controller" => "advert",
-                            "action" => "createAdvert",
-                            "params" => ["type" => "advert"]
-                        ]
-        );
-    }
+    use UploadAdvert;
 
     public function createAdvertAction ()
     {
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
-        $type = $this->dispatcher->getParam ("type", "string");
-        
-        if(  trim ($type) !== "profile") {
-            $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
-        }
-        
-        $this->view->type = $type;
+        $this->view->type = 'advert';
 
         $arrCountries = (new Location())->getCountries ();
 
@@ -48,14 +34,16 @@ class AdvertController extends ControllerBase
         $this->view->arrGenders = $arrGenders;
     }
 
-    public function saveAdvertAction ()
+    public function saveProfileBannerAction ()
     {
         $this->view->disable ();
 
-        if ( !isset ($_POST['advertGender']) ||
-                !isset ($_POST['advertTitle']) ||
-                !isset ($_POST['advertLanguage']) ||
-                !isset ($_POST['advertLocation']) )
+        if (
+                !isset ($_POST['bannerType']) ||
+                empty ($_POST['url']) ||
+                empty ($_POST['tags']) ||
+                !isset ($_POST['advertTitle'])
+        )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
@@ -63,6 +51,57 @@ class AdvertController extends ControllerBase
         if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", "Invalid User");
+        }
+
+        if ( empty ($_FILES) )
+        {
+            $this->ajaxresponse ("error", "No files uploaded");
+        }
+
+        $objAdvert = (new AdvertFactory())->createProfileBanner (
+                new User ($_SESSION['user']['user_id']), $_POST['advertTitle']);
+
+        if ( $objAdvert === false )
+        {
+            $this->ajaxresponse ("error", "Unable to create advert");
+        }
+
+        $arrTags = json_decode ($_POST['tags'], true);
+
+        $arrUrls = json_decode ($_POST['url'], true);
+
+        $arrFiles = $_FILES;
+
+        if ( $this->uploadFiles ($arrFiles, $objAdvert, $arrTags, $arrUrls, 'profile') === false )
+        {
+            $this->ajaxresponse ("error", $this->getValidationFailures ());
+        }
+
+        $this->ajaxresponse ("success", "success");
+    }
+
+    public function saveAdvertAction ()
+    {
+        $this->view->disable ();
+
+        if ( !isset ($_POST['advertGender']) ||
+                !isset ($_POST['advertTitle']) ||
+                !isset ($_POST['advertLanguage']) ||
+                !isset ($_POST['advertLocation']) ||
+                !isset ($_POST['url']) ||
+                empty ($_POST['tags']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
+        if ( empty ($_FILES) )
+        {
+            $this->ajaxresponse ("error", "No files uploaded");
         }
 
         $objAdvert = (new AdvertFactory())->createAdvert (
@@ -73,76 +112,15 @@ class AdvertController extends ControllerBase
             $this->ajaxresponse ("error", "Unable to create advert");
         }
 
-        if ( empty ($_FILES) )
-        {
-            $this->ajaxresponse ("error", "No files uploaded");
-        }
-
-        if ( empty ($_POST['tags']) )
-        {
-            $this->ajaxresponse ("error", "Missing tags");
-        }
-
         $arrTags = json_decode ($_POST['tags'], true);
-
-        if ( empty ($_POST['url']) )
-        {
-            $this->ajaxresponse ("error", "Missing Url");
-        }
 
         $arrUrls = json_decode ($_POST['url'], true);
 
         $arrFiles = $_FILES;
 
-        foreach ($arrFiles as $key => $arrFile) {
-
-            $key = str_replace ("file-", "", $key);
-
-            if ( empty ($arrFile['name']) )
-            {
-                continue;
-            }
-
-            $target_dir = $this->rootPath . "/blab/public/uploads/adverts/";
-            $target_file = $target_dir . basename ($arrFile["name"]);
-            $uploadOk = 1;
-            $imageFileType = strtolower (pathinfo ($target_file, PATHINFO_EXTENSION));
-
-            if ( $arrFile["size"] > 500000 )
-            {
-                continue;
-            }
-
-            // Allow certain file formats
-            if ( $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" )
-            {
-                continue;
-            }
-
-            $check = getimagesize ($arrFile["tmp_name"]);
-
-            if ( $check !== false )
-            {
-                
-            }
-            else
-            {
-                continue;
-            }
-
-            if ( move_uploaded_file ($arrFile["tmp_name"], $target_file) )
-            {
-                $fileLocation = str_replace ($this->rootPath, "", $target_file);
-                $title = $arrTags[$key];
-                $url = $arrUrls[$key];
-
-                $objBanner = (new BannerFactory())->createBanner ($fileLocation, $title, $url, $objAdvert);
-
-                if ( $objBanner === false )
-                {
-                    $this->ajaxresponse ("error", "Unable to create banner");
-                }
-            }
+        if ( $this->uploadFiles ($arrFiles, $objAdvert, $arrTags, $arrUrls) === false )
+        {
+            $this->ajaxresponse ("error", $this->getValidationFailures ());
         }
 
         $this->ajaxresponse ("success", "success");
@@ -161,7 +139,7 @@ class AdvertController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
+
         $this->view->arrAdverts = $arrAdverts;
     }
 
@@ -242,14 +220,7 @@ class AdvertController extends ControllerBase
 
     public function createProfileBannerAction ()
     {
-
-        return $this->dispatcher->forward (
-                        [
-                            "controller" => "advert",
-                            "action" => "createAdvert",
-                            "params" => ["type" => "profile"]
-                        ]
-        );
+        $this->view->type = "profile";
     }
 
 }

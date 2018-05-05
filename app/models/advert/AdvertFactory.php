@@ -73,7 +73,58 @@ class AdvertFactory
             return false;
         }
 
-        $result = $this->db->create ("advert", ["user_id" => $objUser->getId (), "title" => $title, "location" => $location, "gender" => $gender, "language" => $language]);
+        $result = $this->db->create ("advert", ["user_id" => $objUser->getId (), "title" => $title, "location" => $location, "gender" => $gender, "language" => $language, "advert_type" => "advert"]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed to insert", E_USER_WARNING);
+            return false;
+        }
+
+        return new Advert ($result);
+    }
+
+    /**
+     * 
+     * @param User $objUser
+     * @return type
+     * @throws Exception
+     */
+    private function checkUserHasProfileBanner (User $objUser)
+    {
+        $result = $this->db->_select ("advert", "user_id = :userId AND advert_type = 'profile'", [":userId" => $objUser->getId ()]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            throw new Exception ("Db query failed");
+        }
+
+        return !empty ($result);
+    }
+
+    /**
+     * 
+     * @param User $objUser
+     * @param type $title
+     * @return \Advert|boolean
+     */
+    public function createProfileBanner (User $objUser, $title)
+    {
+
+        if ( $this->checkUserHasProfileBanner ($objUser) === true )
+        {
+            $this->validationFailures[] = "You have already creates a profile banner. You may only create one.";
+            return false;
+        }
+
+        if ( trim ($title) === "" )
+        {
+            $this->validationFailures[] = "Title is a mandatory field";
+            return false;
+        }
+
+        $result = $this->db->create ("advert", ["user_id" => $objUser->getId (), "title" => $title, "advert_type" => "profile"]);
 
         if ( $result === false )
         {
@@ -101,7 +152,7 @@ class AdvertFactory
             $where .= " AND user_id = :userId";
             $arrWhere[":userId"] = $objUser->getId ();
         }
-        
+
         $arrResults = $this->db->_select ("advert", $where, $arrWhere, "*", "title ASC");
 
         if ( $arrResults === false )

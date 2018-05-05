@@ -1,62 +1,13 @@
 <form class="form-horizontal">
-    <p>Create a new Advert.</p>
+    <p>Create a new Banner.</p>
 
     <input type="hidden" id="bannerType" name="bannerType" value="<?= $type ?>">
-    
+
     <div class="form-group">
         <label class="col-lg-2 control-label">Title</label>
 
         <div class="col-lg-10">
             <input type="text" placeholder="Title" id="advertTitle" name="advertTitle" class="form-control">
-        </div>
-    </div>
-    
-    
-    <div class="form-group">
-        <label class="col-lg-2 control-label">Location</label>
-
-        <div class="col-lg-10">
-            <select class="form-control" id="advertLocation" name="advertLocation">
-                <option value="">Select Location</option>
-
-                <?php
-                foreach ($arrCountries as $arrCountry) {
-                    echo '<option value="' . $arrCountry['IC_NAME'] . '">' . $arrCountry['IC_NAME'] . '</option>';
-                }
-                ?>
-            </select>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-lg-2 control-label">Language</label>
-
-        <div class="col-lg-10">
-            <select class="form-control" id="advertLanguage" name="advertLanguage">
-                <option value="">Select Location</option>
-
-                <?php
-                foreach ($arrLanguages as $arrLanguage) {
-                    echo '<option value="' . $arrLanguage['value'] . '">' . $arrLanguage['value'] . '</option>';
-                }
-                ?>
-            </select>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-lg-2 control-label">Gender</label>
-
-        <div class="col-lg-10">
-            <select class="form-control" id="advertGender" name="advertGender">
-                <option value="">Select Gender</option>
-
-                <?php
-                foreach ($arrGenders as $gender) {
-                    echo '<option value="' . $gender . '">' . $gender . '</option>';
-                }
-                ?>
-            </select>
         </div>
     </div>
 </form>
@@ -96,23 +47,15 @@
         data.append ("tags", JSON.stringify (elems));
         data.append ("url", JSON.stringify (elems2));
 
-        var advertLocation = $ ("#advertLocation").val ();
-        var advertLanguage = $ ("#advertLanguage").val ();
+        var bannerType = $ ("#bannerType").val ();
+
+        if (bannerType === '')
+        {
+            alert ("Something went wrong");
+            return false;
+        }
+
         var advertTitle = $ ("#advertTitle").val ();
-        var advertGender = $ ("#advertGender").val ();
-        var bannerType = $("#bannerType").val();
-
-        if (advertLocation === '')
-        {
-            alert ("Ypu must select a location");
-            return false;
-        }
-
-        if (advertLanguage === '')
-        {
-            alert ("Ypu must select a language");
-            return false;
-        }
 
         if (advertTitle === '')
         {
@@ -120,28 +63,11 @@
             return false;
         }
 
-        if (advertGender === '')
-        {
-            alert ("Ypu must select a gender");
-            return false;
-
-        }
-        
-        if (bannerType === '')
-        {
-            alert ("Something went wrong");
-            return false;
-
-        }
-
-        data.append ("advertGender", advertGender);
-        data.append ("advertTitle", advertTitle);
-        data.append ("advertLanguage", advertLanguage);
-        data.append ("advertLocation", advertLocation);
         data.append ("bannerType", bannerType);
+        data.append ("advertTitle", advertTitle);
 
         $.ajax ({
-            url: '/blab/advert/saveAdvert',
+            url: '/blab/advert/saveProfileBanner',
             data: data,
             cache: false,
             contentType: false,
@@ -176,10 +102,10 @@
                         var img = document.createElement ("IMG");
                         var textbox = document.createElement ('input');
 
-                        
-                        var div = document.createElement("div");
+
+                        var div = document.createElement ("div");
                         //div.style.width = "100%";
-                        div.class= 'col-lg-12';
+                        div.class = 'col-lg-12';
                         //div.style.height = "100px";
                         //div.style.background = "red";
                         //div.style.color = "white";
@@ -205,7 +131,7 @@
                         div.appendChild (img);
                         div.appendChild (textbox);
                         div.appendChild (textbox2);
-                        dvPreview.appendChild(div);
+                        dvPreview.appendChild (div);
                     }
                     reader.readAsDataURL (file);
                 }
