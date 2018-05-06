@@ -46,7 +46,7 @@ class ChatController extends ControllerBase
 
     public function getChatFriendsAction ()
     {
-        $this->view->disable ();
+         $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
         if ( empty ($_SESSION['user']['user_id']) )
         {
@@ -61,20 +61,10 @@ class ChatController extends ControllerBase
         {
             $this->ajaxresponse ("error", "Unable to get friends");
         }
-        echo '<div id="main_chat_top_box">';
-
-        foreach ($arrFriends as $arrFriend) {
-            echo '<div class="vpb_friends_main_box" username="' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '" groupId="' . $arrFriend->getId () . '" onclick="vpb_open_vchat(\'' . $_SESSION['user']['username'] . '\', \'' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '\', \'' . $arrFriend->getId () . '\', \'/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg\');">'
-            . '<div style="width:40px; float:left;"><img src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg" class="profile_pic" width="30" height="30" align="absmiddle" border="0"></div>'
-            . '<div style="width:120px; float:left;border:0px solid; padding-top:2px;padding-bottom:4px;" align="left" id="searchResultss">' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '</div>'
-            . '<div style="width:28px; float:right;border:0px solid;padding-top:8px;padding-bottom:2px;" align="right">'
-            . '<span class="voffline" title="Offline"></span>'
-            . '</div>'
-            . '<br clear="all">'
-            . '</div>';
-        }
-
-        echo '</div>';
+        
+        $this->view->arrFriends = $arrFriends;
+        
+       
     }
 
     public function loadMessagesAction ()

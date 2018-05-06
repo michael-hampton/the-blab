@@ -805,17 +805,19 @@ class IndexController extends ControllerBase
         }
 
         $arrFriendIds = [];
+        $requestIds = [];
 
         foreach ($arrFriendRequests as $objFriendRequest) {
-            $arrFriendIds[] = (int) $objFriendRequest->getId ();
+            $requestIds[] = (int) $objFriendRequest->getId ();
         }
-
+        
         foreach ($arrFriends as $objFriend) {
 
             $arrFriendIds[] = (int) $objFriend->getId ();
         }
 
         $this->view->arrFriendIds = $arrFriendIds;
+        $this->view->requestIds = $requestIds;
 
         if ( empty ($_POST['friend']) )
         {

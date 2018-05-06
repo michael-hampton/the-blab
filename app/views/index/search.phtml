@@ -3,10 +3,11 @@
 if ( !empty ($arrUsers) )
 {
     foreach ($arrUsers as $arrUser) {
-                
+
         $showRequest = !in_array ((int) $arrUser->getId (), $arrFriendIds) ? 'inline-block' : 'none';
         $showRemove = in_array ($arrUser->getId (), $arrFriendIds) ? 'inline-block' : 'none !important';
-        
+        $showCancel = !in_array ($arrUser->getId (), $arrFriendIds) && in_array ($arrUser->getId (), $requestIds) ? 'inline-block' : 'none !important';
+
         echo '<div class="input-group vpb_popup_fb_box">
             
 				<div style="float:left;">
@@ -27,9 +28,11 @@ if ( !empty ($arrUsers) )
 				</div>
 					<div class="vpb_popup_fb_box_d"><span style="display:' . $showRequest . '" id="addfriend_' . $arrUser->getId () . '" friendid="' . $arrUser->getId () . '" class="cbtn" onclick="vpb_friend_ship (\'' . $arrUser->getId () . '\', \'' . $arrUser->getId () . '\', \'addfriend\')"><i class="fa fa-user-plus"></i> Add Friend</span>
 						
+                                            <span style="display: ' . $showRemove . '" id="unfriend_' . $arrUser->getId () . '" onclick="vpb_friend_ship(\'' . $arrUser->getId () . '\', \'' . $arrUser->getUsername () . '\', \'unfriend\');" class="cbtn"><i class="fa fa-times"></i> Unfriend</span>
+                                            
 						<span style="opacity:0.6;cursor:default;display:none;" id="requestsent_' . $arrUser->getId () . '" class="cbtn"><i class="fa fa-reply"></i> Request Sent</span>
 						
-						<span style="display:' . $showRemove . '" onclick="vpb_friend_ship (\'' . $arrUser->getId () . '\',\'' . $arrUser->getId () . '\', \'cancelrequest\')" title="Cancel Request" id="cancelrequest_' . $arrUser->getId () . '" class="cbtn vpb_cbtn"><i class="fa fa-times"></i>Cancel Request</span></div>
+						<span style="display:' . $showCancel . '" onclick="vpb_friend_ship (\'' . $arrUser->getId () . '\',\'' . $arrUser->getId () . '\', \'cancelrequest\')" title="Cancel Request" id="cancelrequest_' . $arrUser->getId () . '" class="cbtn vpb_cbtn"><i class="fa fa-times"></i>Cancel Request</span></div>
 					<div style="clear:both;"></div>
                                      
 				</div>';

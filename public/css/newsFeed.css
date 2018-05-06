@@ -5,10 +5,35 @@ article
     margin-top:10px;
 }
 
+.navbar-header {
+    float: none !important;
+}
+
+@media (min-width: 480px) {
+    .navbar-header {
+        float:left !important;
+    }
+
+    .showSearch {
+        display:none !important;
+    }
+}
+
 @media (max-width: 480px) {
     .hideMobile {
         display: none !important;
     }
+
+    .dropdown-menu2 {
+        left: 0px !important;
+        max-width: 316px !important;
+    }
+
+    /*    #friendRequests_bar {
+            margin-left:12px !important;
+            min-width: 330px !important;
+            max-width: 330px !important;
+        }*/
 }
 
 .v_load_user_detail
@@ -4140,7 +4165,7 @@ But what about when the browser window starts getting narrow? 5 columns might be
     }
 
     #friendRequests_bar {
-        margin-left: 120px;
+        margin-left: 182px;
         min-width: 250px !important;
         max-width: 250px !important;
     }
@@ -4164,8 +4189,8 @@ But what about when the browser window starts getting narrow? 5 columns might be
     box-shadow: 0 0 3px rgba(86, 96, 117, 0.7);
     float: left;
     font-size: 12px;
-    left: -180px !important;
-    max-width: 348px !important;
+    left: -180px;
+    max-width: 348px;
     list-style: none outside none;
     padding: 0;
     position: absolute;

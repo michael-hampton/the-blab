@@ -24,13 +24,17 @@
 
 <!--                <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>-->
 
-                <img class="img-responsive pull-left" style="margin-top:14px; margin-left: 14px;" src="\blab\public\img\flags\32/Philippines.png">
+                <div class="blab-logo">
+                    <img class="img-responsive pull-left" style="margin-top:14px; margin-left: 14px;" src="\blab\public\img\flags\32/Philippines.png">
 
-                <a style="color:#FFF;" href="#" class="navbar-brand">The Blab
-                    <br> Philippines
-                </a>
+                    <a style="color:#FFF;" href="#" class="navbar-brand">The Blab
+                        <br> Philippines
+                    </a>
+                </div>
 
-                <div class="navbar-header col-lg-5">
+
+
+                <div class="navbar-header col-lg-5 hideMobile SearchDiv">
 
                     <div>
                         <h2 class="vpb_profile_search_box">
@@ -72,7 +76,7 @@
                                     }
                                     ?>
 
-                                    <span id="p_page_first_name"><?= $_SESSION['user']['username'] ?></span>
+                                    <span id="p_page_first_name"><?= (isset ($_SESSION['user']['username']) ? $_SESSION['user']['username'] : '') ?></span>
                                     <div style="clear:both;"></div>
                             </div>
                         </a>
@@ -82,12 +86,12 @@
                         <a herd='/blab/index' style="color:#FFF;"> News Feed</a>
                     </li>
 
-                    <li class="dropdown hideMobile">
+                    <li class="dropdown ">
                         <a  style="color:#FFF;" href="#" class="dropdown-toggle count-info" data-toggle="dropdown"><i style="font-size: 18px;" class="fa fa-bell"></i><span class="label label-warning count"></span></a>
                         <ul class="dropdown-menu2"></ul>
                     </li>
 
-                    <li class="dropdown hideMobile dropdown-toggle count-info" id="friendRequests">
+                    <li class="dropdown  dropdown-toggle count-info" id="friendRequests">
                         <i  style="color:#FFF;" style="font-size: 18px;" class="fa fa-users"></i>
                         <span id="counter" class="label label-primary"></span>
                         <div id="friendRequests_bar" style="border-radius: 0px; border-top: 1px solid rgb(225, 225, 225); font-size: 13px !important; font-family: arial !important; min-width: 300px !important; max-width: 300px !important; width: 100% !important;">
@@ -125,7 +129,7 @@
                     </li>
 
 
-                    <li class="vp_ul_wrap hideMobile"><a style="text-decoration:none !important;" class="dropdown open">
+                    <li class="vp_ul_wrap "><a style="text-decoration:none !important;" class="dropdown open">
 
                             <i style="font-size: 18px;" class="fa fa-cog vpb_notifications_icon vasplus_tooltip_menu" id="v_site_menu" onclick="vpb_show_site_menu ();"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Menu"></i>
                         </a><ul id="v_site_menu_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="min-width: 150px; right: 6px; left: auto; font-size: 13px !important; font-family: arial !important; display: none;" aria-labelledby="v_site_menu"><a style="margin-top:4px;text-decoration:none !important;" class="dropdown open">
@@ -142,7 +146,7 @@
                             <li><a href="/blab/terms/index"><i class="fa fa-envelope-o"></i> Terms and Policies</a></li>
 
                             <li><a href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Messages</a></li>
-                             <li><a href="/blab/user/downloadUserData" onclick="showSuccessMessage('You request is being processed. You should receive an email shortly')"><i class="fa fa-envelope-o"></i> Download Personal Data</a></li>
+                            <li><a href="/blab/user/downloadUserData" onclick="showSuccessMessage ('You request is being processed. You should receive an email shortly')"><i class="fa fa-envelope-o"></i> Download Personal Data</a></li>
 
                             <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#update-password" onclick="vpb_hide_profile_popups ();"><i class="fa fa-edit"></i> Reset Password</a></li>
 
@@ -152,8 +156,12 @@
                         </ul>      
                     </li>
 
+                    <li>
+                        <a href="#"><i style="font-size:18px; color: #FFF;" class="showSearch fa fa-search"></i></a>
+                    </li>
 
-                    <li class=“hideMobile” style="list-style: none;">
+
+                    <li class="hideMobile" style="list-style: none;">
                         <a style="text-decoration:none !important;" class="dropdown open">
                             <i id="v_new_messages"  class="fa fa-envelope  vpb_notifications_icon vasplus_tooltip_notify" onclick="vpb_show_message_menu ();"></i>
                         </a>
@@ -314,7 +322,7 @@
                 <form name="uploadForm" id="uploadForm" enctype="multipart/form-data" style="min-width: 450px;">
 
                     <input style="display:none;" type="file" name="pictures[]" multiple="multiple" id="fileupload" />
-                    
+
                     <select class="form-control" id="upload-privacy">
                         <option value="public">Public</option>
                         <option value="private">Private</option>

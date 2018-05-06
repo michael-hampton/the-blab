@@ -1,0 +1,28 @@
+<?php
+
+echo '<div id="main_chat_top_box">';
+
+foreach ($arrFriends as $arrFriend) {
+    echo '<div class="vpb_friends_main_box" username="' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '" groupId="' . $arrFriend->getId () . '" onclick="vpb_open_vchat(\'' . $_SESSION['user']['username'] . '\', \'' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '\', \'' . $arrFriend->getId () . '\', \'/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg\');">'
+    . '<div style="width:40px; float:left;">';
+
+    if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg') )
+    {
+        echo '<img src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg" class="profile_pic" width="30" height="30" align="absmiddle" border="0">';
+    }
+    else
+    {
+        echo '<img src="/blab/public/img/avatar.gif" class="profile_pic" width="30" height="30" align="absmiddle" border="0">';
+    }
+
+
+    echo '</div>'
+    . '<div style="width:120px; float:left;border:0px solid; padding-top:2px;padding-bottom:4px;" align="left" id="searchResultss">' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '</div>'
+    . '<div style="width:28px; float:right;border:0px solid;padding-top:8px;padding-bottom:2px;" align="right">'
+    . '<span class="voffline" title="Offline"></span>'
+    . '</div>'
+    . '<br clear="all">'
+    . '</div>';
+}
+
+echo '</div>';

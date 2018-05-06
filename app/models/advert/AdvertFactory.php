@@ -153,8 +153,33 @@ class AdvertFactory
             $arrWhere[":userId"] = $objUser->getId ();
         }
 
+        $where .= " AND advert_type = 'advert'";
+        
         $arrResults = $this->db->_select ("advert", $where, $arrWhere, "*", "title ASC");
+        
+        return $this->loadObject($arrResults, $objBannerFactory, $blWithBanners);
+    }
 
+    /**
+     * 
+     * @param User $objUser
+     * @param BannerFactory $objBannerFactory
+     * @return type
+     */
+    public function getProfileBannerForUser (User $objUser, BannerFactory $objBannerFactory)
+    {
+        $arrResults = $this->db->_select("advert", "user_id = :userId AND advert_type = 'profile'", [":userId" => $objUser->getId()]);
+        
+        return $this->loadObject($arrResults, $objBannerFactory, true);
+    }
+#
+    /**
+     * 
+     * @param type $arrResults
+     * @return \Advert|boolean
+     */
+    private function loadObject ($arrResults, BannerFactory $objBannerFactory, $blWithBanners = false)
+    {
         if ( $arrResults === false )
         {
             trigger_error ("Unable to get adverts", E_USER_WARNING);

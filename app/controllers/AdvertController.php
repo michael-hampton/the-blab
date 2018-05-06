@@ -221,6 +221,39 @@ class AdvertController extends ControllerBase
     public function createProfileBannerAction ()
     {
         $this->view->type = "profile";
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $arrBanner = (new AdvertFactory())->getProfileBannerForUser (new User ($_SESSION['user']['user_id']), new BannerFactory ());
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrBanner === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( !empty ($arrBanner) )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "advert",
+                                "action" => "displayProfileBanner",
+                                "params" => ["arrBanners" => $arrBanner]
+                            ]
+            );
+        }
+    }
+    
+    public function displayProfileBannerAction()
+    {
+          $this->view->arrBanner = $this->dispatcher->getParam ("arrBanners");
     }
 
 }
