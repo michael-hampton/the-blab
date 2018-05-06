@@ -13,19 +13,26 @@
 </form>
 
 <div class="row">
-    <div class="form-group col-sm-6">
+    <div class="form-group col-sm-6" style="display:none;">
         <input id="advert-fileupload" type="file" multiple="multiple" />
         <hr />
         <b>Preview</b><br />
     </div>
+    
+    <button type="button" class="btn btn-w-m btn-success StartAdvertUpload">Click to Upload</button>
 </div>
 <div id="dvPreview">
 </div>
 
-<button type="button" class="btn btn-w-m btn-primary Save">Save</button>
+<button type="button" class="btn btn-w-m btn-primary Save" style="display: none;">Save</button>
 
 
 <script>
+    
+    $(".StartAdvertUpload").on("click", function () {
+       $("#advert-fileupload").click(); 
+    });
+    
     $ (".Save").on ("click", function ()
     {
         var data = new FormData ();
@@ -83,6 +90,8 @@
 
     $ ("#advert-fileupload").on ("change", function ()
     {
+        $(".StartAdvertUpload").hide();
+        $(".Save").show();
 
         var fileUpload = document.getElementById ("advert-fileupload");
 
