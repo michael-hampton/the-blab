@@ -51,20 +51,6 @@ class IndexController extends ControllerBase
             );
         }
 
-        $objUserFactory = new UserFactory();
-        $arrUsers = $objUserFactory->getUsers ();
-
-        if ( $arrUsers === false )
-        {
-            return $this->dispatcher->forward (
-                            [
-                                "controller" => "issue",
-                                "action" => "handler",
-                                "params" => ["message" => "unable to get list of users"]
-                            ]
-            );
-        }
-
         if ( empty ($_SESSION['user']['user_id']) )
         {
             return $this->dispatcher->forward (
@@ -76,21 +62,48 @@ class IndexController extends ControllerBase
             );
         }
 
+        try {
+            $objUserFactory = new UserFactory();
+            $arrUsers = $objUserFactory->getUsers ();
+            $objCurrentUser = new User ($_SESSION['user']['user_id']);
+            $objEventFactory = new EventFactory();
+            $objGroupFactory = new GroupFactory();
+            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $arrChatUsers = $objUserFactory->getChatUsers (null, $objCurrentUser);
 
-        $objUser = $objUserFactory->getUsers ($username);
 
-        if ( $objUser === false )
+            $objUser = $objUserFactory->getUsers ($username);
+
+            if ( $objUser === false )
+            {
+                return $this->dispatcher->forward (
+                                [
+                                    "controller" => "issue",
+                                    "action" => "handler",
+                                    "params" => ["message" => "Invalid user"]
+                                ]
+                );
+            }
+
+            $objUser = reset ($objUser);
+            $arrUserSettings = (new UserSettings ($objUser));
+            $arrPhotos = (new UploadFactory())->getUploadaForUser ($objUser, 4);
+            $arrBanners = (new AdvertFactory())->getProfileBannerForUser ($objUser, new BannerFactory ());
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrUsers === false )
         {
             return $this->dispatcher->forward (
                             [
                                 "controller" => "issue",
                                 "action" => "handler",
-                                "params" => ["message" => "Invalid user"]
+                                "params" => ["message" => "unable to get list of users"]
                             ]
             );
         }
-
-        $objUser = reset ($objUser);
 
         Phalcon\Tag::setTitle ("Profile " . $objUser->getFirstName () . ' ' . $objUser->getLastName ());
 
@@ -115,8 +128,6 @@ class IndexController extends ControllerBase
         $this->view->arrFriendList = $arrFriendList;
         $this->view->noPerFriend = 1;
 
-        $objCurrentUser = new User ($_SESSION['user']['user_id']);
-
         $arrCurrentUserFreindList = $objUserFactory->getFriendList ($objCurrentUser);
 
         if ( $arrCurrentUserFreindList === false )
@@ -132,8 +143,6 @@ class IndexController extends ControllerBase
 
         $this->view->arrCurrentUserFreindList = $arrCurrentUserFreindList;
 
-        $objEventFactory = new EventFactory();
-
         $this->view->arrEvents = $objEventFactory->getEventsForUser ($objUser);
 
         if ( $this->view->arrEvents === false )
@@ -146,8 +155,6 @@ class IndexController extends ControllerBase
                             ]
             );
         }
-
-        $objGroupFactory = new GroupFactory();
 
         $this->view->arrGroups = $objGroupFactory->getGroupsForUser ($objUser);
 
@@ -164,13 +171,6 @@ class IndexController extends ControllerBase
 
         $this->view->objUser = $objUser;
 
-        try {
-            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-        } catch (Exception $ex) {
-            trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
         $arrPosts = $objPostFactory->getPostsForUser ($objUser, null, 0, 4);
 
         if ( $arrPosts === false )
@@ -183,8 +183,6 @@ class IndexController extends ControllerBase
                             ]
             );
         }
-
-        $arrPhotos = (new UploadFactory())->getUploadaForUser ($objUser, 4);
 
         if ( $arrPhotos === false )
         {
@@ -200,8 +198,6 @@ class IndexController extends ControllerBase
         $this->view->arrPhotos = $arrPhotos;
         $this->view->arrPosts = $arrPosts;
         $this->view->arrUsers = $arrUsers;
-
-        $arrChatUsers = (new UserFactory())->getChatUsers (null, $objCurrentUser);
 
         if ( $arrChatUsers === false )
         {
@@ -249,10 +245,16 @@ class IndexController extends ControllerBase
             );
         }
 
-        $arrUserSettings = (new UserSettings ($objUser));
-
-//        var_dump($arrUserSettings->getProfileSetting('group'));
-//        die;
+        if ( $arrUserSettings === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unable to get user settings"]
+                            ]
+            );
+        }
 
         $this->view->arrUserSettings = $arrUserSettings;
 
@@ -292,9 +294,7 @@ class IndexController extends ControllerBase
 
         $this->view->arrFriendRequests = $arrFriendRequests;
         $this->view->objCurrentUser = $objCurrentUser;
-
-        $arrBanners = (new AdvertFactory())->getProfileBannerForUser ($objUser, new BannerFactory ());
-
+        
         if ( $arrBanners === false )
         {
             return $this->dispatcher->forward (
@@ -305,6 +305,8 @@ class IndexController extends ControllerBase
                             ]
             );
         }
+        
+        $this->view->arrBanners = $arrBanners;
     }
 
     public function indexAction ()

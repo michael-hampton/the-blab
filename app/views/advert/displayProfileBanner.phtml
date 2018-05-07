@@ -10,6 +10,9 @@
 </style>
 
 <?php
+
+$width = !empty($width) ? $width : '50%';
+
 if ( !empty ($arrBanner))
 {
 
@@ -18,7 +21,7 @@ if ( !empty ($arrBanner))
     if ( !empty ($arrBanners) )
     {
         ?>
-<div id="myCarousel" class="carousel slide" data-ride="carousel" style="margin-bottom:20px; width:50%;">
+<div id="myCarousel" class="carousel slide" data-ride="carousel" style="margin-bottom:20px; width:<?= $width ?>;">
             <!-- Indicators -->
             <ol class="carousel-indicators">
 
