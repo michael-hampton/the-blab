@@ -84,6 +84,36 @@ class BannerFactory
 
     /**
      * 
+     * @param User $objUser
+     * @param Upload $objUpload
+     * @param Advert $objAdvert
+     * @param NotificationFactory $objNotificationFactory
+     * @param EmailNotificationFactory $objEmailNotificationFactory
+     * @return \Banner|boolean
+     */
+    public function addToStory (User $objUser, Upload $objUpload, Advert $objAdvert, NotificationFactory $objNotificationFactory, EmailNotificationFactory $objEmailNotificationFactory)
+    {
+
+        $result = $this->db->create ("advert_banner", ["advert_id" => $objAdvert->getId (), "caption" => "", "url" => "", "image_location" => $objUpload->getFileLocation ()]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed to insert", E_USER_WARNING);
+            return false;
+        }
+
+        $message = $objUser->getFirstName () . ' ' . $objUser->getLastName () . 'just added a picture to their story';
+        $body = 'click here to see it ';
+
+        $objEmail = $objEmailNotificationFactory->createNotification ($objUser, $message, $body);
+        $objEmail->sendEmail ();
+        $objNotificationFactory->createNotification ($objUser, $body);
+
+        return new Banner ($result);
+    }
+
+    /**
+     * 
      * @param Advert $objAdvert
      * @return \Banner|boolean
      */

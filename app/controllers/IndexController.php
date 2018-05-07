@@ -292,6 +292,19 @@ class IndexController extends ControllerBase
 
         $this->view->arrFriendRequests = $arrFriendRequests;
         $this->view->objCurrentUser = $objCurrentUser;
+
+        $arrBanners = (new AdvertFactory())->getProfileBannerForUser ($objUser, new BannerFactory ());
+
+        if ( $arrBanners === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get users profile banner"]
+                            ]
+            );
+        }
     }
 
     public function indexAction ()
@@ -810,7 +823,7 @@ class IndexController extends ControllerBase
         foreach ($arrFriendRequests as $objFriendRequest) {
             $requestIds[] = (int) $objFriendRequest->getId ();
         }
-        
+
         foreach ($arrFriends as $objFriend) {
 
             $arrFriendIds[] = (int) $objFriend->getId ();
@@ -873,6 +886,13 @@ class IndexController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
+        if ( empty ($_POST['addToStory']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $blAddToStory = (bool) $_POST['addToStory'];
+
         $uploadType = $_POST['selectedImageType'];
         $uploadId = $_POST['selectedImageId'];
         $comment = $_POST['uploadComment'];
@@ -884,7 +904,9 @@ class IndexController extends ControllerBase
             $objUser = new User ($_SESSION['user']['user_id']);
             $objUserSettings = new UserSettings ($objUser);
 
-            $arrIds = $this->multipleUploadValidation ("pictures", $_FILES, $target_dir, $objUser);
+            $arrIds = $this->multipleUploadValidation (
+                    "pictures", $_FILES, $target_dir, $objUser, new UploadFactory (), new AdvertFactory (), new BannerFactory (), $blAddToStory
+            );
 
             switch ($uploadType) {
                 case "page":

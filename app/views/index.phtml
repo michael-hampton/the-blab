@@ -132,27 +132,46 @@
                     <li class="vp_ul_wrap "><a style="text-decoration:none !important;" class="dropdown open">
 
                             <i style="font-size: 18px;" class="fa fa-cog vpb_notifications_icon vasplus_tooltip_menu" id="v_site_menu" onclick="vpb_show_site_menu ();"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Menu"></i>
-                        </a><ul id="v_site_menu_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="min-width: 150px; right: 6px; left: auto; font-size: 13px !important; font-family: arial !important; display: none;" aria-labelledby="v_site_menu"><a style="margin-top:4px;text-decoration:none !important;" class="dropdown open">
+                        </a>
+
+<ul id="v_site_menu_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="min-width: 250px; right: 6px; left: auto; font-size: 13px !important; font-family: arial !important; display: none;" aria-labelledby="v_site_menu"><a style="margin-top:4px;text-decoration:none !important;" class="dropdown open">
 
                                 <li class="dropdown-header" style="cursor:default;">Site Menu</li>
 
                             </a>
+
+<li role="separator" class="divider"></li>
+
                             <li>
                                 <a style="text-decoration:none !important;" class="dropdown open"></a>
                                 <a href="/blab/terms/settings" onclick="vpb_show_about_page_owner_details ('edit');">
                                     <i class="fa fa-cog"></i> Settings</a>
                             </li>
 
+<li role="separator" class="divider"></li>
+
+
                             <li><a href="/blab/terms/index"><i class="fa fa-envelope-o"></i> Terms and Policies</a></li>
 
+<li role="separator" class="divider"></li>
+
                             <li><a href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Messages</a></li>
+
+<li role="separator" class="divider"></li>
+
                             <li><a href="/blab/user/downloadUserData" onclick="showSuccessMessage ('You request is being processed. You should receive an email shortly')"><i class="fa fa-envelope-o"></i> Download Personal Data</a></li>
 
-                            <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#update-password" onclick="vpb_hide_profile_popups ();"><i class="fa fa-edit"></i> Reset Password</a></li>
+<li role="separator" class="divider"></li>
+
+                            <li><a href="#" data-toggle="modal" data-target="#update-password" onclick="vpb_hide_profile_popups ();"><i class="fa fa-edit"></i> Reset Password</a></li>
+
+<li role="separator" class="divider"></li>
+
+ <li><a href="#" data-toggle="modal" data-target="#report-bug" onclick="vpb_hide_profile_popups ();"><i class="fa fa-power-off"></i> Report a Problem</a></li>
 
 
                             <li role="separator" class="divider"></li>
-                            <li><a href="javascript:void(0);" data-backdrop="static" data-toggle="modal" data-target="#logout-confirmation" onclick="vpb_hide_profile_popups ();"><i class="fa fa-power-off"></i> Logout</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#logout-confirmation" onclick="vpb_hide_profile_popups ();"><i class="fa fa-power-off"></i> Logout</a></li>
                         </ul>      
                     </li>
 
@@ -328,6 +347,14 @@
                         <option value="private">Private</option>
                         <option value="friend">Friends Only</option>
                     </select>
+  
+  <label class="control control--checkbox" style="font-size:12px !important;">
+
+                                        <input type="checkbox" name="addToStory" id="addToStory">
+                                        <div class="control__indicator"></div>
+                                        Add to Story
+                                    </label>
+
 
                     <textarea placeholder="Say something about the photo(s)" name="uploadComment" id="uploadComment" style="height:100px; width:90%; margin-left:30px; margin-top:30px;" class="form-control mentions"></textarea>
 
@@ -1035,7 +1062,7 @@
 
 
 
-<!-- Report a conversation Modal -->
+<!—- Report a conversation Modal -->
 <div class="modal fade" id="report-abuse" tabindex="-1" role="dialog" aria-labelledby="reportabuse" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1068,8 +1095,40 @@
     </div>
 </div>
 
-<input type="hidden" id="v_confirmation_message" value="Do you really mean to remove: ">
+<!—- Report a bug Modal -->
+<div class="modal fade" id="report-bug" tabindex="-1" role="dialog" aria-labelledby="reportbug" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="reportbug">Report a Problem</h4>
+            </div>
+            <input type="hidden" id="reportBugFullname" /> 
+            <input type="hidden" id="reportBugUsername" />
+            <div class="modal-body">
 
+                <div id="vpb_display_all_users_in_group_for_report"></div>
+                <div id="vpb_reason_for_report_box">
+                    <div class="input-group">
+                        <span class="input-group-addon" style="vertical-align:top; padding-top:10px !important;">Report</span>
+                        <textarea class="form-control form-control-plus-pms" id="report_bug_data" style="min-height:250px !important;"  placeholder=""></textarea>
+                    </div>
+                    <div id="report_post_status" style="margin:0 auto;" align="center"></div>
+                </div> 
+            </div>
+
+            <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
+                <span id="back_label_text" class="btn btn-default" style=" margin-top:0px; margin-right:20px; display:none;" onclick="vpb_cancel_report_this ();"><i class="fa fa-reply"></i> Back</span>
+
+                <span class="btn btn-default" data-dismiss="modal" style=" margin-top:0px;" onclick="vpb_cancel_report_this ();">Cancel</span>
+
+                <span id="vsubmit_report" class="btn btn-default btn btn-success btn-pms-continue" style="padding-top:5px; padding-bottom:7px; margin-left:20px;" onClick="vpb_report_the_bug ('Grace Chung', 'grace', 'info@vasplus.info');">Submit</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="v_confirmation_message" value="Do you really mean to remove: ">
 
 <!-- Confirm remove friend from the tagged friends list -->
 <!-- Modal -->
@@ -1651,9 +1710,6 @@
         isMobile = true;
     }
 </script>
-
-
-
 
 
 

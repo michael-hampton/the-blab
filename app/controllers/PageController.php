@@ -297,7 +297,7 @@ class PageController extends ControllerBase
 
     public function createPageAction ()
     {
-        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+       
 
         $objPageType = new PageTypeFactory();
 

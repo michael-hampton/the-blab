@@ -16,19 +16,18 @@ class ControllerBase extends \Phalcon\Mvc\Controller
      * @var type 
      */
     protected $arrUserSettings;
-    
+
     /**
      * The
      * @var type 
      */
     protected $totalFriendsPerLoad = 50;
-    
+
     /**
      *
      * @var type 
      */
     private $totalChatPerLoad = 20;
-
 
     /**
      *
@@ -49,15 +48,16 @@ class ControllerBase extends \Phalcon\Mvc\Controller
      * @param type $offset
      * @return boolean
      */
-    function strposa($haystack, $needles=array(), $offset=0) {
+    function strposa ($haystack, $needles = array(), $offset = 0)
+    {
         $chr = array();
-        foreach($needles as $needle) {
-                $res = strpos($haystack, $needle, $offset);
-                if ($res !== false) $chr[$needle] = $res;
+        foreach ($needles as $needle) {
+            $res = strpos ($haystack, $needle, $offset);
+            if ( $res !== false )
+                $chr[$needle] = $res;
         }
-        return !empty($chr);
-        
-}
+        return !empty ($chr);
+    }
 
     /**
      *
@@ -88,41 +88,41 @@ class ControllerBase extends \Phalcon\Mvc\Controller
                 }
                 else
                 {
-                   
-    
 
-if (strpos($url, 'user') === false && 
-strpos($url, 'resetPassword') === false 
-&& strpos($url, 'terms') === false){
-header ("Location: /blab/user/login");
-    exit;
-}
 
-                 
+
+                    if ( strpos ($url, 'user') === false &&
+                            strpos ($url, 'resetPassword') === false && strpos ($url, 'terms') === false )
+                    {
+                        header ("Location: /blab/user/login");
+                        exit;
+                    }
                 }
             } catch (Exception $ex) {
                 trigger_error ($ex->getMessage (), E_USER_WARNING);
             }
         }
-        
+
         $this->view->totalChatPerLoad = $this->totalChatPerLoad;
         $this->view->totalFriendsPerLoad = $this->totalFriendsPerLoad;
         $this->view->startPage = 0;
         $this->view->totalPerLoad = 4;
         $this->view->totalComments = 2;
     }
-    
+
     /**
      * 
      * @param User $objUser
      */
-    public function getSettingsForUser(User $objUser) {
-        $arrResults = (new UserSettings())->getUserSettings();
-        
-        if($arrResults === false) {
+    public function getSettingsForUser (User $objUser)
+    {
+        $arrResults = (new UserSettings())->getUserSettings ();
+
+        if ( $arrResults === false )
+        {
             
         }
-        
+
         $this->arrUserSettings = $arrResults;
     }
 
@@ -157,12 +157,18 @@ header ("Location: /blab/user/login");
      * @param type $keyname
      * @param type $arrFiles
      * @param type $target_dir
-     * @return boolean
+     * @param User $objUser
+     * @param UploadFactory $objUpload
+     * @param AdvertFactory $objAdvertFacotry
+     * @param BannerFactory $objBannerFactory
+     * @param type $blAddToStory
+     * @return type
      */
-    protected function multipleUploadValidation ($keyname, $arrFiles, $target_dir, User $objUser)
+    protected function multipleUploadValidation (
+    $keyname, $arrFiles, $target_dir, User $objUser, UploadFactory $objUpload, AdvertFactory $objAdvertFacotry, BannerFactory $objBannerFactory, $blAddToStory = false
+    )
     {
         $arrIds = [];
-        $objUpload = new UploadFactory();
 
         if ( !is_dir ($target_dir) )
         {
@@ -208,7 +214,7 @@ header ("Location: /blab/user/login");
 // if everything is ok, try to upload file
             }
 
-            if($this->compress($_FILES[$keyname]["tmp_name"][$key], $target_file, 80))
+            if ( $this->compress ($_FILES[$keyname]["tmp_name"][$key], $target_file, 80) )
 
             //if ( move_uploaded_file ($_FILES[$keyname]["tmp_name"][$key], $target_file))
             {
@@ -222,6 +228,32 @@ header ("Location: /blab/user/login");
                 }
 
                 $arrIds[] = $objUploaded->getId ();
+
+                if ( $blAddToStory === true )
+                {
+                    $arrAdvert = $objAdvertFacotry->getProfileBannerForUser ($objUser, $objBannerFactory);
+
+                    if ( empty ($arrAdvert[0]) )
+                    {
+                        $objAdvert = $objAdvertFacotry->createProfileBanner ($objUser, $objUser->getFirstName () . ' ' . $objUser->getLastName ());
+
+                        if ( $objAdvert === false )
+                        {
+                            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                        }
+                    }
+                    else
+                    {
+                        $objAdvert = $arrAdvert[0];
+                    }
+
+                    $blBannerResult = $objBannerFactory->addToStory ($objUser, $objUploaded, $objAdvert, new NotificationFactory (), new EmailNotificationFactory ());
+
+                    if ( $blBannerResult === false )
+                    {
+                        $this->ajaxresponse ("error", "Unable to add picture(s) to story");
+                    }
+                }
             }
             else
             {
@@ -319,25 +351,30 @@ header ("Location: /blab/user/login");
         return $imageLocation;
     }
 
-    protected function compress($source, $destination, $quality) {
+    protected function compress ($source, $destination, $quality)
+    {
 
-    $info = getimagesize($source);
+        $info = getimagesize ($source);
 
-    if ($info['mime'] == 'image/jpeg') {
-        $image = imagecreatefromjpeg($source);
+        if ( $info['mime'] == 'image/jpeg' )
+        {
+            $image = imagecreatefromjpeg ($source);
+        }
+        elseif ( $info['mime'] == 'image/gif' )
+        {
+            $image = imagecreatefromgif ($source);
+        }
+        elseif ( $info['mime'] == 'image/png' )
+        {
+            $image = imagecreatefrompng ($source);
+        }
+
+        if ( !isset ($image) )
+        {
+            return false;
+        }
+
+        return imagejpeg ($image, $destination, $quality);
     }
-    elseif ($info['mime'] == 'image/gif') {
-        $image = imagecreatefromgif($source);
-    }
-    elseif ($info['mime'] == 'image/png') {
-        $image = imagecreatefrompng($source);
-    }
 
-    if(!isset($image)){
-        return false;
-    }
-
-    return imagejpeg($image, $destination, $quality);
-
-}
 }

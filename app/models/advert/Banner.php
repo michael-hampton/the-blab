@@ -173,6 +173,7 @@ class Banner
         return true;
     }
     
+    
     /**
      * 
      * @return boolean
