@@ -1,0 +1,105 @@
+<?php
+$totalCommentsToDisplay = 1;
+
+$friendIds = [];
+
+foreach ($arrFriendList as $friend) {
+    $friendIds[] = $friend->getId ();
+}
+
+$requestIds = [];
+
+foreach ($arrFriendRequests as $objFriendRequest) {
+    $requestIds[] = $objFriendRequest->getId ();
+}
+?>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-3">
+            <div class="row">
+                <?php
+                $this->partial ("templates/profileUpload", ["arrUser" => $objUser, "friendIds" => $friendIds, "requestIds" => $requestIds]);
+                $this->partial ("templates/links");
+                ?>
+            </div>
+
+        </div>
+
+        <div class="col-md-9">
+            <!-- Display Group Details -->
+
+            <div class="vprofile_o_detail" style="border-bottom:0px solid !important;">
+                <div class="vprofile_o_title" style="padding:0px;">
+                    <div style="float:left; padding:10px;">
+                        Groups            
+                    </div>
+                    <div style="float:right; padding:10px;">
+                        <span class="create_btn" onclick="vpb_reset_current_group_details ();"><i class="fa fa-plus" style="font-weight:normal !important;"></i> Create Group</span>
+
+                    </div><div style="clear:both;"></div></div>
+                <div style="clear:both;"></div>
+            </div>
+
+            <div style="clear:both;"></div>
+
+            <div style="width:100%; margin:0 auto; text-align:center; display:table;" align="center">
+                <input type="hidden" id="vtotal_groups" value="<?= count ($arrGroups) ?>">
+                <input type="hidden" id="vpb_groups_start" value="<?= $paginationLimit ?>">
+
+                <div class="input-group vpb-the-friends-wrap" id="vpb_load_more_group_box">
+                    <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_groups ();">View more groups</span></div>
+                    <div style="float:right; color:#999;"><span id="v_this_members_totals"><?= count ($arrGroups) ?></span> of <?= $totalCount ?></div>
+                    <div style="clear:both;"></div>
+                </div>
+
+                <!-- Loading Gif -->
+                <div class="input-group vpb-the-friends-wrap" style="display:none;padding:7px 10px !important;" id="vpb_loading_group_members_outer">
+                    <div id="vpb_loading_group_members"></div>
+                </div>
+
+                <div id="vpb_loaded_group_members" style=" width:100%;"></div>
+                <div style="clear:both;"></div>
+
+
+
+
+                <?php
+                foreach ($arrGroups as $arrGroup) {
+                    $image = trim ($arrGroup->getImageLocation ()) !== "" && file_exists ($rootPath . $arrGroup->getImageLocation ()) ? $arrGroup->getImageLocation () : '/blab/public/img/avatar.gif';
+                    ?>
+
+                    <div class="vpb_groups_box">
+                        <div style="width:100%; padding:10px;">
+                            <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
+                                <img src="<?= $image ?>" class="img-responsive" border="0"></a>
+                            <div class="vproducttitle">
+                                <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
+                                    <span><?= $arrGroup->getGroupName () ?></span>
+                                </a>
+                            </div>
+                            <div class="vproductprice">
+                                <div class="vpull_left">3 members</div>
+                                <div class="vpull_right">
+
+                                    <span id="group_join_13896651249640768" onclick="vpb_send_request_to_join_group ('13896651249640768', 'Jelzon11', 'michaelhampton', 'join');" class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;"><i class="fa fa-plus"></i> Join</span>
+
+                                    <span id="group_requestsent_13896651249640768" style="display:none;">
+                                        <span class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;opacity:0.6;cursor:default;"><i class="fa fa-reply"></i> Request Sent</span>
+
+                                        <span class="cbtn vpb_cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;" title="Cancel Request" onclick="vpb_send_request_to_join_group ('13896651249640768', 'Jelzon11', 'michaelhampton', 'cancel');"><i class="fa fa-times"></i></span>
+                                    </span></div>
+                                <div style="clear:both;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                <?php } ?>
+            </div>
+
+
+        </div>
+    </div>
+
+
+</div>

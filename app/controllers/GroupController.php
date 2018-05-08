@@ -4,6 +4,12 @@ use Phalcon\Mvc\View;
 
 class GroupController extends ControllerBase
 {
+    
+     /**
+     *
+     * @var type 
+     */
+    private $paginationLimit = 1;
 
     public function groupUsersAction ()
     {
@@ -296,6 +302,87 @@ class GroupController extends ControllerBase
         }
 
         $this->view->arrPhotos = $arrPhotos;
+    }
+
+    public function searchGroupsAction ()
+    {
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Invalid user"]
+                            ]
+            );
+        }
+        
+        $objGroupFactory = new GroupFactory();
+
+        $arrGroups = $objGroupFactory->getAllGroups (null, 0, $this->paginationLimit);
+        $totalCount = $objGroupFactory->getAllGroups (null, null, null);
+
+        if ( $arrGroups === false || $totalCount === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get groups"]
+                            ]
+            );
+        }
+
+        $this->view->arrGroups = $arrGroups;
+
+        try {
+            $objUserFactory = new UserFactory();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $arrFriendList = $objUserFactory->getFriendList ($objUser);
+             $arrFriendRequests = $objUserFactory->getFriendRequests ($objUser);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => $this->defaultErrrorMessage]
+                            ]
+            );
+        }
+
+
+
+        if ( $arrFriendList === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get list of friends"]
+                            ]
+            );
+        }
+
+        if ( $arrFriendRequests === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get friend requests"]
+                            ]
+            );
+        }
+
+        $this->view->arrFriendRequests = $arrFriendRequests;
+        $this->view->objUser = $objUser;
+        $this->view->arrFriendList = $arrFriendList;
+        $this->view->arrGroups = $arrGroups;
+        $this->view->paginationLimit = $this->paginationLimit;
+        $this->view->totalCount = count($totalCount);
     }
 
     public function createGroupAction ()

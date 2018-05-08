@@ -30,19 +30,67 @@ class EventFactory
 
         $this->db->connect ();
     }
-    
-     /**
+
+    /**
+     * 
+     * @param type $searchText
+     * @param type $pageNo
+     * @param type $pageLimit
+     */
+    public function getAllEvents ($searchText = null, $pageNo = null, $pageLimit = null)
+    {
+        $sqlWhere = "";
+        $arrWhere = [];
+
+        if ( $searchText !== null )
+        {
+            $sqlWhere .= " AND event_name LIKE :searchText";
+            $arrWhere[':searchText'] = '%' . $searchText . '%';
+        }
+
+
+        $sql = "SELECT * FROM event WHERE 1=1";
+
+        if ( $sqlWhere !== "" )
+        {
+            $sql .= $sqlWhere;
+        }
+
+        $sql .= " ORDER BY event_name ASC";
+
+
+        if ( $pageNo !== null && $pageLimit !== null )
+        {
+            $sql .= " LIMIT {$pageNo}, {$pageLimit}";
+        }
+
+        $results = $this->db->_query ($sql, $arrWhere);
+
+        return $this->loadObject ($results);
+    }
+
+    /**
      * 
      * @param User $objUser
      * @return \Event|boolean
      */
     public function getEventsForUser (User $objUser)
     {
-        $results = $this->db->_select("event", "user_id = :userId", [":userId" => $objUser->getId()]);
+        $results = $this->db->_select ("event", "user_id = :userId", [":userId" => $objUser->getId ()]);
 
+        return $this->loadObject ($results);
+    }
+
+    /**
+     * 
+     * @param array $results
+     * @return \Event|boolean
+     */
+    private function loadObject (array $results)
+    {
         if ( $results === false )
         {
-            trigger_error("DATABASE QUERY FAILED", E_USER_WARNING);
+            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
             return false;
         }
 
@@ -79,7 +127,7 @@ class EventFactory
 
         if ( $results === false )
         {
-            trigger_error("DATABASE QUERY FAILED", E_USER_WARNING);
+            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
             return false;
         }
 
@@ -150,7 +198,7 @@ class EventFactory
 
         if ( $result === false )
         {
-            trigger_error("DATABASE QUERY FAILED - unable to create event", E_USER_WARNING);
+            trigger_error ("DATABASE QUERY FAILED - unable to create event", E_USER_WARNING);
             return false;
         }
 

@@ -76,13 +76,31 @@ class GroupFactory
     /**
      * 
      * @param type $searchText
+     * @param type $page
+     * @param type $pageLimit
      * @return type
      */
-    public function getAllGoups ($searchText)
+    public function getAllGroups ($searchText = null, $page = null, $pageLimit = null)
     {
+
+        $arrWhere = [];
+        $sqlWhere = '';
+
+        if($searchText !== null) {
+            $sqlWhere .= " AND `name` LIKE :groupName";
+            $arrWhere[":groupName"] = '%' . $searchText . '%';
+        }
+        
+        $limit = "";
+        
+        if($page !== null && $pageLimit !== null) {
+            $limit = " LIMIT {$page}, {$pageLimit}";
+        }
+        
+
         $arrResults = $this->db->_query ("SELECT * FROM `groups` 
-                                        WHERE `name` LIKE :groupName 
-                                        ORDER BY name ASC", [":groupName" => '%' . $searchText . '%']);
+                                        WHERE  1=1 " . $sqlWhere . 
+                                        " ORDER BY name ASC" . $limit, $arrWhere);
 
         $arrGroups = $this->buildGroupObject ($arrResults);
 

@@ -4,6 +4,11 @@ use Phalcon\Mvc\View;
 
 class EventController extends ControllerBase
 {
+    /**
+     *
+     * @var type 
+     */
+    private $paginationLimit = 1;
 
     /**
      * 
@@ -156,10 +161,85 @@ class EventController extends ControllerBase
         $this->view->arrMembers = $arrMembers;
     }
 
+    public function searchEventsAction ()
+    {
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Invalid user"]
+                            ]
+            );
+        }
+        
+        $objEventFactory = new EventFactory();
+        $arrEvents = $objEventFactory->getAllEvents (null, 0, $this->paginationLimit);
+        $totalCount = $objEventFactory->getAllEvents (null, null, null);
+        
+        if ( $arrEvents === false || $totalCount === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get groups"]
+                            ]
+            );
+        }
+
+        try {
+            $objUserFactory = new UserFactory();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $arrFriendList = $objUserFactory->getFriendList ($objUser);
+            $arrFriendRequests = $objUserFactory->getFriendRequests ($objUser);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => $this->defaultErrrorMessage]
+                            ]
+            );
+        }
+
+
+
+        if ( $arrFriendList === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get list of friends"]
+                            ]
+            );
+        }
+
+        if ( $arrFriendRequests === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get friend requests"]
+                            ]
+            );
+        }
+
+        $this->view->arrFriendRequests = $arrFriendRequests;
+        $this->view->objUser = $objUser;
+        $this->view->arrFriendList = $arrFriendList;
+        $this->view->arrEvents = $arrEvents;
+         $this->view->paginationLimit = $this->paginationLimit;
+         $this->view->totalCount = count($totalCount);
+    }
+
     public function reportEventAction ()
     {
-        $this->view->disable ();
-
         $this->view->disable ();
 
         if ( empty ($_POST['group_id']) || empty ($_POST['group_name']) || empty ($_POST['report_group_data']) || empty ($_SESSION['user']['user_id']) )

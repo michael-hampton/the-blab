@@ -5,31 +5,36 @@
             <div style="float:left; padding:10px;">
                 <i class="fa fa-calendar v_the_iconed"></i> Your Events
             </div>
-            
+
             <div style="float:right; padding:10px;">
 
                 <span id="view_or_edit_buttonD">
                     <i class="fa fa-plus-square v_the_iconed"></i> 
                     <span id="createEvent" class="vpb_hover vview_item"> Create Event</span>
+                    <br><div style="float:right;"><span class="vpb_hover vview_item" onclick="window.location.href = '/blab/event/searchEvents';">See All</span></div>
+                    <div style="clear:both"></div>
 
                 </span>
 
             </div><div style="clear:both;"></div>
-                
+
         </div>
 
         <ul class="list-group clear-list" style="padding:10px;">
             <?php
-            if ( !empty ($arrEvents) ){
-                foreach ($arrEvents as $arrEvent){
-                     $image = trim($arrEvent->getImageLocation ()) !== "" && file_exists ($rootPath  . $arrEvent->getImageLocation () ) ? $arrEvent->getImageLocation ()  : '/blab/public/img/avatar.gif';
+            if ( !empty ($arrEvents) )
+            {
+                foreach ($arrEvents as $arrEvent) {
+                    $image = trim ($arrEvent->getImageLocation ()) !== "" && file_exists ($rootPath . $arrEvent->getImageLocation ()) ? $arrEvent->getImageLocation () : '/blab/public/img/avatar.gif';
                     ?>
                     <a href="/blab/event/index/<?= $arrEvent->getId () ?>">
                         <img style="width: 50px;" title="<?= $arrEvent->getEventName () ?>" src="<?= $image ?>">
                     </a>
                     <?php
                 }
-            } else {
+            }
+            else
+            {
                 echo '<h3>You have no events</h3>';
             }
             ?>

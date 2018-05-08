@@ -91,7 +91,13 @@ class IndexController extends ControllerBase
             $arrBanners = (new AdvertFactory())->getProfileBannerForUser ($objUser, new BannerFactory ());
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => $this->defaultErrrorMessage]
+                            ]
+            );
         }
 
         if ( $arrUsers === false )
@@ -294,7 +300,7 @@ class IndexController extends ControllerBase
 
         $this->view->arrFriendRequests = $arrFriendRequests;
         $this->view->objCurrentUser = $objCurrentUser;
-        
+
         if ( $arrBanners === false )
         {
             return $this->dispatcher->forward (
@@ -305,7 +311,7 @@ class IndexController extends ControllerBase
                             ]
             );
         }
-        
+
         $this->view->arrBanners = $arrBanners;
     }
 
@@ -365,7 +371,7 @@ class IndexController extends ControllerBase
 
         $objEventFactory = new EventFactory();
 
-        $arrEvents = $objEventFactory->getEventsForUser ($objUser);
+        $arrEvents = $objEventFactory->getEventsForProfile ($objUser);
 
         if ( $arrEvents === false )
         {
@@ -382,7 +388,7 @@ class IndexController extends ControllerBase
 
         $objGroupFactory = new GroupFactory();
 
-        $arrGroups = $objGroupFactory->getGroupsForUser ($objUser);
+        $arrGroups = $objGroupFactory->getGroupsForProfile ($objUser);
 
         if ( $arrGroups === false )
         {
@@ -859,7 +865,7 @@ class IndexController extends ControllerBase
 
         $this->view->arrPages = $arrPages;
 
-        $arrGroups = (new GroupFactory())->getAllGoups ($searchText);
+        $arrGroups = (new GroupFactory())->getAllGroups ($searchText);
 
         if ( $arrGroups === false )
         {
