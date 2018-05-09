@@ -39,9 +39,10 @@ class GroupFactory
     /**
      * 
      * @param type $results
+     * @param GroupRequestFactory $objGroupRequestFactory
      * @return \Group|boolean
      */
-    private function buildGroupObject ($results)
+    private function buildGroupObject ($results, GroupRequestFactory $objGroupRequestFactory = null)
     {
         try {
             if ( $results === false || !is_array ($results) )
@@ -62,6 +63,12 @@ class GroupFactory
                 $objGroup->setGroupName ($result['name']);
                 $objGroup->setDescription ($result['description']);
                 $objGroup->setMemberCount(isset($result['member_count']) ? $result['member_count'] : 0);
+                
+                if($objGroupRequestFactory !== null) {
+                    $arrRequests = $objGroupRequestFactory->getAllGroupRequests($objGroup);
+                    
+                    $objGroup->setArrRequests($arrRequests);
+                }
 
                 $arrGroups[] = $objGroup;
             }
@@ -80,7 +87,7 @@ class GroupFactory
      * @param type $pageLimit
      * @return type
      */
-    public function getAllGroups ($searchText = null, $page = null, $pageLimit = null)
+    public function getAllGroups (User $objUser, GroupRequestFactory $objGroupRequestFactory, $searchText = null, $page = null, $pageLimit = null)
     {
 
         $arrWhere = [];
@@ -97,12 +104,14 @@ class GroupFactory
             $limit = " LIMIT {$page}, {$pageLimit}";
         }
         
+        $arrWhere[':userId'] = $objUser->getId();
 
-        $arrResults = $this->db->_query ("SELECT * FROM `groups` 
-                                        WHERE  1=1 " . $sqlWhere . 
+        $arrResults = $this->db->_query ("SELECT g.*, COUNT(gm.id) AS member_count FROM `groups` g
+                                        LEFT JOIN group_member gm ON gm.group_id = g.group_id
+                                        WHERE  g.group_id NOT IN (SELECT group_id FROM group_member WHERE user_id = :userId) " . $sqlWhere . 
                                         " ORDER BY name ASC" . $limit, $arrWhere);
 
-        $arrGroups = $this->buildGroupObject ($arrResults);
+        $arrGroups = $this->buildGroupObject ($arrResults, $objGroupRequestFactory);
 
         return $arrGroups;
     }
@@ -114,8 +123,8 @@ class GroupFactory
      */
     public function getGroupsForProfile (User $objUser)
     {
-        $results = $this->db->_query ("SELECT g.* FROM `groups` g
-                                        INNER JOIN group_member gm ON gm.group_id - g.`group_id`
+        $results = $this->db->_query ("SELECT g.* FROM group_member gm 
+                                        INNER JOIN groups g ON g.group_id = gm.group_id
                                         WHERE gm.user_id = :userId", [':userId' => $objUser->getId ()]);
 
         $arrGroups = $this->buildGroupObject ($results);
@@ -137,23 +146,6 @@ class GroupFactory
         return $arrGroups;
     }
     
-    /**
-     * 
-     * @param User $objUser
-     * @return type
-     */
-    public function getSuggestedGroupsForUser(User $objUser)
-    {
-        $results = $this->db->_query("SELECT g.*, (SELECT COUNT(*) FROM group_member WHERE group_id = g.group_id) AS member_count FROM groups g
-                                    WHERE g.group_id NOT IN (SELECT group_id FROM group_member WHERE user_id = :userId)
-                                    ORDER BY g.name
-                                    LIMIT 6", [":userId" => $objUser->getId ()]);
-        
-        $arrGroups = $this->buildGroupObject($results);
-        
-        return $arrGroups;
-    }
-
     /**
      * 
      * @param User $objUser

@@ -1,0 +1,15 @@
+<?php
+foreach ($arrEvents as $arrEvent) {
+    $image = trim ($arrEvent->getImageLocation ()) !== "" && file_exists ($rootPath . $arrEvent->getImageLocation ()) ? $arrEvent->getImageLocation () : '/blab/public/img/avatar.gif';
+    ?>
+
+    <div class="vpb_groups_box">
+        <div class="col-lg-2 pull-left" style="padding:10px;">
+            <a href="/blab/event/index/<?= $arrEvent->getId () ?>">
+                <img src="<?= $image ?>" class="img-responsive" border="0"></a>
+            <div class="vproducttitle"><a href=""/blab/event/index/<?= $arrEvent->getId () ?>"><span><?= $arrEvent->getEventName () ?></span></a></div>
+            
+        </div>
+    </div>
+
+<?php } ?>

@@ -4,6 +4,7 @@ use Phalcon\Mvc\View;
 
 class EventController extends ControllerBase
 {
+
     /**
      *
      * @var type 
@@ -173,11 +174,11 @@ class EventController extends ControllerBase
                             ]
             );
         }
-        
+
         $objEventFactory = new EventFactory();
         $arrEvents = $objEventFactory->getAllEvents (null, 0, $this->paginationLimit);
         $totalCount = $objEventFactory->getAllEvents (null, null, null);
-        
+
         if ( $arrEvents === false || $totalCount === false )
         {
             return $this->dispatcher->forward (
@@ -234,8 +235,36 @@ class EventController extends ControllerBase
         $this->view->objUser = $objUser;
         $this->view->arrFriendList = $arrFriendList;
         $this->view->arrEvents = $arrEvents;
-         $this->view->paginationLimit = $this->paginationLimit;
-         $this->view->totalCount = count($totalCount);
+        $this->view->paginationLimit = $this->paginationLimit;
+        $this->view->totalCount = count ($totalCount);
+    }
+
+    public function eventSearchPaginationAction ()
+    {
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            return $this->ajaxresponse ("error", "invalid user");
+        }
+
+        if ( empty ($_POST['vpb_start']) || !isset ($_POST['searchText']) || empty ($_POST['vpb_total_per_load']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $searchText = !empty ($_POST['searchText']) ? $_POST['searchText'] : null;
+        $page = $searchText === null ? (int) $_POST['vpb_start'] : null;
+        $totalToLoad = $searchText === null ? (int) $_POST['vpb_total_per_load'] : null;
+
+        $arrEvents = (new EventFactory())->getAllEvents ($searchText, $page, $totalToLoad);
+
+        if ( $arrEvents === false )
+        {
+            $this->ajaxresponse ("error", "unable to get events");
+        }
+
+        $this->view->arrEvents = $arrEvents;
     }
 
     public function reportEventAction ()

@@ -4,8 +4,8 @@ use Phalcon\Mvc\View;
 
 class GroupController extends ControllerBase
 {
-    
-     /**
+
+    /**
      *
      * @var type 
      */
@@ -317,30 +317,13 @@ class GroupController extends ControllerBase
                             ]
             );
         }
-        
-        $objGroupFactory = new GroupFactory();
-
-        $arrGroups = $objGroupFactory->getAllGroups (null, 0, $this->paginationLimit);
-        $totalCount = $objGroupFactory->getAllGroups (null, null, null);
-
-        if ( $arrGroups === false || $totalCount === false )
-        {
-            return $this->dispatcher->forward (
-                            [
-                                "controller" => "issue",
-                                "action" => "handler",
-                                "params" => ["message" => "unable to get groups"]
-                            ]
-            );
-        }
-
-        $this->view->arrGroups = $arrGroups;
 
         try {
             $objUserFactory = new UserFactory();
             $objUser = new User ($_SESSION['user']['user_id']);
             $arrFriendList = $objUserFactory->getFriendList ($objUser);
-             $arrFriendRequests = $objUserFactory->getFriendRequests ($objUser);
+            $arrFriendRequests = $objUserFactory->getFriendRequests ($objUser);
+            $objGroupFactory = new GroupFactory();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
 
@@ -354,6 +337,37 @@ class GroupController extends ControllerBase
         }
 
 
+
+        $arrGroups = $objGroupFactory->getAllGroups ($objUser, new GroupRequestFactory(), null, 0, $this->paginationLimit);
+        $totalCount = $objGroupFactory->getAllGroups ($objUser, new GroupRequestFactory(), null, null, null);
+
+        if ( $arrGroups === false || $totalCount === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get groups"]
+                            ]
+            );
+        }
+
+        $arrMemberGroups = $objGroupFactory->getGroupsForProfile ($objUser);
+
+        if ( $arrMemberGroups === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get groups"]
+                            ]
+            );
+        }
+
+        $this->view->arrMemberGroups = $arrMemberGroups;
+
+        $this->view->arrGroups = $arrGroups;
 
         if ( $arrFriendList === false )
         {
@@ -382,7 +396,38 @@ class GroupController extends ControllerBase
         $this->view->arrFriendList = $arrFriendList;
         $this->view->arrGroups = $arrGroups;
         $this->view->paginationLimit = $this->paginationLimit;
-        $this->view->totalCount = count($totalCount);
+        $this->view->totalCount = count ($totalCount);
+    }
+
+    public function groupSearchPaginationAction ()
+    {
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            return $this->ajaxresponse ("error", "invalid user");
+        }
+
+        $objUser = new User ($_SESSION['user']['user_id']);
+
+        if ( empty ($_POST['vpb_start']) || !isset ($_POST['searchText']) || empty ($_POST['vpb_total_per_load']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $searchText = !empty ($_POST['searchText']) ? $_POST['searchText'] : null;
+        $page = $searchText === null ? (int)$_POST['vpb_start'] : null;
+        $totalToLoad = $searchText === null ? (int)$_POST['vpb_total_per_load'] : null;
+
+        $arrGroups = (new GroupFactory())->getAllGroups ($objUser, new GroupRequestFactory(), $searchText, $page, $totalToLoad);
+
+        if ( $arrGroups === false )
+        {
+            $this->ajaxresponse ("error", "unable to get groups");
+        }
+
+        $this->view->arrGroups = $arrGroups;
+        $this->view->objUser = $objUser;
     }
 
     public function createGroupAction ()
@@ -548,7 +593,12 @@ class GroupController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $arrGroups = (new GroupFactory())->getSuggestedGroupsForUser (new User ($_SESSION['user']['user_id']));
+        try {
+            $arrGroups = (new GroupFactory())->getAllGroups (new User ($_SESSION['user']['user_id']), new GroupRequestFactory(), null, 0, 5);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $arrGroups === false )
         {

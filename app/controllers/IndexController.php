@@ -865,7 +865,7 @@ class IndexController extends ControllerBase
 
         $this->view->arrPages = $arrPages;
 
-        $arrGroups = (new GroupFactory())->getAllGroups ($searchText);
+        $arrGroups = (new GroupFactory())->getAllGroups ($objUser, new GroupRequestFactory(), $searchText);
 
         if ( $arrGroups === false )
         {

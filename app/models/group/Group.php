@@ -61,6 +61,12 @@ class Group
      * @var type 
      */
     private $db;
+    
+    /**
+     *
+     * @var type 
+     */
+    private $arrRequests = [];
 
     /**
      * 
@@ -206,6 +212,23 @@ class Group
         $this->memberCount = $memberCount;
     }
 
+    /**
+     * 
+     * @return type
+     */
+    public function getArrRequests ()
+    {
+        return $this->arrRequests;
+    }
+
+    /**
+     * 
+     * @param type $arrRequests
+     */
+    public function setArrRequests ($arrRequests)
+    {
+        $this->arrRequests = $arrRequests;
+    }    
     
     /**
      * 
