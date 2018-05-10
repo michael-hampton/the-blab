@@ -108,7 +108,7 @@ class GroupFactory
 
         $arrResults = $this->db->_query ("SELECT g.*, COUNT(gm.id) AS member_count FROM `groups` g
                                         LEFT JOIN group_member gm ON gm.group_id = g.group_id
-                                        WHERE  g.group_id NOT IN (SELECT group_id FROM group_member WHERE user_id = :userId) " . $sqlWhere . 
+                                        WHERE  g.group_id NOT IN (SELECT group_id FROM group_member WHERE user_id = :userId) AND LOWER(group_type) = 'public' " . $sqlWhere . 
                                         " ORDER BY name ASC" . $limit, $arrWhere);
 
         $arrGroups = $this->buildGroupObject ($arrResults, $objGroupRequestFactory);
@@ -123,7 +123,7 @@ class GroupFactory
      */
     public function getGroupsForProfile (User $objUser)
     {
-        $results = $this->db->_query ("SELECT g.* FROM group_member gm 
+        $results = $this->db->_query ("SELECT COUNT(gm.id) AS member_count, g.* FROM group_member gm 
                                         INNER JOIN groups g ON g.group_id = gm.group_id
                                         WHERE gm.user_id = :userId", [':userId' => $objUser->getId ()]);
 

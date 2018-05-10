@@ -41,14 +41,33 @@ class PageFactory
      * @param type $searchText
      * @return type
      */
-    public function getAllPages ($searchText)
+    public function getAllPages (User $objUser, PageReactionFactory $objPageReactionFactory, $searchText = null, $page = null, $pageLimit = null)
     {
 
-        $arrResults = $this->db->_query ("SELECT * FROM `page` 
-                                        WHERE (`page_name` LIKE :pageName OR `url` LIKE :pageName) 
-                                        ORDER BY page_name ASC", [":pageName" => '%' . $searchText . '%']);
+        $arrWhere = [];
 
-        $arrPages = $this->buildPageObject ($arrResults);
+        $sql = "SELECT  p.*, COUNT(pf.id) AS followers, COUNT(pl.id) AS like_count  FROM `page` p  
+                LEFT JOIN page_follower pf ON pf.page_id = p.id
+                LEFT JOIN page_like pl ON pl.page_id = p.id
+                WHERE p.user_id != :userId";
+        $arrWhere[':userId'] = $objUser->getId ();
+
+        if ( $searchText !== null )
+        {
+            $sql .= " AND (`page_name` LIKE :pageName OR `url` LIKE :pageName)";
+            $arrWhere[":pageName"] = '%' . $searchText . '%';
+        }
+
+        $sql .= " ORDER BY page_name ASC";
+
+        if ( $page !== null )
+        {
+            $sql .= " LIMIT {$page}, {$pageLimit}";
+        }
+
+        $arrResults = $this->db->_query ($sql, $arrWhere);
+
+        $arrPages = $this->buildPageObject ($arrResults, $objPageReactionFactory);
 
         return $arrPages;
     }
@@ -58,7 +77,7 @@ class PageFactory
      * @param type $arrResults
      * @return boolean|\Page
      */
-    private function buildPageObject ($arrResults)
+    private function buildPageObject ($arrResults, PageReactionFactory $objPageReactionFactory = null)
     {
         if ( $arrResults === false || !is_array ($arrResults) )
         {
@@ -82,6 +101,26 @@ class PageFactory
                 $objPage->setCategories ($arrResult['category_id']);
                 $objPage->setFileLocation ($arrResult['image_location']);
 
+                if ( isset ($arrResult['followers']) )
+                {
+                    
+                    $objPage->setFollowCount ($arrResult['followers']);
+                }
+                if ( isset ($arrResult['like_count']) )
+                {
+                    $objPage->setLikeCount ($arrResult['like_count']);
+                }
+
+                if ( $objPageReactionFactory !== null )
+                {
+                    $arrFollowers = $objPageReactionFactory->getFollowersForPage ($objPage);
+
+                    if ( !empty ($arrFollowers) )
+                    {
+                        $objPage->setArrFollowers ($arrFollowers);
+                    }
+                }
+
                 $arrPages[] = $objPage;
             }
         } catch (Exception $ex) {
@@ -99,24 +138,25 @@ class PageFactory
      */
     public function getPagesForUser (User $objUser)
     {
-        $arrResults = $this->db->_select("page", "user_id = :userId", [":userId" => $objUser->getId()]);
+        $arrResults = $this->db->_select ("page", "user_id = :userId", [":userId" => $objUser->getId ()]);
         $arrPages = $this->buildPageObject ($arrResults);
 
         return $arrPages;
     }
-    
-      /**
+
+    /**
      * 
      * @param User $objUser
      * @return boolean|\Page
      */
-    public function getPagesForProfile (User $objUser)
+    public function getPagesForProfile (User $objUser, PageReactionFactory $objPageReactionFactory)
     {
-        $arrResults = $this->db->_query ("SELECT p.* FROM page p
-                                        INNER JOIN page_follower pf ON pf.page_id = p.id
-                                        WHERE pf.user_id = :userId", [':userId' => $objUser->getId ()]);
+        $arrResults = $this->db->_query ("SELECT p.*, COUNT(pf.id) AS followers, COUNT(pl.id) AS like_count FROM page p
+                                        LEFT JOIN page_follower pf ON pf.page_id = p.id
+                                        LEFT JOIN page_like pl ON pl.page_id = p.id
+                                        WHERE p.user_id = :userId", [':userId' => $objUser->getId ()]);
 
-        $arrPages = $this->buildPageObject ($arrResults);
+        $arrPages = $this->buildPageObject ($arrResults, $objPageReactionFactory);
 
         return $arrPages;
     }
@@ -132,7 +172,7 @@ class PageFactory
                                          FROM `page_follower` pf 
                                          INNER JOIN page p ON p.id = pf.page_id 
                                          WHERE pf.`user_id` = :userId", [':userId' => $objUser->getId ()]);
-        
+
         $arrPages = $this->buildPageObject ($arrResults);
 
         return $arrPages;

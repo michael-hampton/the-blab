@@ -402,10 +402,14 @@ class IndexController extends ControllerBase
         }
 
         $this->view->arrGroups = $arrGroups;
+        
+        $objPageFactory = new PageFactory();
+        
+        $arrPages = $objPageFactory->getPagesForProfile($objUser, new PageReactionFactory ());
 
         $arrUserPages = (new PageFactory())->getPagesMemberOf ($objUser);
 
-        if ( $arrUserPages === false )
+        if ( $arrUserPages === false || $arrPages === false )
         {
             return $this->dispatcher->forward (
                             [
@@ -415,7 +419,8 @@ class IndexController extends ControllerBase
                             ]
             );
         }
-
+        
+        $this->view->arrPages = $arrPages;
 
         try {
             $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
@@ -441,22 +446,6 @@ class IndexController extends ControllerBase
 
         $this->view->arrPosts = array_slice ($arrPosts, 0, $this->postsPerPage);
         $this->view->arrUsers = $arrUsers;
-
-
-        $arrPages = (new PageFactory())->getAllPages (null);
-
-        if ( $arrPages === false )
-        {
-            return $this->dispatcher->forward (
-                            [
-                                "controller" => "issue",
-                                "action" => "handler",
-                                "params" => ["message" => "unable to get pages for user"]
-                            ]
-            );
-        }
-
-        $this->view->arrPages = $arrPages;
 
         $this->view->arrUser = $objUser;
 
@@ -856,7 +845,7 @@ class IndexController extends ControllerBase
 
         $this->view->arrUsers = $arrUsers;
 
-        $arrPages = (new PageFactory())->getAllPages ($searchText);
+        $arrPages = (new PageFactory())->getAllPages ($objUser, new PageReactionFactory(), $searchText);
 
         if ( $arrPages === false )
         {

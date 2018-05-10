@@ -37,23 +37,24 @@ class EventFactory
      * @param type $pageNo
      * @param type $pageLimit
      */
-    public function getAllEvents ($searchText = null, $pageNo = null, $pageLimit = null)
+    public function getAllEvents (User $objUser, $searchText = null, $pageNo = null, $pageLimit = null)
     {
-        $sqlWhere = "";
-        $arrWhere = [];
+
+        $sql = "SELECT e.*,
+               SUM(IF(status = 1, 1, 0)) AS going,
+                SUM(IF(status = 2, 1, 0)) AS not_going,
+                SUM(IF(status = 3, 1, 0)) AS interested,
+                SUM(IF(status = 4, 1, 0)) AS pending
+                FROM event e
+                LEFT JOIN event_member em ON em.event_id = e.event_id
+                 WHERE e.event_id NOT IN (SELECT event_id FROM event_member WHERE user_id = :userId) AND LOWER(event_type) = 'public' ";
+        $arrWhere[':userId'] = $objUser->getId ();
+
 
         if ( $searchText !== null )
         {
-            $sqlWhere .= " AND event_name LIKE :searchText";
+            $sql .=" AND event_name LIKE :searchText";
             $arrWhere[':searchText'] = '%' . $searchText . '%';
-        }
-
-
-        $sql = "SELECT * FROM event WHERE 1=1";
-
-        if ( $sqlWhere !== "" )
-        {
-            $sql .= $sqlWhere;
         }
 
         $sql .= " ORDER BY event_name ASC";
@@ -108,6 +109,26 @@ class EventFactory
             $objEvent->setLocation ($result['location']);
             $objEvent->setEventTime ($result['event_time']);
 
+            if ( isset ($result['going']) )
+            {
+                $objEvent->setGoingCount ($result['going']);
+            }
+
+            if ( isset ($result['not_going']) )
+            {
+                $objEvent->setNotGoingCount ($result['not_going']);
+            }
+
+            if ( isset ($result['interested']) )
+            {
+                $objEvent->setInterestedCount ($result['interested']);
+            }
+
+            if ( isset ($result['pending']) )
+            {
+                $objEvent->setPendingCount ($result['pending']);
+            }
+
             $arrEvents[] = $objEvent;
         }
 
@@ -121,7 +142,12 @@ class EventFactory
      */
     public function getEventsForProfile (User $objUser)
     {
-        $results = $this->db->_query ("SELECT e.* FROM event e
+        $results = $this->db->_query ("SELECT e.*,
+                                         SUM(IF(status = 1, 1, 0)) AS going,
+                                        SUM(IF(status = 2, 1, 0)) AS not_going,
+                                        SUM(IF(status = 3, 1, 0)) AS interested,
+                                        SUM(IF(status = 4, 1, 0)) AS pending
+                                        FROM event e
                                     INNER JOIN`event_member` em ON em.`event_id` = e.event_id
                                     WHERE em.`user_id` = :userId", [':userId' => $objUser->getId ()]);
 

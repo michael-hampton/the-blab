@@ -5,6 +5,11 @@ use Phalcon\Dispatcher;
 
 class PageController extends ControllerBase
 {
+    /**
+     *
+     * @var type 
+     */
+    private $paginationLimit = 1;
 
     public function reportPageAction ()
     {
@@ -656,6 +661,135 @@ class PageController extends ControllerBase
 
         $this->ajaxresponse ("success", "success");
     }
+
+    public function searchPagesAction ()
+    {
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Invalid user"]
+                            ]
+            );
+        }
+
+        try {
+            $objUserFactory = new UserFactory();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $arrFriendList = $objUserFactory->getFriendList ($objUser);
+            $arrFriendRequests = $objUserFactory->getFriendRequests ($objUser);
+            $objPageFactory = new PageFactory();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => $this->defaultErrrorMessage]
+                            ]
+            );
+        }
+
+
+
+        $arrPages = $objPageFactory->getAllPages ($objUser, new PageReactionFactory(), null, 0, $this->paginationLimit);
+        
+        $totalCount = $objPageFactory->getAllPages ($objUser, new PageReactionFactory(), null, null, null);
+
+        if ( $arrPages === false || $totalCount === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get pages"]
+                            ]
+            );
+        }
+
+        $arrMemberPages = $objPageFactory->getPagesForProfile ($objUser, new PageReactionFactory ());
+
+        if ( $arrMemberPages === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get pages"]
+                            ]
+            );
+        }
+
+        $this->view->arrMemberPages = $arrMemberPages;
+
+        $this->view->arrPages = $arrPages;
+
+        if ( $arrFriendList === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get list of friends"]
+                            ]
+            );
+        }
+
+        if ( $arrFriendRequests === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get friend requests"]
+                            ]
+            );
+        }
+
+        $this->view->arrFriendRequests = $arrFriendRequests;
+        $this->view->objUser = $objUser;
+        $this->view->arrFriendList = $arrFriendList;
+        $this->view->arrPages = $arrPages;
+        $this->view->paginationLimit = $this->paginationLimit;
+        $this->view->totalCount = count ($totalCount);
+    }
+    
+
+    public function pageSearchPaginationAction ()
+    {
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            return $this->ajaxresponse ("error", "invalid user");
+        }
+
+        $objUser = new User ($_SESSION['user']['user_id']);
+
+        if ( empty ($_POST['vpb_start']) || !isset ($_POST['searchText']) || empty ($_POST['vpb_total_per_load']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $searchText = !empty ($_POST['searchText']) ? $_POST['searchText'] : null;
+        $page = $searchText === null ? (int)$_POST['vpb_start'] : null;
+        $totalToLoad = $searchText === null ? (int)$_POST['vpb_total_per_load'] : null;
+
+        $arrPages = (new PageFactory())->getAllPages ($objUser, new PageReactionFactory(), $searchText, $page, $totalToLoad);
+
+        if ( $arrPages === false )
+        {
+            $this->ajaxresponse ("error", "unable to get groups");
+        }
+
+        $this->view->arrPages = $arrPages;
+        $this->view->objUser = $objUser;
+    }
+    
 
     public function unfollowPageAction ()
     {

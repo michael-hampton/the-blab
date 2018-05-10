@@ -8,7 +8,19 @@ foreach ($arrEvents as $arrEvent) {
             <a href="/blab/event/index/<?= $arrEvent->getId () ?>">
                 <img src="<?= $image ?>" class="img-responsive" border="0"></a>
             <div class="vproducttitle"><a href=""/blab/event/index/<?= $arrEvent->getId () ?>"><span><?= $arrEvent->getEventName () ?></span></a></div>
-            
+
+            <div class="vproductprice">
+                <div class="vpull_left">
+                    <span style="margin:2px; float: left;" class="label label-primary"><?= $arrEvent->getGoingCount () ?> Going</span> <br>
+                    <span style="margin:2px; float: left;" class="label label-danger"><?= $arrEvent->getNotGoingCount () ?>Not Going</span> <br>
+                    <span style="margin:2px; float: left;" class="label label-success"><?= $arrEvent->getInterestedCount () ?>Interested</span> <br>
+                    <span style="margin:2px; float: left;" class="label label-warning"><?= $arrEvent->getPendingCount () ?>Pending</span> <br>
+
+                </div>
+
+                <div style="clear:both;"></div>
+            </div>
+
         </div>
     </div>
 

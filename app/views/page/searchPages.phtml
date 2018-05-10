@@ -55,26 +55,26 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 
                             <div class="ibox">
                                 <div class="ibox-title">
-                                    <h5>Groups you are a member of</h5>
+                                    <h5>Your Pages</h5>
 
                                 </div>
                                 <div class="ibox-content col-lg-12 pull-left">
                                     <?php
-                                    foreach ($arrMemberGroups as $arrMemberGroup) {
-                                        $image = trim ($arrMemberGroup->getImageLocation ()) !== "" && file_exists ($rootPath . $arrMemberGroup->getImageLocation ()) ? $arrMemberGroup->getImageLocation () : '/blab/public/img/avatar.gif';
+                                    foreach ($arrMemberPages as $arrMemberPage) {
+                                        $image = trim ($arrMemberPage->getFileLocation ()) !== "" && file_exists ($rootPath . $arrMemberPage->getFileLocation ()) ? $arrMemberPage->getFileLocation () : '/blab/public/img/avatar.gif';
                                         ?>
 
                                         <div class="vpb_groups_box member">
                                             <div class="col-lg-2 pull-left" style="padding:10px;">
-                                                <a href="/blab/group/index/<?= $arrMemberGroup->getId () ?>">
+                                                <a href="/blab/page/index/<?= $arrMemberPage->getUrl () ?>">
                                                     <img src="<?= $image ?>" class="img-responsive" border="0"></a>
                                                 <div class="vproducttitle">
-                                                    <a href="/blab/group/index/<?= $arrMemberGroup->getId () ?>">
-                                                        <span><?= $arrMemberGroup->getGroupName () ?></span>
+                                                    <a href="/blab/page/index/<?= $arrMemberPage->getUrl () ?>">
+                                                        <span><?= $arrMemberPage->getName () ?></span>
                                                     </a>
                                                 </div>
                                                 <div class="vproductprice">
-                                                    <div class="vpull_left"><?= $arrMemberGroup->getMemberCount() ?> members</div>
+                                                    <div class="vpull_left"><?= $arrMemberPage->getFollowCount () ?> followers</div>
 
                                                     <div style="clear:both;"></div>
                                                 </div>
@@ -89,8 +89,8 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                 </div>
 
                 <div class="input-group vpb-the-friends-wrap" id="vpb_load_more_group_box" style="margin-top: 12px;">
-                    <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_groups ();">View more groups</span></div>
-                    <div style="float:right; color:#999;"><span id="v_this_members_totals"><?= count ($arrGroups) ?></span> of <?= $totalCount ?></div>
+                    <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_pages ();">View more pages</span></div>
+                    <div style="float:right; color:#999;"><span id="v_this_members_totals"><?= count ($arrPages) ?></span> of <?= $totalCount ?></div>
                     <div style="clear:both;"></div>
                 </div>
 
@@ -102,7 +102,7 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 
                 <div class="col-md-12" style="padding:0px !important;">
                     <div class="input-group">
-                        <input onkeyup="vpb_load_more_groups (true)" type="text" id="searchText" placeholder="Search" class="input-sm form-control"> 
+                        <input onkeyup="vpb_load_more_pages (true)" type="text" id="searchText" placeholder="Search" class="input-sm form-control"> 
                         <span class="input-group-btn">
                             <button onclick="search ()" type="button" class="btn btn-sm btn-primary"> Go!</button> 
                         </span>
@@ -115,24 +115,23 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 
                             <div class="ibox">
                                 <div class="ibox-title">
-                                    <h5>Groups you are not a member of</h5>
+                                    <h5>Other Pages</h5>
 
                                 </div>
                                 <div class="ibox-content col-lg-12 pull-left">
                                     <div id="vpb_loaded_group_members" style=" width:100%;">
                                         <?php
-                                        foreach ($arrGroups as $arrGroup) {
+                                        foreach ($arrPages as $arrPage) {
 
                                             $blHasRequest = false;
 
-                                            $arrRequests = $arrGroup->getArrRequests ();
+                                            $arrRequests = $arrPage->getArrFollowers ();
 
                                             if ( !empty ($arrRequests) )
                                             {
                                                 foreach ($arrRequests as $objRequest) {
-                                                    $arrUser = $objRequest->getArrUser ();
 
-                                                    if ( is_object ($arrUser) && (int) $arrUser->getId () === (int) $objUser->getId () )
+                                                    if ( $objRequest->getId () === (int) $objRequest->getId () )
                                                     {
                                                         $blHasRequest = true;
                                                     }
@@ -141,35 +140,39 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 
                                             $displayCancel = $blHasRequest === true ? 'block' : 'none';
                                             $showRequest = $blHasRequest === false ? 'block' : 'none';
-                                            $image = trim ($arrGroup->getImageLocation ()) !== "" && file_exists ($rootPath . $arrGroup->getImageLocation ()) ? $arrGroup->getImageLocation () : '/blab/public/img/avatar.gif';
+                                            $image = trim ($arrPage->getFileLocation ()) !== "" && file_exists ($rootPath . $arrPage->getFileLocation ()) ? $arrPage->getFileLocation () : '/blab/public/img/avatar.gif';
                                             ?>
 
                                             <div class="vpb_groups_box notMember">
                                                 <div class="col-lg-2 pull-left" style="padding:10px;">
-                                                    <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
+                                                    <a href="/blab/page/index/<?= $arrPage->getUrl () ?>">
                                                         <img src="<?= $image ?>" class="img-responsive" border="0"></a>
                                                     <div class="vproducttitle">
-                                                        <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
-                                                            <span><?= $arrGroup->getGroupName () ?></span>
+                                                        <a href="/blab/page/index/<?= $arrPage->getUrl () ?>">
+                                                            <span><?= $arrPage->getName () ?></span>
                                                         </a>
                                                     </div>
                                                     <div class="vproductprice">
-                                                        <div class="vpull_left"><?= $arrGroup->getMemberCount () ?> members</div>
+                                                        <div class="vpull_left"><?= $arrPage->getFollowCount () ?> members</div>
+                                                        <div class="vpull_left"><?= $arrPage->getLikeCount () ?> likes</div>
+                                                        
+                                                        
+
                                                         <div class="vpull_right">
+                                                            <?php
+                                                            if ( $blHasRequest === true )
+                                                            {
+                                                                echo '<span style="margin-top:12px;" class="label label-primary">Following</span>';
+                                                            }
+                                                            ?>
+                                                        </div>
 
-                                                            <span id="group_join_<?= $arrGroup->getId () ?>" onclick="vpb_send_request_to_join_group (<?= $arrGroup->getId () ?>, 'Jelzon11', 'michaelhampton', 'join');" class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important; display: <?= $showRequest ?>"><i class="fa fa-plus"></i> Join</span>
-
-                                                            <span id="group_requestsent_<?= $arrGroup->getId () ?>" style="display:<?= $displayCancel ?>;">
-                                                                <span class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;opacity:0.6;cursor:default;"><i class="fa fa-reply"></i> Request Sent</span>
-
-                                                                <span class="cbtn vpb_cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;" title="Cancel Request" onclick="vpb_send_request_to_join_group (<?= $arrGroup->getId () ?>, 'Jelzon11', 'michaelhampton', 'cancel');"><i class="fa fa-times"></i></span>
-                                                            </span></div>
                                                         <div style="clear:both;"></div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                        <?php } ?>
+<?php } ?>
 
                                     </div>
                                     <div style="clear:both;"></div>
@@ -201,7 +204,7 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                                         return false;
                                     }
 
-                                    vpb_load_more_events (true);
+                                    vpb_load_more_pages (true);
                                 }
 
 </script>

@@ -48,6 +48,51 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                 <input type="hidden" id="vpb_groups_start" value="<?= $paginationLimit ?>">
                 <input type="hidden" id="vpb_total_groups_per_load" value="<?= $paginationLimit ?>">
 
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="wrapper wrapper-content animated fadeInUp">
+
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                    <h5>Events you are invited to</h5>
+
+                                </div>
+                                <div class="ibox-content col-lg-12 pull-left">
+                                    <?php
+                                    foreach ($arrMemberEvents as $arrMemberEvent) {
+                                        $image = trim ($arrMemberEvent->getImageLocation ()) !== "" && file_exists ($rootPath . $arrMemberEvent->getImageLocation ()) ? $arrMemberEvent->getImageLocation () : '/blab/public/img/avatar.gif';
+                                        ?>
+
+                                        <div class="vpb_groups_box member">
+                                            <div class="col-lg-2 pull-left" style="padding:10px;">
+                                                <a href="/blab/event/index/<?= $arrMemberEvent->getId () ?>">
+                                                    <img src="<?= $image ?>" class="img-responsive" border="0"></a>
+                                                <div class="vproducttitle">
+                                                    <a href="/blab/event/index/<?= $arrMemberEvent->getId () ?>">
+                                                        <span><?= $arrMemberEvent->getEventName () ?></span>
+                                                    </a>
+                                                </div>
+                                                <div class="vproductprice">
+                                                    <div class="vpull_left">
+                                                        <span style="margin:2px; float: left;" class="label label-primary"><?= $arrMemberEvent->getGoingCount () ?> Going</span> <br>
+                                                        <span style="margin:2px; float: left;" class="label label-danger"><?= $arrMemberEvent->getNotGoingCount () ?>Not Going</span> <br>
+                                                        <span style="margin:2px; float: left;" class="label label-success"><?= $arrMemberEvent->getInterestedCount () ?>Interested</span> <br>
+                                                        <span style="margin:2px; float: left;" class="label label-warning"><?= $arrMemberEvent->getPendingCount () ?>Pending</span> <br>
+
+                                                    </div>
+
+                                                    <div style="clear:both;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    <?php } ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="input-group vpb-the-friends-wrap" id="vpb_load_more_group_box">
 
                     <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_events ();">View more events</span></div>
@@ -64,7 +109,7 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                     <div class="input-group">
                         <input onkeyup="vpb_load_more_events (true)" id="searchText" type="text" placeholder="Search" class="input-sm form-control"> 
                         <span class="input-group-btn">
-                            <button onclick="vpb_load_more_events (true)" type="button" class="btn btn-sm btn-primary"> Go!</button> 
+                            <button onclick="search ()" type="button" class="btn btn-sm btn-primary"> Go!</button> 
                         </span>
                     </div>
                 </div>
@@ -79,8 +124,19 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                             <div class="col-lg-2 pull-left" style="padding:10px;">
                                 <a href="/blab/event/index/<?= $arrEvent->getId () ?>">
                                     <img src="<?= $image ?>" class="img-responsive" border="0"></a>
-                                <div class="vproducttitle"><a href=""/blab/event/index/<?= $arrEvent->getId () ?>"><span><?= $arrEvent->getEventName () ?></span></a></div>
+                                <div class="vproducttitle"><a href="/blab/event/index/<?= $arrEvent->getId () ?>"><span><?= $arrEvent->getEventName () ?></span></a></div>
 
+                                <div class="vproductprice">
+                                    <div class="vpull_left">
+                                        <span style="margin:2px; float: left;" class="label label-primary"><?= $arrEvent->getGoingCount () ?> Going</span> <br>
+                                        <span style="margin:2px; float: left;" class="label label-danger"><?= $arrEvent->getNotGoingCount () ?>Not Going</span> <br>
+                                        <span style="margin:2px; float: left;" class="label label-success"><?= $arrEvent->getInterestedCount () ?>Interested</span> <br>
+                                        <span style="margin:2px; float: left;" class="label label-warning"><?= $arrEvent->getPendingCount () ?>Pending</span> <br>
+
+                                    </div>
+
+                                    <div style="clear:both;"></div>
+                                </div>
 
                             </div>
                         </div>
@@ -100,3 +156,17 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 
 <script src="/blab/public/js/newsFeed.js" type="text/javascript"></script>
 <script src="/blab/public/js/geocomplete.js"></script>
+
+<script>
+                                function search ()
+                                {
+
+                                    if ($.trim ($ ("#searchText")).val () === "")
+                                    {
+                                        return false;
+                                    }
+
+                                    vpb_load_more_events (true);
+                                }
+
+</script>

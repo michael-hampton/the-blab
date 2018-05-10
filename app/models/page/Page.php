@@ -97,6 +97,19 @@ class Page
      * @var type 
      */
     private $likeCount;
+    
+    /**
+     *
+     * @var int 
+     */
+    private $followCount;
+
+
+    /**
+     *
+     * @var array 
+     */
+    private $arrFollowers = [];
 
     /**
      * 
@@ -258,7 +271,26 @@ class Page
     {
         return $this->address;
     }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function getFollowCount ()
+    {
+        return $this->followCount;
+    }
 
+    /**
+     * 
+     * @param type $followCount
+     */
+    public function setFollowCount ($followCount)
+    {
+        $this->followCount = $followCount;
+    }
+
+    
     /**
      * 
      * @return type
@@ -348,7 +380,26 @@ class Page
     {
         $this->websiteUrl = $websiteUrl;
     }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function getArrFollowers ()
+    {
+        return $this->arrFollowers;
+    }
 
+    /**
+     * 
+     * @param type $arrFollowers
+     */
+    public function setArrFollowers ($arrFollowers)
+    {
+        $this->arrFollowers = $arrFollowers;
+    }
+
+    
     /**
      * 
      * @return boolean

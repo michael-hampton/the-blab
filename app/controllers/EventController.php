@@ -175,21 +175,6 @@ class EventController extends ControllerBase
             );
         }
 
-        $objEventFactory = new EventFactory();
-        $arrEvents = $objEventFactory->getAllEvents (null, 0, $this->paginationLimit);
-        $totalCount = $objEventFactory->getAllEvents (null, null, null);
-
-        if ( $arrEvents === false || $totalCount === false )
-        {
-            return $this->dispatcher->forward (
-                            [
-                                "controller" => "issue",
-                                "action" => "handler",
-                                "params" => ["message" => "unable to get groups"]
-                            ]
-            );
-        }
-
         try {
             $objUserFactory = new UserFactory();
             $objUser = new User ($_SESSION['user']['user_id']);
@@ -207,7 +192,20 @@ class EventController extends ControllerBase
             );
         }
 
+        $objEventFactory = new EventFactory();
+        $arrEvents = $objEventFactory->getAllEvents ($objUser, null, 0, $this->paginationLimit);
+        $totalCount = $objEventFactory->getAllEvents ($objUser, null, null, null);
 
+        if ( $arrEvents === false || $totalCount === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get groups"]
+                            ]
+            );
+        }
 
         if ( $arrFriendList === false )
         {
@@ -231,6 +229,21 @@ class EventController extends ControllerBase
             );
         }
 
+        $arrMemberEvents = $objEventFactory->getEventsForProfile ($objUser);
+
+        if ( $arrMemberEvents === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get member events"]
+                            ]
+            );
+        }
+
+        $this->view->arrMemberEvents = $arrMemberEvents;
+
         $this->view->arrFriendRequests = $arrFriendRequests;
         $this->view->objUser = $objUser;
         $this->view->arrFriendList = $arrFriendList;
@@ -253,11 +266,13 @@ class EventController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
+        $objUser = new User ($_SESSION['user']['user_id']);
+
         $searchText = !empty ($_POST['searchText']) ? $_POST['searchText'] : null;
         $page = $searchText === null ? (int) $_POST['vpb_start'] : null;
         $totalToLoad = $searchText === null ? (int) $_POST['vpb_total_per_load'] : null;
 
-        $arrEvents = (new EventFactory())->getAllEvents ($searchText, $page, $totalToLoad);
+        $arrEvents = (new EventFactory())->getAllEvents ($objUser, $searchText, $page, $totalToLoad);
 
         if ( $arrEvents === false )
         {
