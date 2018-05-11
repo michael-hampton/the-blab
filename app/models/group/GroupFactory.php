@@ -59,6 +59,11 @@ class GroupFactory
             $arrGroups = [];
 
             foreach ($results as $result) {
+
+                if(empty($result['group_id']) || empty($result['name'])) {
+                    continue;
+                }
+
                 $objGroup = new Group ($result['group_id']);
                 $objGroup->setGroupName ($result['name']);
                 $objGroup->setDescription ($result['description']);
@@ -92,24 +97,28 @@ class GroupFactory
 
         $arrWhere = [];
         $sqlWhere = '';
-
-        if($searchText !== null) {
-            $sqlWhere .= " AND `name` LIKE :groupName";
-            $arrWhere[":groupName"] = '%' . $searchText . '%';
-        }
-        
-        $limit = "";
-        
-        if($page !== null && $pageLimit !== null) {
-            $limit = " LIMIT {$page}, {$pageLimit}";
-        }
         
         $arrWhere[':userId'] = $objUser->getId();
 
-        $arrResults = $this->db->_query ("SELECT g.*, COUNT(gm.id) AS member_count FROM `groups` g
-                                        LEFT JOIN group_member gm ON gm.group_id = g.group_id
-                                        WHERE  g.group_id NOT IN (SELECT group_id FROM group_member WHERE user_id = :userId) AND LOWER(group_type) = 'public' " . $sqlWhere . 
-                                        " ORDER BY name ASC" . $limit, $arrWhere);
+        $sql = "SELECT g.*,
+                COUNT(gm.id) AS member_count 
+                FROM `groups` g
+                LEFT JOIN group_member gm ON gm.group_id = g.group_id
+                WHERE  g.group_id NOT IN (SELECT group_id FROM group_member WHERE user_id = :userId)
+                AND group_type Like '%public%'"; 
+
+                if($searchText !== null) {
+                    $sql .= " AND `name` LIKE :groupName";
+                    $arrWhere[":groupName"] = '%' . $searchText . '%';
+                }
+   
+                $sql .= " GROUP BY g.group_id ORDER BY name ASC";
+
+                if($page !== null && $pageLimit !== null) {
+                    $sql .= " LIMIT {$page}, {$pageLimit}";
+                }
+
+               $arrResults = $this->db->_query ($sql, $arrWhere);
 
         $arrGroups = $this->buildGroupObject ($arrResults, $objGroupRequestFactory);
 
@@ -120,10 +129,11 @@ class GroupFactory
      * 
      * @param User $objUser
      * @return \Group|boolean
-     */
+     */ 
     public function getGroupsForProfile (User $objUser)
     {
-        $results = $this->db->_query ("SELECT COUNT(gm.id) AS member_count, g.* FROM group_member gm 
+        $results = $this->db->_query ("SELECT COUNT(gm. 
+id) AS member_count, g.* FROM group_member gm 
                                         INNER JOIN groups g ON g.group_id = gm.group_id
                                         WHERE gm.user_id = :userId", [':userId' => $objUser->getId ()]);
 
@@ -178,7 +188,7 @@ class GroupFactory
             return false;
         }
 
-        $result = $this->db->create ("groups", ["created_by" => $objUser->getId (), "name" => $name, "description" => $description, "group_type" => $groupType]);
+        $result = $this->db->create ("groups", ["created_by" => $objUser->getId (), "name" => $name, "description" => $description, "group_type" => strtolower($groupType)]);
 
         if ( $result === false )
         {

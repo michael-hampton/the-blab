@@ -5,6 +5,7 @@ use Phalcon\Dispatcher;
 
 class PageController extends ControllerBase
 {
+
     /**
      *
      * @var type 
@@ -302,7 +303,7 @@ class PageController extends ControllerBase
 
     public function createPageAction ()
     {
-       
+
 
         $objPageType = new PageTypeFactory();
 
@@ -696,9 +697,9 @@ class PageController extends ControllerBase
 
 
 
-        $arrPages = $objPageFactory->getAllPages ($objUser, new PageReactionFactory(), null, 0, $this->paginationLimit);
-        
-        $totalCount = $objPageFactory->getAllPages ($objUser, new PageReactionFactory(), null, null, null);
+        $arrPages = $objPageFactory->getAllPages ($objUser, new PageReactionFactory (), null, 0, $this->paginationLimit);
+
+        $totalCount = $objPageFactory->getAllPages ($objUser, new PageReactionFactory (), null, null, null);
 
         if ( $arrPages === false || $totalCount === false )
         {
@@ -750,6 +751,21 @@ class PageController extends ControllerBase
             );
         }
 
+        $arrCategories = (new PageCategoryFactory())->getAllCategories ();
+
+        if ( $arrCategories === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get page categories"]
+                            ]
+            );
+        }
+
+        $this->view->arrCategories = $arrCategories;
+
         $this->view->arrFriendRequests = $arrFriendRequests;
         $this->view->objUser = $objUser;
         $this->view->arrFriendList = $arrFriendList;
@@ -757,7 +773,6 @@ class PageController extends ControllerBase
         $this->view->paginationLimit = $this->paginationLimit;
         $this->view->totalCount = count ($totalCount);
     }
-    
 
     public function pageSearchPaginationAction ()
     {
@@ -770,16 +785,17 @@ class PageController extends ControllerBase
 
         $objUser = new User ($_SESSION['user']['user_id']);
 
-        if ( empty ($_POST['vpb_start']) || !isset ($_POST['searchText']) || empty ($_POST['vpb_total_per_load']) )
+        if ( empty ($_POST['vpb_start']) || !isset ($_POST['searchText']) || !isset ($_POST['pageCategory']) || empty ($_POST['vpb_total_per_load']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
         $searchText = !empty ($_POST['searchText']) ? $_POST['searchText'] : null;
-        $page = $searchText === null ? (int)$_POST['vpb_start'] : null;
-        $totalToLoad = $searchText === null ? (int)$_POST['vpb_total_per_load'] : null;
+        $category = !empty ($_POST['pageCategory']) ? new PageCategory ($_POST['pageCategory']) : null;
+        $page = $searchText === null && $category === null ? (int) $_POST['vpb_start'] : null;
+        $totalToLoad = $searchText === null && $category === null ? (int) $_POST['vpb_total_per_load'] : null;
 
-        $arrPages = (new PageFactory())->getAllPages ($objUser, new PageReactionFactory(), $searchText, $page, $totalToLoad);
+        $arrPages = (new PageFactory())->getAllPages ($objUser, new PageReactionFactory (), $searchText, $page, $totalToLoad, $category);
 
         if ( $arrPages === false )
         {
@@ -789,7 +805,6 @@ class PageController extends ControllerBase
         $this->view->arrPages = $arrPages;
         $this->view->objUser = $objUser;
     }
-    
 
     public function unfollowPageAction ()
     {

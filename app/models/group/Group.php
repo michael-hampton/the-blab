@@ -260,7 +260,7 @@ class Group
     {
         $result = $this->db->_select ("groups", "group_id = :groupId", [":groupId" => $this->id]);
 
-        if ( $result === false )
+        if ( empty($result) )
         {
             trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
             return false;
@@ -299,7 +299,7 @@ class Group
      */
     public function save ()
     {
-        $result = $this->db->update ("groups", ["name" => $this->groupName, "description" => $this->description, "group_type" => $this->groupType], "group_id = :groupId", [":groupId" => $this->id]);
+        $result = $this->db->update ("groups", ["name" => $this->groupName, "description" => $this->description, "group_type" => strtolower($this->groupType)], "group_id = :groupId", [":groupId" => $this->id]);
 
         if ( $result === false )
         {

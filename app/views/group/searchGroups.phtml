@@ -53,12 +53,12 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                     <div class="col-lg-12">
                         <div class="wrapper wrapper-content animated fadeInUp">
 
-                            <div class="ibox">
+                            <div class="ibox col-lg-12">
                                 <div class="ibox-title">
                                     <h5>Groups you are a member of</h5>
 
                                 </div>
-                                <div class="ibox-content col-lg-12 pull-left">
+                                <div class="ibox-content col-lg-12 pull-left" style="width:100%">
                                     <?php
                                     foreach ($arrMemberGroups as $arrMemberGroup) {
                                         $image = trim ($arrMemberGroup->getImageLocation ()) !== "" && file_exists ($rootPath . $arrMemberGroup->getImageLocation ()) ? $arrMemberGroup->getImageLocation () : '/blab/public/img/avatar.gif';
@@ -74,7 +74,7 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                                                     </a>
                                                 </div>
                                                 <div class="vproductprice">
-                                                    <div class="vpull_left"><?= $arrMemberGroup->getMemberCount() ?> members</div>
+                                                    <div class="vpull_left"><?= $arrMemberGroup->getMemberCount () ?> members</div>
 
                                                     <div style="clear:both;"></div>
                                                 </div>
@@ -102,6 +102,7 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 
                 <div class="col-md-12" style="padding:0px !important;">
                     <div class="input-group">
+
                         <input onkeyup="vpb_load_more_groups (true)" type="text" id="searchText" placeholder="Search" class="input-sm form-control"> 
                         <span class="input-group-btn">
                             <button onclick="search ()" type="button" class="btn btn-sm btn-primary"> Go!</button> 
@@ -113,15 +114,17 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                     <div class="col-lg-12">
                         <div class="wrapper wrapper-content animated fadeInUp">
 
-                            <div class="ibox">
+                            <div class="ibox col-lg-12">
                                 <div class="ibox-title">
                                     <h5>Groups you are not a member of</h5>
 
                                 </div>
-                                <div class="ibox-content col-lg-12 pull-left">
+                                <div class="ibox-content col-lg-12 pull-left" style="width:100%">
                                     <div id="vpb_loaded_group_members" style=" width:100%;">
                                         <?php
                                         foreach ($arrGroups as $arrGroup) {
+
+
 
                                             $blHasRequest = false;
 
@@ -193,15 +196,15 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 <script src="/blab/public/js/geocomplete.js"></script>
 
 <script>
-                                function search ()
-                                {
+                                                                    function search ()
+                                                                    {
 
-                                    if ($.trim ($ ("#searchText")).val () === "")
-                                    {
-                                        return false;
-                                    }
+                                                                        if ($.trim ($ ("#searchText")).val () === "")
+                                                                        {
+                                                                            return false;
+                                                                        }
 
-                                    vpb_load_more_events (true);
-                                }
+                                                                        vpb_load_more_events (true);
+                                                                    }
 
 </script>

@@ -35,7 +35,7 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                         Events            
                     </div>
                     <div style="float:right; padding:10px;">
-                        <span class="create_btn" onclick="vpb_reset_current_group_details ();"><i class="fa fa-plus" style="font-weight:normal !important;"></i> Create Event</span>
+                        <span class="create_btn" id="createEvent"><i class="fa fa-plus" style="font-weight:normal !important;"></i> Create Event</span>
 
                     </div><div style="clear:both;"></div></div>
                 <div style="clear:both;"></div>
@@ -52,18 +52,18 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                     <div class="col-lg-12">
                         <div class="wrapper wrapper-content animated fadeInUp">
 
-                            <div class="ibox">
+                            <div class="ibox col-lg-12">
                                 <div class="ibox-title">
                                     <h5>Events you are invited to</h5>
 
                                 </div>
-                                <div class="ibox-content col-lg-12 pull-left">
+                                <div class="ibox-content col-lg-12 pull-left" style="width: 100%;">
                                     <?php
                                     foreach ($arrMemberEvents as $arrMemberEvent) {
                                         $image = trim ($arrMemberEvent->getImageLocation ()) !== "" && file_exists ($rootPath . $arrMemberEvent->getImageLocation ()) ? $arrMemberEvent->getImageLocation () : '/blab/public/img/avatar.gif';
                                         ?>
 
-                                        <div class="vpb_groups_box member">
+                                        <div class="vpb_groups_box member col-lg-12">
                                             <div class="col-lg-2 pull-left" style="padding:10px;">
                                                 <a href="/blab/event/index/<?= $arrMemberEvent->getId () ?>">
                                                     <img src="<?= $image ?>" class="img-responsive" border="0"></a>
@@ -93,7 +93,7 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                     </div>
                 </div>
 
-                <div class="input-group vpb-the-friends-wrap" id="vpb_load_more_group_box">
+                <div style="margin-top:10px; margin-bottom:10px;;" class="input-group vpb-the-friends-wrap" id="vpb_load_more_group_box">
 
                     <div style="float:left;"><span class="vpb_hover" style="color:#3b5998;" onclick="vpb_load_more_events ();">View more events</span></div>
                     <div style="float:right; color:#999;"><span id="v_this_members_totals"><?= count ($arrEvents) ?></span> of <?= $totalCount ?></div>
@@ -114,34 +114,42 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                     </div>
                 </div>
 
-                <div id="vpb_loaded_group_members" style=" width:100%;">
-                    <?php
-                    foreach ($arrEvents as $arrEvent) {
-                        $image = trim ($arrEvent->getImageLocation ()) !== "" && file_exists ($rootPath . $arrEvent->getImageLocation ()) ? $arrEvent->getImageLocation () : '/blab/public/img/avatar.gif';
-                        ?>
 
-                        <div class="vpb_groups_box">
-                            <div class="col-lg-2 pull-left" style="padding:10px;">
-                                <a href="/blab/event/index/<?= $arrEvent->getId () ?>">
-                                    <img src="<?= $image ?>" class="img-responsive" border="0"></a>
-                                <div class="vproducttitle"><a href="/blab/event/index/<?= $arrEvent->getId () ?>"><span><?= $arrEvent->getEventName () ?></span></a></div>
+                <div class="ibox col-lg-12">
+                    <div class="ibox-title">
+                        <h5>All events</h5>
 
-                                <div class="vproductprice">
-                                    <div class="vpull_left">
-                                        <span style="margin:2px; float: left;" class="label label-primary"><?= $arrEvent->getGoingCount () ?> Going</span> <br>
-                                        <span style="margin:2px; float: left;" class="label label-danger"><?= $arrEvent->getNotGoingCount () ?>Not Going</span> <br>
-                                        <span style="margin:2px; float: left;" class="label label-success"><?= $arrEvent->getInterestedCount () ?>Interested</span> <br>
-                                        <span style="margin:2px; float: left;" class="label label-warning"><?= $arrEvent->getPendingCount () ?>Pending</span> <br>
+                    </div>
+                    <div class="ibox-content col-lg-12 pull-left" style="width:100%;">
+                        <div id="vpb_loaded_group_members" style=" width:100%;">
+                            <?php
+                            foreach ($arrEvents as $arrEvent) {
+                                $image = trim ($arrEvent->getImageLocation ()) !== "" && file_exists ($rootPath . $arrEvent->getImageLocation ()) ? $arrEvent->getImageLocation () : '/blab/public/img/avatar.gif';
+                                ?>
+
+                                <div class="vpb_groups_box">
+                                    <div class="col-lg-2 pull-left" style="padding:10px;">
+                                        <a href="/blab/event/index/<?= $arrEvent->getId () ?>">
+                                            <img src="<?= $image ?>" class="img-responsive" border="0"></a>
+                                        <div class="vproducttitle"><a href="/blab/event/index/<?= $arrEvent->getId () ?>"><span><?= $arrEvent->getEventName () ?></span></a></div>
+
+                                        <div class="vproductprice">
+                                            <div class="vpull_left">
+                                                <span style="margin-top:2px; float: left;" class="label label-primary"><?= $arrEvent->getGoingCount () ?> Going</span> <br>
+                                                <span style="margin-top:2px; float: left;" class="label label-danger"><?= $arrEvent->getNotGoingCount () ?>Not Going</span> <br>
+                                                <span style="margin-top:2px; float: left;" class="label label-success"><?= $arrEvent->getInterestedCount () ?>Interested</span> <br>
+                                                <span style="margin-top:2px; float: left;" class="label label-warning"><?= $arrEvent->getPendingCount () ?>Pending</span> <br>
+
+                                            </div>
+
+                                            <div style="clear:both;"></div>
+                                        </div>
 
                                     </div>
-
-                                    <div style="clear:both;"></div>
                                 </div>
 
-                            </div>
-                        </div>
-
-                    <?php } ?>
+                            <?php } ?>
+                        </div></div>
 
                 </div>
                 <div style="clear:both;"></div>

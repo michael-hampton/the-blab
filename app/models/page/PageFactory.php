@@ -38,10 +38,15 @@ class PageFactory
 
     /**
      * 
+     * @param User $objUser
+     * @param PageReactionFactory $objPageReactionFactory
      * @param type $searchText
+     * @param type $page
+     * @param type $pageLimit
+     * @param PageCategory $category
      * @return type
      */
-    public function getAllPages (User $objUser, PageReactionFactory $objPageReactionFactory, $searchText = null, $page = null, $pageLimit = null)
+    public function getAllPages (User $objUser, PageReactionFactory $objPageReactionFactory, $searchText = null, $page = null, $pageLimit = null, PageCategory $category = null)
     {
 
         $arrWhere = [];
@@ -58,7 +63,13 @@ class PageFactory
             $arrWhere[":pageName"] = '%' . $searchText . '%';
         }
 
-        $sql .= " ORDER BY page_name ASC";
+        if ( $category !== null )
+        {
+            $sql .= " AND category_id = :categoryId";
+            $arrWhere[':categoryId'] = $category->getId ();
+        }
+
+        $sql .= " GROUP BY p.id ORDER BY page_name ASC";
 
         if ( $page !== null )
         {
@@ -92,6 +103,12 @@ class PageFactory
 
         try {
             foreach ($arrResults as $arrResult) {
+
+                if ( empty ($arrResult['page_name']) || empty ($arrResult['url']) )
+                {
+                    continue;
+                }
+
                 $objPage = new Page ($arrResult['url']);
                 $objPage->setName ($arrResult['page_name']);
                 $objPage->setDescription ($arrResult['description']);
@@ -103,7 +120,7 @@ class PageFactory
 
                 if ( isset ($arrResult['followers']) )
                 {
-                    
+
                     $objPage->setFollowCount ($arrResult['followers']);
                 }
                 if ( isset ($arrResult['like_count']) )

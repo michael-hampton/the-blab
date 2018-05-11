@@ -407,7 +407,18 @@ class EventController extends ControllerBase
 
         $objEventFactory = new EventFactory();
 
-        $objEvent = $objEventFactory->createEvent ($objUser, $_POST['location'], $_POST['eventDate'], $_POST['eventName'], $_POST['eventTime']
+        if ( !isset ($_POST['location']) ||
+                !isset ($_POST['eventDate']) ||
+                !isset ($_POST['eventName']) ||
+                !isset ($_POST['eventTime']) ||
+                !isset ($_POST['eventCategory']) ||
+                !isset ($_POST['eventType'])
+        )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objEvent = $objEventFactory->createEvent ($objUser, $_POST['location'], $_POST['eventDate'], $_POST['eventName'], $_POST['eventTime'], $_POST['eventCategory'], $_POST['eventType']
         );
 
         if ( $objEvent === false )
@@ -450,6 +461,44 @@ class EventController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
+    }
+
+    public function updateEventAction ($typeOnly)
+    {
+
+        $this->view->disable ();
+
+        if ( empty ($_POST['eventId']) || empty ($_POST['eventType']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $typeOnly !== true && $typeOnly != 'true' )
+        {
+            // check other fields present
+        }
+
+        try {
+            $objEvent = new Event ($_POST['eventId']);
+            $objEvent->setEventType ($_POST['eventType']);
+
+            if ( $typeOnly !== true && $typeOnly != 'true' )
+            {
+                // set other fields
+            }
+
+            $blResult = $objEvent->save ();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
     }
 
     public function updateEventImageAction ()

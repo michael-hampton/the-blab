@@ -78,22 +78,46 @@ if ( !in_array ($_SESSION['user']['user_id'], $arrMemberIds) && strtolower (trim
 
                     <div id="group_page_menu" class="group_manin_menu_wrapper">
                         <div id="not_deleting_group" style="width:100%; display:block;">
-                            <div style="clear:both;"></div>
-                            <span id="g_discussion" class="group_menu_wrapper_active" onclick="vpb_show_status_updates ();">Discussion</span>
-                            <span id="g_members" class="group_menu_wrapper" onclick="<?= ($permission === true ? 'vpb_show_event_page_members ();' : '') ?>">Members</span>
-                            <span class="group_menu_wrapper" onclick="<?= ($permission === true ? 'vpb_load_event_photos(\'' . $objEvent->getEventName () . '\');' : '') ?>">Photos</span>
 
-                            <span id="g_videos" class="group_menu_wrapper" onclick="<?= ($permission === true ? 'vpb_show_event_videos();' : '') ?>">Videos</span>
+                            <div style="width:100%">
+                                <div style="clear:both;"></div>
+                                <span id="g_discussion" class="group_menu_wrapper_active" onclick="vpb_show_status_updates ();">Discussion</span>
+                                <span id="g_members" class="group_menu_wrapper" onclick="<?= ($permission === true ? 'vpb_show_event_page_members ();' : '') ?>">Members</span>
+                                <span class="group_menu_wrapper" onclick="<?= ($permission === true ? 'vpb_load_event_photos(\'' . $objEvent->getEventName () . '\');' : '') ?>">Photos</span>
 
-                            <span id="g_videos" class="group_menu_wrapper" onclick="vpb_shoq_report_this_event_box ('Michael hampton', 'michaelhampton', 'bluetiger_uan@yahoo.com', '<?= $objEvent->getId () ?>', '<?= $objEvent->getEventName () ?>')">Report Event</span>             
-                            <span id="vpb_get_all_the_group_confirmation_box" class="group_menu_wrapper"></span> 
+                                <span id="g_videos" class="group_menu_wrapper" onclick="<?= ($permission === true ? 'vpb_show_event_videos();' : '') ?>">Videos</span>
 
-                            <?php if ( $objEvent->getUserId () === $_SESSION['user']['user_id'] ): ?> 
-                                <span onclick="vpb_confirm_delete_current_event_details ('<?= $objEvent->getId () ?>', 'michaelhampton', '<?= $objEvent->getEventName () ?>');
-                                      " style="float:right!important;
-                                      " class="group_menu_wrapper vasplus_tooltip_icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete this group"><i class="fa fa-remove v_edit_group_details"></i></span>
-                                <span onclick="vpb_set_current_event_details (<?= $objEvent->getId () ?>);" style="float:right !important;border-left: 1px solid #e5e5e5;" class="group_menu_wrapper vasplus_tooltip_icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit group details"><i class="fa fa-pencil-square v_edit_group_details"></i></span>
-                            <?php endif; ?>
+                                <span id="g_videos" class="group_menu_wrapper" onclick="vpb_shoq_report_this_event_box ('Michael hampton', 'michaelhampton', 'bluetiger_uan@yahoo.com', '<?= $objEvent->getId () ?>', '<?= $objEvent->getEventName () ?>')">Report Event</span>             
+                                <span id="vpb_get_all_the_group_confirmation_box" class="group_menu_wrapper"></span> 
+                            </div>
+
+                            <div style="width:100%">
+                                <?php if ( $objEvent->getUserId () === $_SESSION['user']['user_id'] ): ?> 
+                                    <span onclick="vpb_confirm_delete_current_event_details ('<?= $objEvent->getId () ?>', 'michaelhampton', '<?= $objEvent->getEventName () ?>');
+                                          " style="float:right!important;
+                                          " class="group_menu_wrapper vasplus_tooltip_icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete this group"><i class="fa fa-remove v_edit_group_details"></i></span>
+                                    <span onclick="vpb_set_current_event_details (<?= $objEvent->getId () ?>);" style="float:right !important;border-left: 1px solid #e5e5e5;" class="group_menu_wrapper vasplus_tooltip_icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit group details"><i class="fa fa-pencil-square v_edit_group_details"></i></span>
+                                <?php endif; ?>
+
+                                <?php $arrEventTypes = array("public" => "Public", "private" => "Private"); ?>
+
+                                <select style="width:20%;" id="eventType" name="eventType" class="form-control">
+                                    <?php
+                                    foreach ($arrEventTypes as $key => $value) {
+
+                                        $selected = trim ($key) === trim ($objEvent->getEventType ()) ? 'selected="selected"' : '';
+
+                                        echo '<option value="' . $key . '" ' . $selected . '>' . $value . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+
+
+
+
+
 
                         </div>
                         <div style="clear:both;"></div>

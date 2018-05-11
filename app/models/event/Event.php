@@ -90,6 +90,18 @@ class Event
      *
      * @var type 
      */
+    private $eventType;
+
+    /**
+     *
+     * @var type 
+     */
+    private $eventCategory;
+
+    /**
+     *
+     * @var type 
+     */
     private $objDb;
 
     public function __construct ($id)
@@ -319,6 +331,42 @@ class Event
 
     /**
      * 
+     * @return type
+     */
+    public function getEventType ()
+    {
+        return $this->eventType;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getEventCategory ()
+    {
+        return $this->eventCategory;
+    }
+
+    /**
+     * 
+     * @param type $eventType
+     */
+    public function setEventType ($eventType)
+    {
+        $this->eventType = $eventType;
+    }
+
+    /**
+     * 
+     * @param type $eventCategory
+     */
+    public function setEventCategory ($eventCategory)
+    {
+        $this->eventCategory = $eventCategory;
+    }
+
+    /**
+     * 
      * @param type $imageLocation
      * @return boolean
      */
@@ -328,6 +376,77 @@ class Event
 
         if ( $result === false )
         {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @var array 
+     */
+    private $validationFailures = [];
+
+    /**
+     * 
+     * @return type
+     */
+    public function getValidationFailures ()
+    {
+        return $this->validationFailures;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    private function validate ()
+    {
+        if ( trim ($this->eventName) === "" )
+        {
+            $this->validationFailures[] = "Event name cannot be empty";
+        }
+
+        if ( trim ($this->eventType) === "" )
+        {
+            $this->validationFailures[] = "Event type cannot be empty";
+        }
+
+        if ( trim ($this->eventDate) === "" )
+        {
+            $this->validationFailures[] = "Event date cannot be empty";
+        }
+
+        if ( trim ($this->location) === "" )
+        {
+            $this->validationFailures[] = "Event location cannot be empty";
+        }
+
+        if ( count ($this->validationFailures) > 0 )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    public function save ()
+    {
+        if ( $this->validate () === false )
+        {
+            return false;
+        }
+
+        $result = $this->objDb->update ("event", ["location" => $this->location, "event_date" => $this->eventDate, "event_name" => $this->eventName, "event_time" => $this->eventTime, "event_type" => $this->eventType, "event_category" => $this->eventCategory], "event_id = :eventId", [":eventId" => $this->id]);
+
+        if ( $result === false )
+        {
+            trigger_error ("db query failed to update event", E_USER_WARNING);
             return false;
         }
 
@@ -368,6 +487,8 @@ class Event
         $this->interestedCount = $result[0]['interested'];
         $this->totalCount = $result[0]['total'];
         $this->pendingCount = $result[0]['pending'];
+        $this->eventType = $result[0]['event_type'];
+        $this->eventCategory = $result[0]['event_category'];
 
         return true;
     }

@@ -37,7 +37,7 @@ class EventFactory
      * @param type $pageNo
      * @param type $pageLimit
      */
-    public function getAllEvents (User $objUser, $searchText = null, $pageNo = null, $pageLimit = null)
+    public function getAllEvents (User $objUser, $searchText = null, $pageNo = null, $pageLimit = null, $objEventCategory = null)
     {
 
         $sql = "SELECT e.*,
@@ -47,7 +47,7 @@ class EventFactory
                 SUM(IF(status = 4, 1, 0)) AS pending
                 FROM event e
                 LEFT JOIN event_member em ON em.event_id = e.event_id
-                 WHERE e.event_id NOT IN (SELECT event_id FROM event_member WHERE user_id = :userId) AND LOWER(event_type) = 'public' ";
+                 WHERE e.event_id NOT IN (SELECT event_id FROM event_member WHERE user_id = :userId) AND event_type like '%public%' ";
         $arrWhere[':userId'] = $objUser->getId ();
 
 
@@ -57,7 +57,13 @@ class EventFactory
             $arrWhere[':searchText'] = '%' . $searchText . '%';
         }
 
-        $sql .= " ORDER BY event_name ASC";
+        if ( $objEventCategory !== null )
+        {
+            $sql .= " AND event_category = :category";
+            $arrWhere[':category'] = $objEventCategory->getId ();
+        }
+
+        $sql .= " GROUP BY e.event_id ORDER BY event_name ASC";
 
 
         if ( $pageNo !== null && $pageLimit !== null )
@@ -184,11 +190,13 @@ class EventFactory
      * @param type $eventDate
      * @param type $eventName
      * @param type $eventTime
+     * @param type $eventCategory
+     * @param type $eventType
      * @return \Event|boolean
      */
-    public function createEvent (User $objUser, $location, $eventDate, $eventName, $eventTime)
+    public function createEvent (User $objUser, $location, $eventDate, $eventName, $eventTime, $eventCategory, $eventType)
     {
-        if ( trim ($location) === "" )
+        if ( trim ($location) === "" || !is_string ($location) )
         {
             $this->validationFailures[] = "Location is a mandatory field";
         }
@@ -198,12 +206,22 @@ class EventFactory
             $this->validationFailures[] = "Event Date is a mandatory field";
         }
 
-        if ( trim ($eventName) === "" )
+        if ( trim ($eventName) === "" || !is_string ($eventName) )
         {
             $this->validationFailures[] = "Event Name is a mandatory field";
         }
 
         if ( trim ($eventTime) === "" )
+        {
+            $this->validationFailures[] = "Event Time is a mandatory field";
+        }
+
+        if ( trim ($eventCategory) === "" )
+        {
+            $this->validationFailures[] = "Event Time is a mandatory field";
+        }
+
+        if ( trim ($eventType) === "" || !is_string ($eventType) )
         {
             $this->validationFailures[] = "Event Time is a mandatory field";
         }
@@ -218,7 +236,9 @@ class EventFactory
             "location" => $location,
             "event_date" => date ("Y-m-d H:i:s", strtotime ($eventDate)),
             "event_name" => $eventName,
-            "event_time" => $eventTime
+            "event_time" => $eventTime,
+            "event_category" => $eventCategory,
+            "event_type" => $eventType
                 ]
         );
 
