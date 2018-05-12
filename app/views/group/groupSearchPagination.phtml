@@ -1,49 +1,59 @@
 <?php
-foreach ($arrGroups as $arrGroup) {
-    $blHasRequest = false;
+if ( !empty ($arrGroups) )
+{
+    foreach ($arrGroups as $arrGroup) {
+        $blHasRequest = false;
 
-    $arrRequests = $arrGroup->getArrRequests ();
+        $arrRequests = $arrGroup->getArrRequests ();
 
-    if ( !empty ($arrRequests) )
-    {
-        foreach ($arrRequests as $objRequest) {
-            $arrUser = $objRequest->getArrUser ();
+        if ( !empty ($arrRequests) )
+        {
+            foreach ($arrRequests as $objRequest) {
+                $arrUser = $objRequest->getArrUser ();
 
-            if ( is_object ($arrUser) && (int) $arrUser->getId () === (int) $objUser->getId () )
-            {
-                $blHasRequest = true;
+                if ( is_object ($arrUser) && (int) $arrUser->getId () === (int) $objUser->getId () )
+                {
+                    $blHasRequest = true;
+                }
             }
         }
-    }
 
-    $displayCancel = $blHasRequest === true ? 'block' : 'none';
-    $showRequest = $blHasRequest === false ? 'block' : 'none';
-    $image = trim ($arrGroup->getImageLocation ()) !== "" && file_exists ($rootPath . $arrGroup->getImageLocation ()) ? $arrGroup->getImageLocation () : '/blab/public/img/avatar.gif';
-    ?>
+        $displayCancel = $blHasRequest === true ? 'block' : 'none';
+        $showRequest = $blHasRequest === false ? 'block' : 'none';
+        $image = trim ($arrGroup->getImageLocation ()) !== "" && file_exists ($rootPath . $arrGroup->getImageLocation ()) ? $arrGroup->getImageLocation () : '/blab/public/img/avatar.gif';
+        ?>
 
-    <div class="vpb_groups_box notMember">
-        <div class="col-lg-2 pull-left" style="padding:10px;">
-            <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
-                <img src="<?= $image ?>" class="img-responsive" border="0"></a>
-            <div class="vproducttitle">
+        <div class="vpb_groups_box notMember">
+            <div class="col-lg-2 pull-left" style="padding:10px;">
                 <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
-                    <span><?= $arrGroup->getGroupName () ?></span>
-                </a>
-            </div>
-            <div class="vproductprice">
-                <div class="vpull_left"><?= $arrGroup->getMemberCount () ?> members</div>
-                <div class="vpull_right">
+                    <img src="<?= $image ?>" class="img-responsive" border="0"></a>
+                <div class="vproducttitle">
+                    <a href="/blab/group/index/<?= $arrGroup->getId () ?>">
+                        <span><?= $arrGroup->getGroupName () ?></span>
+                    </a>
+                </div>
+                <div class="vproductprice">
+                    <div class="vpull_left"><?= $arrGroup->getMemberCount () ?> members</div>
+                    <div class="vpull_right">
 
-                    <span id="group_join_13896651249640768" onclick="vpb_send_request_to_join_group (<?= $arrGroup->getId () ?>, 'Jelzon11', 'michaelhampton', 'join');" class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important; display: <?= $showRequest ?>;"><i class="fa fa-plus"></i> Join</span>
+                        <span id="group_join_13896651249640768" onclick="vpb_send_request_to_join_group (<?= $arrGroup->getId () ?>, 'Jelzon11', 'michaelhampton', 'join');" class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important; display: <?= $showRequest ?>;"><i class="fa fa-plus"></i> Join</span>
 
-                    <span id="group_requestsent_<?= $arrGroup->getId () ?>" style="display:<?= $displayCancel; ?>;">
-                        <span class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;opacity:0.6;cursor:default;"><i class="fa fa-reply"></i> Request Sent</span>
+                        <span id="group_requestsent_<?= $arrGroup->getId () ?>" style="display:<?= $displayCancel; ?>;">
+                            <span class="cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;opacity:0.6;cursor:default;"><i class="fa fa-reply"></i> Request Sent</span>
 
-                        <span class="cbtn vpb_cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;" title="Cancel Request" onclick="vpb_send_request_to_join_group (<?= $arrGroup->getId () ?>, 'Jelzon11', 'michaelhampton', 'cancel');"><i class="fa fa-times"></i></span>
-                    </span></div>
-                <div style="clear:both;"></div>
+                            <span class="cbtn vpb_cbtn" style="font-family:arial !important; font-size:13px !important;padding:3px 10px !important;margin:0px !important;" title="Cancel Request" onclick="vpb_send_request_to_join_group (<?= $arrGroup->getId () ?>, 'Jelzon11', 'michaelhampton', 'cancel');"><i class="fa fa-times"></i></span>
+                        </span></div>
+                    <div style="clear:both;"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-<?php } ?>
+    <?php
+    }
+}
+else
+{
+    echo '<h2>There are no results matching that criteria</h2>';
+}
+
+

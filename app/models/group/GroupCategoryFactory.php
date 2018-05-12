@@ -7,11 +7,11 @@
  */
 
 /**
- * Description of EventCategoryFactory
+ * Description of GroupCategoryFactory
  *
  * @author michael.hampton
  */
-class EventCategoryFactory
+class GroupCategoryFactory
 {
 
     /**
@@ -23,7 +23,7 @@ class EventCategoryFactory
     public function __construct ()
     {
         $this->db = new Database();
-        $this->db->connect();
+        $this->db->connect ();
     }
 
      /**
@@ -32,7 +32,7 @@ class EventCategoryFactory
      */
     public function getAllCategories ()
     {
-        $arrResults = $this->db->_query ("SELECT name, id FROM `event_category` ORDER BY name ASC", []);
+        $arrResults = $this->db->_query ("SELECT name, id FROM `group_category` ORDER BY name ASC", []);
 
         return $this->loadObject ($arrResults);
     }
@@ -59,7 +59,7 @@ class EventCategoryFactory
         $arrCategories = [];
 
         foreach ($arrResults as $arrResult) {
-            $objCategory = new EventCategory ($arrResult['id']);
+            $objCategory = new GroupCategory ($arrResult['id']);
             $objCategory->setName ($arrResult['name']);
 
             $arrCategories[] = $objCategory;

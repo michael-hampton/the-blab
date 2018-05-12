@@ -138,7 +138,7 @@ class EventMember
     {
         $result = $this->objDb->_select ("event_member", "user_id = :userId AND event_id = :eventId", [":userId" => $objUser->getId (), ":eventId" => $this->id]);
 
-        if ( $result === false || empty ($result[0]['status']) )
+        if ( $result === false )
         {
             trigger_error ("Db query failed", E_USER_WARNING);
             return false;

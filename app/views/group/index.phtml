@@ -21,12 +21,12 @@
         <input type="hidden" id="currentGroupDescription" value="<?= $objGroup->getDescription () ?>">
         <input type="hidden" id="currentGroupImage" value="<?= $objGroup->getImageLocation () ?>">
         <input type="hidden" id="currentPrivacy" value="public">
+        <input type="hidden" id="currentGroupCategory" value="<?= $objGroup->getGroupCategory () ?>">
 
         <div class="col-md-3">
             <?php
-            
             $this->partial ("templates/groups", ["arrGroups" => $arrGroups]);
-            
+
             $this->partial ("templates/profileUpload", ["arrUser" => $objUser, "friendIds" => $friendIds]);
 
             $this->partial (
@@ -123,7 +123,7 @@
                                     <span onclick="vpb_confirm_delete_current_group_details ('<?= $objGroup->getId () ?>', 'michaelhampton', '<?= $objGroup->getGroupName () ?>');
                                           " style="float:right!important;
                                           " class="group_menu_wrapper vasplus_tooltip_icons" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete this group"><i class="fa fa-remove v_edit_group_details"></i></span>
-                                    <span onclick="vpb_set_current_group_details ( < ? = $objGroup - > getId () ? > );" style="float:right !important;border-left: 1px solid #e5e5e5;" class="group_menu_wrapper vasplus_tooltip_icons" original-title="Edit Group Details"><i class="fa fa-pencil-square v_edit_group_details"></i></span>
+                                    <span onclick="vpb_set_current_group_details (<?= $objGroup->getId () ?>);" style="float:right !important;border-left: 1px solid #e5e5e5;" class="group_menu_wrapper vasplus_tooltip_icons" original-title="Edit Group Details"><i class="fa fa-pencil-square v_edit_group_details"></i></span>
                                 <?php endif; ?>
 
                             </div>

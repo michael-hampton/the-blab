@@ -367,6 +367,23 @@ class GroupController extends ControllerBase
 
         $this->view->arrMemberGroups = $arrMemberGroups;
 
+        $arrCategories = (new GroupCategoryFactory())->getAllCategories ();
+
+        if ( $arrCategories === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get page categories"]
+                            ]
+            );
+        }
+
+        $this->view->arrCategories = $arrCategories;
+
+
+
         $this->view->arrGroups = $arrGroups;
 
         if ( $arrFriendList === false )
@@ -416,10 +433,11 @@ class GroupController extends ControllerBase
         }
 
         $searchText = !empty ($_POST['searchText']) ? $_POST['searchText'] : null;
-        $page = $searchText === null ? (int)$_POST['vpb_start'] : null;
+        $category = !empty ($_POST['pageCategory']) ? new GroupCategory ($_POST['pageCategory']) : null;
+        $page = $searchText === null && $category === null ? (int)$_POST['vpb_start'] : null;
         $totalToLoad = $searchText === null ? (int)$_POST['vpb_total_per_load'] : null;
 
-        $arrGroups = (new GroupFactory())->getAllGroups ($objUser, new GroupRequestFactory(), $searchText, $page, $totalToLoad);
+        $arrGroups = (new GroupFactory())->getAllGroups ($objUser, new GroupRequestFactory(), $searchText, $page, $totalToLoad, $category);
 
         if ( $arrGroups === false )
         {
@@ -460,7 +478,9 @@ class GroupController extends ControllerBase
                 !isset ($_POST['group_type']) ||
                 !isset ($_POST['group_name']) ||
                 !isset ($_POST['photo_added']) ||
-                !isset ($_POST['vgroup_description'])
+                !isset ($_POST['vgroup_description']) ||
+                !isset ($_POST['groupCategory'])
+ 
         )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -472,11 +492,13 @@ class GroupController extends ControllerBase
             {
                 $this->ajaxresponse ("error", $this->defaultErrrorMessage);
             }
+           
             $objGroup = new Group ($_POST['group_id']);
 
             $objGroup->setDescription ($_POST['vgroup_description']);
             $objGroup->setGroupName ($_POST['group_name']);
             $objGroup->setGroupType ($_POST['group_type']);
+            $objGroup->setGroupCategory ($_POST['groupCategory']);
 
             $blResult = $objGroup->save ();
 
@@ -486,11 +508,11 @@ class GroupController extends ControllerBase
             }
         }
         else
-        {
+        {            
             // create group
             $objGroupFactory = new GroupFactory();
 
-            $objGroup = $objGroupFactory->createGroup ($objUser, $_POST['group_name'], $_POST['vgroup_description'], $_POST['group_type']);
+            $objGroup = $objGroupFactory->createGroup ($objUser, $_POST['group_name'], $_POST['vgroup_description'], $_POST['group_type'], $_POST['groupCategory']);
 
             if ( $objGroup === false )
             {

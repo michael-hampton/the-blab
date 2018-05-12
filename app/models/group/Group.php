@@ -11,7 +11,7 @@
  *
  * @author michael.hampton
  */
-class Group
+class Group implements ObjectInterface
 {
 
     /**
@@ -61,6 +61,8 @@ class Group
      * @var type 
      */
     private $db;
+
+    private $groupCategory;
     
     /**
      *
@@ -99,7 +101,7 @@ class Group
      * 
      * @param type $id
      */
-    public function setId (type $id)
+    public function setId ($id)
     {
         $this->id = $id;
     }
@@ -193,6 +195,24 @@ class Group
     {
         $this->groupType = $groupType;
     }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getGroupCategory ()
+    {
+        return $this->groupCategory;
+    }
+
+    /**
+     * 
+     * @param type $groupCategory
+     */
+    public function setGroupCategory ($groupCategory)
+    {
+        $this->groupCategory = $groupCategory;
+    }
     
     /**
      * 
@@ -271,6 +291,7 @@ class Group
         $this->imageLocation = $result[0]['image_location'];
         $this->createdBy = $result[0]['created_by'];
         $this->groupType = $result[0]['group_type'];
+        $this->groupCategory = $result[0]['group_category'];
 
         return true;
     }
@@ -293,13 +314,63 @@ class Group
         return true;
     }
 
+    private $validationFailures = [];
+
+    /**
+     * 
+     * @return type
+     */
+    public function getValidationFailures ()
+    {
+        return $this->validationFailures;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    private function validate ()
+    {
+        if ( trim ($this->groupName) === "" || !is_string($this->groupName) )
+        {
+            $this->validationFailures[] = "Group name cannot be empty";
+        }
+
+        if ( trim ($this->groupType) === "" || !is_string($this->groupType))
+        {
+            $this->validationFailures[] = "Group type cannot be empty";
+        }
+
+        if ( trim ($this->description) === "" || !is_string($this->description))
+        {
+            $this->validationFailures[] = "Description cannot be empty";
+        }
+
+        if ( trim ($this->groupCategory) === "" )
+        {
+            $this->validationFailures[] = "Event location cannot be empty";
+        }
+
+        if ( count ($this->validationFailures) > 0 )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * 
      * @return boolean
      */
     public function save ()
     {
-        $result = $this->db->update ("groups", ["name" => $this->groupName, "description" => $this->description, "group_type" => strtolower($this->groupType)], "group_id = :groupId", [":groupId" => $this->id]);
+        if ( $this->validate () === false )
+        {
+            return false;
+        }
+    
+        $result = $this->db->update ("groups", ["name" => $this->groupName, "description" => $this->description, "group_type" => strtolower($this->groupType), "group_category" => $this->groupCategory], "group_id = :groupId", [":groupId" => $this->id]);
 
         if ( $result === false )
         {

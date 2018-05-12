@@ -244,6 +244,22 @@ class EventController extends ControllerBase
 
         $this->view->arrMemberEvents = $arrMemberEvents;
 
+        $arrCategories = (new EventCategoryFactory())->getAllCategories ();
+
+        if ( $arrCategories === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get page categories"]
+                            ]
+            );
+        }
+
+        $this->view->arrCategories = $arrCategories;
+
+
         $this->view->arrFriendRequests = $arrFriendRequests;
         $this->view->objUser = $objUser;
         $this->view->arrFriendList = $arrFriendList;
@@ -269,10 +285,11 @@ class EventController extends ControllerBase
         $objUser = new User ($_SESSION['user']['user_id']);
 
         $searchText = !empty ($_POST['searchText']) ? $_POST['searchText'] : null;
-        $page = $searchText === null ? (int) $_POST['vpb_start'] : null;
-        $totalToLoad = $searchText === null ? (int) $_POST['vpb_total_per_load'] : null;
+        $category = !empty ($_POST['pageCategory']) ? new EventCategory ($_POST['pageCategory']) : null;
+        $page = $searchText === null && $category === null ? (int) $_POST['vpb_start'] : null;
+        $totalToLoad = $searchText === null && $category === null ? (int) $_POST['vpb_total_per_load'] : null;
 
-        $arrEvents = (new EventFactory())->getAllEvents ($objUser, $searchText, $page, $totalToLoad);
+        $arrEvents = (new EventFactory())->getAllEvents ($objUser, $searchText, $page, $totalToLoad, $category);
 
         if ( $arrEvents === false )
         {
@@ -461,6 +478,55 @@ class EventController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
+
+        $arrCategories = (new EventCategoryFactory())->getAllCategories ();
+
+        if ( $arrCategories === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->arrCategories = $arrCategories;
+    }
+
+    public function updateEventModalAction ()
+    {
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_POST['eventId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objEvent = new Event ($_POST['eventId']);
+            $objFriend = new UserFactory();
+
+            $this->view->arrFriendList = $objFriend->getFriendList (new User ($_SESSION['user']['user_id']));
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $this->view->arrFriendList === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrCategories = (new EventCategoryFactory())->getAllCategories ();
+
+        if ( $arrCategories === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->arrCategories = $arrCategories;
+        $this->view->objEvent = $objEvent;
     }
 
     public function updateEventAction ($typeOnly)
@@ -473,9 +539,19 @@ class EventController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
+
         if ( $typeOnly !== true && $typeOnly != 'true' )
         {
-            // check other fields present
+            if (
+                    empty ($_POST['eventName']) ||
+                    empty ($_POST['eventCategory']) ||
+                    empty ($_POST['location']) ||
+                    empty ($_POST['eventDate']) ||
+                    empty ($_POST['eventTime'])
+            )
+            {
+                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            }
         }
 
         try {
@@ -485,6 +561,11 @@ class EventController extends ControllerBase
             if ( $typeOnly !== true && $typeOnly != 'true' )
             {
                 // set other fields
+                $objEvent->setEventName ($_POST['eventName']);
+                $objEvent->setEventCategory ($_POST['eventCategory']);
+                $objEvent->setLocation ($_POST['location']);
+                $objEvent->setEventDate ($_POST['eventDate']);
+                $objEvent->setEventTime ($_POST['eventTime']);
             }
 
             $blResult = $objEvent->save ();

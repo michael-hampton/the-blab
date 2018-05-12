@@ -23,12 +23,27 @@
                         </div>
                     </div>
 
-                    <div style="height: 250px; overflow-y: auto;">
-                        <ul class="list-group clear-list">
+                     <div class="form-group">
+                        <label class="col-lg-2 control-label">Group Category</label>
+
+                        <div class="col-lg-10">
+                            <select id="groupCategory" name="groupCategory" class="form-control">
+                                <option value="1">Art</option>
+                                <option value="2">Music</option>
+                                <option value="3">Comedy</option>
+                                <option value="4">Dance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    
+
+                    <div style="height: 250px; overflow-y: auto; width:100%;">
+                        <ul class="list-group clear-list col-lg-12">
 
                             <?php foreach ($arrFriendList as $friend): ?>
 
-                                <li class="list-group-item fist-item">
+                                <li class="list-group-item fist-item col-lg-12">
                                     <?= $friend->getFirstName () . ' ' . $friend->getLastName () ?>
                                     <input class="checkbox-primary group-checkbox" type="checkbox" value="<?= $friend->getId () ?>">
                                 </li>
@@ -60,6 +75,7 @@
 
         var arrData = {
             groupName: $ ("#groupName").val (),
+            GroupCategory: $ ("#groupCategory").val (),
             groupDescription: $ ("#groupDescription").val (),
             groupIds: groupIds
         };

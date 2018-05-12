@@ -11,7 +11,7 @@
  *
  * @author michael.hampton
  */
-class Event
+class Event implements ObjectInterface
 {
 
     /**
@@ -403,22 +403,22 @@ class Event
      */
     private function validate ()
     {
-        if ( trim ($this->eventName) === "" )
+        if ( trim ($this->eventName) === "" || !is_string($this->eventName))
         {
             $this->validationFailures[] = "Event name cannot be empty";
         }
 
-        if ( trim ($this->eventType) === "" )
+        if ( trim ($this->eventType) === "" || !is_string($this->eventType))
         {
             $this->validationFailures[] = "Event type cannot be empty";
         }
 
-        if ( trim ($this->eventDate) === "" )
+        if ( trim ($this->eventDate) === "" || !is_string($this->eventDate))
         {
             $this->validationFailures[] = "Event date cannot be empty";
         }
 
-        if ( trim ($this->location) === "" )
+        if ( trim ($this->location) === "" || !is_string($this->location) )
         {
             $this->validationFailures[] = "Event location cannot be empty";
         }

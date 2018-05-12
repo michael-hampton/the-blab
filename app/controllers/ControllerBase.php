@@ -108,6 +108,15 @@ class ControllerBase extends \Phalcon\Mvc\Controller
         $this->view->startPage = 0;
         $this->view->totalPerLoad = 4;
         $this->view->totalComments = 2;
+
+        $arrGroupCategories = (new GroupCategoryFactory())->getAllCategories ();
+
+        if ( $arrGroupCategories === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+        
+        $this->view->arrGroupCategories = $arrGroupCategories;
     }
 
     /**

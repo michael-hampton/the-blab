@@ -60,28 +60,38 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                                 </div>
                                 <div class="ibox-content col-lg-12 pull-left" style="width:100%">
                                     <?php
-                                    foreach ($arrMemberPages as $arrMemberPage) {
-                                        $image = trim ($arrMemberPage->getFileLocation ()) !== "" && file_exists ($rootPath . $arrMemberPage->getFileLocation ()) ? $arrMemberPage->getFileLocation () : '/blab/public/img/avatar.gif';
-                                        ?>
+                                    if ( !empty ($arrMemberPages) )
+                                    {
+                                        foreach ($arrMemberPages as $arrMemberPage) {
+                                            $image = trim ($arrMemberPage->getFileLocation ()) !== "" && file_exists ($rootPath . $arrMemberPage->getFileLocation ()) ? $arrMemberPage->getFileLocation () : '/blab/public/img/avatar.gif';
+                                            ?>
 
-                                        <div class="vpb_groups_box member">
-                                            <div class="col-lg-2 pull-left" style="padding:10px;">
-                                                <a href="/blab/page/index/<?= $arrMemberPage->getUrl () ?>">
-                                                    <img src="<?= $image ?>" class="img-responsive" border="0"></a>
-                                                <div class="vproducttitle">
+                                            <div class="vpb_groups_box member">
+                                                <div class="col-lg-2 pull-left" style="padding:10px;">
                                                     <a href="/blab/page/index/<?= $arrMemberPage->getUrl () ?>">
-                                                        <span><?= $arrMemberPage->getName () ?></span>
-                                                    </a>
-                                                </div>
-                                                <div class="vproductprice">
-                                                    <div class="vpull_left"><?= $arrMemberPage->getFollowCount () ?> followers</div>
+                                                        <img src="<?= $image ?>" class="img-responsive" border="0"></a>
+                                                    <div class="vproducttitle">
+                                                        <a href="/blab/page/index/<?= $arrMemberPage->getUrl () ?>">
+                                                            <span><?= $arrMemberPage->getName () ?></span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="vproductprice">
+                                                        <div class="vpull_left"><?= $arrMemberPage->getFollowCount () ?> followers</div>
 
-                                                    <div style="clear:both;"></div>
+                                                        <div style="clear:both;"></div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                    <?php } ?>
+                                            <?php
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                        echo '<h2>You have no pages yet</h2>';
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -100,19 +110,23 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                 </div>
 
 
+                <div class="col-lg-12" style="float: left; padding: 10px; background-color: #FFF; border: 1px solid #CCC; margin-top:8px; margin-bottom: 8px; border-radius: 5px;">
+
+                    <input type="hidden" id="pageCategory" name="pageCategory">
+
+                    <ul class="tag-list" style="padding: 0; width: 100%;">
+                        <?php
+                        foreach ($arrCategories as $arrCategory) {
+                            echo '<li id="' . $arrCategory->getId () . '"><a href=""><i class="fa fa-tag"></i> ' . $arrCategory->getName () . '</a></li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+
                 <div class="col-md-12" style="padding:0px !important;">
                     <div class="input-group">
 
-                        <select style="width:20%;" id="pageCategory" class="form-control">
-                            <option value="">Select Category</option>
-                            <?php
-                            foreach ($arrCategories as $arrCategory) {
-                                echo '<option value="' . $arrCategory->getId () . '">' . $arrCategory->getName () . '</option>';
-                            }
-                            ?>
-                        </select>
-
-                        <input style="width: 70%; margin-left: 12px;" onkeyup="vpb_load_more_pages (true)" type="text" id="searchText" placeholder="Search" class="input-sm form-control"> 
+                        <input style="width: 100%; margin-left: 12px;" onkeyup="vpb_load_more_pages (true)" type="text" id="searchText" placeholder="Search" class="input-sm form-control"> 
                         <span class="input-group-btn">
                             <button onclick="search ()" type="button" class="btn btn-sm btn-primary"> Go!</button> 
                         </span>
@@ -182,7 +196,7 @@ foreach ($arrFriendRequests as $objFriendRequest) {
                                                 </div>
                                             </div>
 
-                                        <?php } ?>
+<?php } ?>
 
                                     </div>
                                     <div style="clear:both;"></div>
@@ -207,9 +221,21 @@ foreach ($arrFriendRequests as $objFriendRequest) {
 
 <script>
 
-                                $ ("#pageCategory").on ("change", function ()
+                                $ (".tag-list > li").on ("click", function ()
                                 {
+                                    var categoryId = $ (this).attr ("id");
+
+                                    if (!categoryId)
+                                    {
+                                        showErrorMessage ('Invalid category id');
+                                        return false;
+                                    }
+
+                                    $ ("#pageCategory").val (categoryId);
                                     vpb_load_more_pages (true);
+
+                                    return false;
+
                                 });
 
                                 function search ()

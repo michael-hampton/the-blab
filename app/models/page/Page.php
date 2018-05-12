@@ -11,7 +11,7 @@
  *
  * @author michael.hampton
  */
-class Page
+class Page implements ObjectInterface
 {
 
     /**
@@ -430,11 +430,65 @@ class Page
     }
 
     /**
+     *
+     * @var array 
+     */
+    private $validationFailures = [];
+
+    /**
+     * 
+     * @return type
+     */
+    public function getValidationFailures ()
+    {
+        return $this->validationFailures;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    private function validate ()
+    {
+        if ( trim ($this->name) === "" || !is_string($this->name))
+        {
+            $this->validationFailures[] = "Page name cannot be empty";
+        }
+
+        if ( trim ($this->description) === "" || !is_string($this->description))
+        {
+            $this->validationFailures[] = "Description cannot be empty";
+        }
+
+        if ( trim ($this->pageType) === "")
+        {
+            $this->validationFailures[] = "Page type cannot be empty";
+        }
+
+        if ( trim ($this->categories) === "" )
+        {
+            $this->validationFailures[] = "Category cannot be empty";
+        }
+
+        if ( count ($this->validationFailures) > 0 )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * 
      * @return boolean
      */
     public function save ()
     {
+        if ( $this->validate () === false )
+        {
+            return false;
+        }
+    
         $result = $this->objDatabase->update ("page", [
             "description" => $this->description,
             "page_name" => $this->name,

@@ -134,13 +134,13 @@
                             <i style="font-size: 18px;" class="fa fa-cog vpb_notifications_icon vasplus_tooltip_menu" id="v_site_menu" onclick="vpb_show_site_menu ();"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Menu"></i>
                         </a>
 
-<ul id="v_site_menu_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="min-width: 250px; right: 6px; left: auto; font-size: 13px !important; font-family: arial !important; display: none;" aria-labelledby="v_site_menu"><a style="margin-top:4px;text-decoration:none !important;" class="dropdown open">
+                        <ul id="v_site_menu_box" class="dropdown-menu bullet pull-right vasplus_bosy" style="min-width: 250px; right: 6px; left: auto; font-size: 13px !important; font-family: arial !important; display: none;" aria-labelledby="v_site_menu"><a style="margin-top:4px;text-decoration:none !important;" class="dropdown open">
 
                                 <li class="dropdown-header" style="cursor:default;">Site Menu</li>
 
                             </a>
 
-<li role="separator" class="divider"></li>
+                            <li role="separator" class="divider"></li>
 
                             <li>
                                 <a style="text-decoration:none !important;" class="dropdown open"></a>
@@ -148,26 +148,26 @@
                                     <i class="fa fa-cog"></i> Settings</a>
                             </li>
 
-<li role="separator" class="divider"></li>
+                            <li role="separator" class="divider"></li>
 
 
                             <li><a href="/blab/terms/index"><i class="fa fa-envelope-o"></i> Terms and Policies</a></li>
 
-<li role="separator" class="divider"></li>
+                            <li role="separator" class="divider"></li>
 
                             <li><a href="/blab/chat/messenger"><i class="fa fa-envelope-o"></i> Messages</a></li>
 
-<li role="separator" class="divider"></li>
+                            <li role="separator" class="divider"></li>
 
                             <li><a href="/blab/user/downloadUserData" onclick="showSuccessMessage ('You request is being processed. You should receive an email shortly')"><i class="fa fa-envelope-o"></i> Download Personal Data</a></li>
 
-<li role="separator" class="divider"></li>
+                            <li role="separator" class="divider"></li>
 
                             <li><a href="#" data-toggle="modal" data-target="#update-password" onclick="vpb_hide_profile_popups ();"><i class="fa fa-edit"></i> Reset Password</a></li>
 
-<li role="separator" class="divider"></li>
+                            <li role="separator" class="divider"></li>
 
- <li><a href="#" data-toggle="modal" data-target="#report-bug" onclick="vpb_hide_profile_popups ();"><i class="fa fa-power-off"></i> Report a Problem</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#report-bug" onclick="vpb_hide_profile_popups ();"><i class="fa fa-power-off"></i> Report a Problem</a></li>
 
 
                             <li role="separator" class="divider"></li>
@@ -343,17 +343,18 @@
                     <input style="display:none;" type="file" name="pictures[]" multiple="multiple" id="fileupload" />
 
                     <select class="form-control" id="upload-privacy">
-                        <option value="public">Public</option>
+                        <option value="
+                                ">Public</option>
                         <option value="private">Private</option>
                         <option value="friend">Friends Only</option>
                     </select>
-  
-  <label class="control control--checkbox" style="font-size:12px !important;">
 
-                                        <input type="checkbox" name="addToStory" id="addToStory">
-                                        <div class="control__indicator"></div>
-                                        Add to Story
-                                    </label>
+                    <label class="control control--checkbox" style="font-size:12px !important;">
+
+                        <input type="checkbox" name="addToStory" id="addToStory">
+                        <div class="control__indicator"></div>
+                        Add to Story
+                    </label>
 
 
                     <textarea placeholder="Say something about the photo(s)" name="uploadComment" id="uploadComment" style="height:100px; width:90%; margin-left:30px; margin-top:30px;" class="form-control mentions"></textarea>
@@ -472,6 +473,19 @@
     </div>
 </div>
 
+<div class="modal fade" id="v-update-event" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="v-update-event" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="v-update-events"><i class="fa fa-plus-square-o"></i> Update Event</h4>
+            </div>
+            <div class="modal-body" style="margin:0 auto !important; text-align:center;" align="center">
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Create Group Modal -->
 <div id="v-create-group-box" data-backdrop="static" data-toggle="modal" data-target="#v-create-group" style="display:none;"></div>
 
@@ -497,6 +511,21 @@
                             <span class="input-group-addon" style="background-color:transparent !important; border:0px solid; padding-left:0px !important; cursor:pointer; min-width:120px;text-align:right; vertical-align:top;" onClick="document.getElementById ('vgroup_description').focus ();">Description</span>
                             <textarea id="vgroup_description" class="form-control form-control-plus-pms" style="font-weight:normal !important; padding-left:10px; padding-right:10px; resize:none; overflow-y:auto; min-height:60px;" placeholder="Tell members about the group and its purpose..."></textarea>
                         </div><br clear="all">
+
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Group Category</label>
+
+                            <div class="col-lg-10">
+                                <select id="groupCategory" name="groupCategory" class="form-control">
+                                    <option value="">Select Category</option>
+                                    <?php
+                                    foreach ($arrGroupCategories as $arrGroupCategory) {
+                                        echo '<option value="' . $arrGroupCategory->getId () . '">' . $arrGroupCategory->getName () . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
 
 
 
@@ -1095,7 +1124,7 @@
     </div>
 </div>
 
-<!—- Report a bug Modal -->
+<!-- Report a bug Modal -->
 <div class="modal fade" id="report-bug" tabindex="-1" role="dialog" aria-labelledby="reportbug" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1710,7 +1739,6 @@
         isMobile = true;
     }
 </script>
-
 
 
 

@@ -11,7 +11,7 @@
  *
  * @author michael.hampton
  */
-class Product
+class Product implements ObjectInterface
 {
 
     /**
@@ -318,12 +318,66 @@ class Product
         return true;
     }
 
+     /**
+     *
+     * @var array 
+     */
+    private $validationFailures = [];
+
+    /**
+     * 
+     * @return type
+     */
+    public function getValidationFailures ()
+    {
+        return $this->validationFailures;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    private function validate ()
+    {
+        if ( trim ($this->name) === "" || !is_string($this->name))
+        {
+            $this->validationFailures[] = "Product name cannot be empty";
+        }
+
+        if ( trim ($this->description) === "" || !is_string($this->description))
+        {
+            $this->validationFailures[] = "Description cannot be empty";
+        }
+
+        if ( trim ($this->category) === "")
+        {
+            $this->validationFailures[] = "Page type cannot be empty";
+        }
+
+        if ( trim ($this->productCode) === "" )
+        {
+            $this->validationFailures[] = "Category cannot be empty";
+        }
+
+        if ( count ($this->validationFailures) > 0 )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * 
      * @return boolean
      */
     public function save ()
     {
+        if ( $this->validate () === false )
+        {
+            return false;
+        }
+    
         $result = $this->db->update ("product", [
             "name" => $this->name,
             "description" => $this->description,

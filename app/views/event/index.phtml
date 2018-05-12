@@ -23,7 +23,7 @@ foreach ($arrFriendList as $friend) {
 
 $permission = true;
 
-if ( !in_array ($_SESSION['user']['user_id'], $arrMemberIds) && strtolower (trim ($eventType)) === "private" )
+if ( !in_array ($_SESSION['user']['user_id'], $arrMemberIds) && strtolower (trim ($objEvent->getEventType())) === "private" )
 {
     echo '<h2>This is a closed event</h2>';
     exit;
@@ -200,7 +200,7 @@ if ( !in_array ($_SESSION['user']['user_id'], $arrMemberIds) && strtolower (trim
 
                 <div id="vasplus_wall_status_updates" style="width:100%;">
                     <?php
-                    if ( in_array ($_SESSION['user']['user_id'], $arrMemberIds) )
+                    if ( in_array ($_SESSION['user']['user_id'], $arrMemberIds) || trim(strtolower ($objEvent->getEventType())) === "public" )
                     {
                         $this->partial ("templates/postBox", ["form" => "eventcommentform"]);
 

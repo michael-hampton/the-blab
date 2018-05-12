@@ -1,5 +1,6 @@
 <?php
-foreach ($arrEvents as $arrEvent) {
+if(!empty($arrEvents)) {
+    foreach ($arrEvents as $arrEvent) {
     $image = trim ($arrEvent->getImageLocation ()) !== "" && file_exists ($rootPath . $arrEvent->getImageLocation ()) ? $arrEvent->getImageLocation () : '/blab/public/img/avatar.gif';
     ?>
 
@@ -24,4 +25,10 @@ foreach ($arrEvents as $arrEvent) {
         </div>
     </div>
 
-<?php } ?>
+<?php }
+} else {
+    echo '<h2>There are no results matching that criteria</h2>';
+}
+
+
+

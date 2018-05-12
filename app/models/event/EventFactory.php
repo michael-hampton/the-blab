@@ -37,7 +37,7 @@ class EventFactory
      * @param type $pageNo
      * @param type $pageLimit
      */
-    public function getAllEvents (User $objUser, $searchText = null, $pageNo = null, $pageLimit = null, $objEventCategory = null)
+    public function getAllEvents (User $objUser, $searchText = null, $pageNo = null, $pageLimit = null, EventCategory $objEventCategory = null)
     {
 
         $sql = "SELECT e.*,
