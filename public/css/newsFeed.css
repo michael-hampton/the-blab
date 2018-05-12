@@ -57,13 +57,19 @@ article
     float: none !important;
 }
 
+@media (min-width: 768px) 
+and (max-width : 1024px)  {
+    .dropdown-menu2 {
+        left: -120px;
+    }
+}
 @media (min-width: 480px) {
     .navbar-header {
         float:left !important;
     }
 
     #v_site_menu_box {
-        left: -64px !important;
+        right: -150px !important;
     }
 
     .showSearch {
