@@ -46,25 +46,25 @@ class ChatController extends ControllerBase
 
     public function getChatFriendsAction ()
     {
-         $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
         if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", "Invalid User");
         }
 
+        $objUser = new User ($_SESSION['user']['user_id']);
+
         $searchText = isset ($_POST['searchText']) && trim ($_POST['searchText']) !== "" ? $_POST['searchText'] : null;
 
-        $arrFriends = (new UserFactory())->getUsers ($searchText);
+        $arrFriends = (new UserFactory())->getFriendList ($objUser, 0, 50, $searchText);
 
         if ( $arrFriends === false )
         {
             $this->ajaxresponse ("error", "Unable to get friends");
         }
-        
+
         $this->view->arrFriends = $arrFriends;
-        
-       
     }
 
     public function loadMessagesAction ()
@@ -210,14 +210,14 @@ class ChatController extends ControllerBase
                 $this->ajaxresponse ("error", "Cant upload file");
             }
         }
-        
-         try {
-            $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory(), new User ($_POST['group_username']), $objUser, $fileName, $type, null);
+
+        try {
+            $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($_POST['group_username']), $objUser, $fileName, $type, null);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
+
         if ( $blResponse === false )
         {
             $this->ajaxresponse ("error", "Cant save message");
@@ -269,7 +269,7 @@ class ChatController extends ControllerBase
         try {
             $objMessage = new MessageFactory();
 
-            $blResult = $objMessage->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory(), new User ($_POST['group_username']), $objUser, '', 'text', null);
+            $blResult = $objMessage->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($_POST['group_username']), $objUser, '', 'text', null);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -278,6 +278,29 @@ class ChatController extends ControllerBase
         if ( $blResult === false )
         {
             $this->ajaxresponse ("error", "Unable to save message");
+        }
+
+        if ( !empty ($_POST['tags']) )
+        {
+
+            $objNotification = new NotificationFactory();
+
+            $tags = explode (",", $_POST['tags']);
+
+            $username = $_SESSION['user']['username'];
+
+            $message = $username . " Tagged you in a comment";
+
+            foreach ($tags as $taggedUser) {
+
+                $objNewUser = new User ($taggedUser);
+
+                $blResult = $objNotification->createNotification ($objNewUser, $message);
+
+                $blResult2 = (new TagUserFactory())->createTagForPost ($objNewUser, $objPost);
+                $objEmail = new EmailNotification ($objNewUser, $message, $_POST['comment']);
+                $objEmail->sendEmail ();
+            }
         }
 
         $this->ajaxresponse ("success", "success");
@@ -421,7 +444,7 @@ class ChatController extends ControllerBase
         if ( $_POST['group_type'] == "user" )
         {
             try {
-                $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory(), new User ($_POST['group_id']), $objUser, $fileName, $type, null);
+                $blResponse = (new MessageFactory())->sendMessage ('New file uploaded', new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($_POST['group_id']), $objUser, $fileName, $type, null);
             } catch (Exception $ex) {
                 trigger_error ($ex->getMessage (), E_USER_WARNING);
                 $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -455,12 +478,13 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", "Invalid User");
         }
 
+
         try {
             $objUser = new User ($_SESSION['user']['user_id']);
 
             $groupId = isset ($_POST['group_id']) && trim ($_POST['group_id']) !== "" && is_numeric ($_POST['group_id']) ? $_POST['group_id'] : null;
 
-            $blResponse = (new MessageFactory())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory(), new User ($_POST['userId']), $objUser, $_POST['filename'], $_POST['type'], $groupId);
+            $blResponse = (new MessageFactory())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($_POST['userId']), $objUser, $_POST['filename'], $_POST['type'], $groupId);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -469,6 +493,28 @@ class ChatController extends ControllerBase
         if ( $blResponse === FALSE )
         {
             $this->ajaxresponse ("error", "CANT SAVE");
+        }
+
+        if ( !empty ($_POST['tags']) )
+        {
+
+            $objNotification = new NotificationFactory();
+
+            $tags = explode (",", $_POST['tags']);
+
+            $username = $_SESSION['user']['username'];
+
+            $message = $username . " Tagged you in a chat message";
+
+            foreach ($tags as $taggedUser) {
+
+                $objNewUser = new User ($taggedUser);
+
+                $objNotification->createNotification ($objNewUser, $message);
+
+                $objEmail = new EmailNotification ($objNewUser, $message, $_POST['msg']);
+                $objEmail->sendEmail ();
+            }
         }
 
         echo $blResponse->getId ();
@@ -498,7 +544,7 @@ class ChatController extends ControllerBase
 					<div class="vpb_users_wraper_left" style="width:100% !important;">
 					
 					<div class="vpb_users_wraper_photos">
-					<img src="/blab/public/uploads/pfile/' . $arrUser->getUsername () . '.jpg" border="0">
+					<img src="/blab/public/uploads/profile/' . $arrUser->getUsername () . '.jpg" border="0">
 					</div>
 					
 					<div class="vpb_users_wraper_name">
@@ -965,33 +1011,32 @@ class ChatController extends ControllerBase
         }
     }
 
-    public function add_messageAction ()
-    {
-        $this->view->disable ();
-
-        if ( !isset ($_SESSION['user']['user_id']) || empty ($_SESSION['user']['user_id']) )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        try {
-            $objUser = new User ($_SESSION['user']['user_id']);
-
-            $blResponse = (new Message())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), $_POST['userId'], $objUser);
-        } catch (Exception $ex) {
-            trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        if ( $blResponse === FALSE )
-        {
-            $this->ajaxresponse ("error", "CANT SAVE");
-        }
-    }
-
-    public function add_msgAction ()
-    {
-        
-    }
-
+//    public function add_messageAction ()
+//    {
+//        $this->view->disable ();
+// 
+//        if ( !isset ($_SESSION['user']['user_id']) || empty ($_SESSION['user']['user_id']) )
+//        {
+//            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+//        }
+//
+//        try {
+//            $objUser = new User ($_SESSION['user']['user_id']);
+//
+//            $blResponse = (new Message())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), $_POST['userId'], $objUser);
+//        } catch (Exception $ex) {
+//            trigger_error ($ex->getMessage (), E_USER_WARNING);
+//            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+//        }
+//
+//        if ( $blResponse === FALSE )
+//        {
+//            $this->ajaxresponse ("error", "CANT SAVE");
+//        }
+//    }
+//
+//    public function add_msgAction ()
+//    {
+//        
+//    }
 }

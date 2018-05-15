@@ -9,9 +9,14 @@ if ( empty ($arrFriendList) )
 <div class="ibox">
     <div class="ibox-content">
         <div id="contact_list">
-            <ul class="list-group clear-list">
+   
+         <input type="text" id="contact-list-search" placeholder="Search Friends" />
+
+            <div class="contact-list-offline offline-status-text" onclick="toggleChatStatus()">Turn off chat</div>
+
+            <ul id="" class="list-group clear-list contact-list-user">
                 <?php foreach ($arrFriendList as $objUser) { ?>
-                    <li class="list-group-item fist-item">
+                    <li class="list-group-item fist-item hide">
                         <a href="/blab/chat/messenger?username=<?= $objUser->getUsername () ?>">
                             <span class="pull-left">
 

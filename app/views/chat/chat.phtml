@@ -351,7 +351,7 @@
             </ul>
         </div>
 
-        <textarea placeholder="Type your message. Press Shift + Enter for newline" user-id="<?= $userId ?>" id="chatMsg" style="margin-top: -5px !important;" name="textMessage" class="form-control"></textarea>
+        <textarea placeholder="Type your message. Press Shift + Enter for newline" user-id="<?= $userId ?>" id="chatMsg" style="margin-top: -5px !important;" name="textMessage" class="form-control mentions"></textarea>
 
         <div id="vpb_added_photos" class="vasinfo">
             <span id="vpb_photos"></span><span id="additional_photos"></span><i id="vRemovePhotos" class="fa fa-times vItems_hover" title="Remove" onclick="vpb_remove_photos ();"></i><i id="vRemoveFiles" class="fa fa-times vItems_hover" title="Remove" onclick="vpb_remove_files ();"></i>
@@ -393,6 +393,20 @@
     </div>
 </div>
 
+<script>
+
+    $ (document).ready (function ()
+    {
+        $ ('#chatMsg').mentionsInput ({
+            source: '/blab/index/autoSuggest',
+            showAtCaret: true
+        });
+    });
+
+
+</script>
+
 <script src="//lab.subinsb.com/projects/Francium/voice/recorder.js"></script>
 <script src="//lab.subinsb.com/projects/Francium/voice/Fr.voice.js"></script>
 <script src="/blab/public/js/chat.js" type="text/javascript"></script>
+

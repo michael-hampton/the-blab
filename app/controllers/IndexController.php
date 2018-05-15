@@ -131,6 +131,21 @@ class IndexController extends ControllerBase
         $arrFilteredFriendList = $this->arrayPagination ($this->totalFriendsPerLoad, $arrFriendList, 0);
         $this->view->arrFilteredFriendList = $arrFilteredFriendList;
 
+        $arrSuggestedList = $objUserFactory->getUsersNotFriends ($objUser);
+
+        if ( $arrFriendList === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get suggested friend list"]
+                            ]
+            );
+        }
+
+        $this->view->arrSuggestedList = $arrSuggestedList;
+
         $this->view->arrFriendList = $arrFriendList;
         $this->view->noPerFriend = 1;
 
@@ -366,6 +381,21 @@ class IndexController extends ControllerBase
 
         $this->view->arrFriendList = $arrFriendList;
 
+        $arrSuggestedList = $objUserFactory->getUsersNotFriends ($objUser);
+
+        if ( $arrFriendList === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "unable to get suggested friend list"]
+                            ]
+            );
+        }
+
+        $this->view->arrSuggestedList = $arrSuggestedList;
+
         $arrFilteredFriendList = $this->arrayPagination ($this->totalFriendsPerLoad, $arrFriendList, 0);
         $this->view->arrFilteredFriendList = $arrFilteredFriendList;
 
@@ -402,10 +432,10 @@ class IndexController extends ControllerBase
         }
 
         $this->view->arrGroups = $arrGroups;
-        
+
         $objPageFactory = new PageFactory();
-        
-        $arrPages = $objPageFactory->getPagesForProfile($objUser, new PageReactionFactory ());
+
+        $arrPages = $objPageFactory->getPagesForProfile ($objUser, new PageReactionFactory ());
 
         $arrUserPages = (new PageFactory())->getPagesMemberOf ($objUser);
 
@@ -419,7 +449,7 @@ class IndexController extends ControllerBase
                             ]
             );
         }
-        
+
         $this->view->arrPages = $arrPages;
 
         try {
@@ -845,7 +875,7 @@ class IndexController extends ControllerBase
 
         $this->view->arrUsers = $arrUsers;
 
-        $arrPages = (new PageFactory())->getAllPages ($objUser, new PageReactionFactory(), $searchText);
+        $arrPages = (new PageFactory())->getAllPages ($objUser, new PageReactionFactory (), $searchText);
 
         if ( $arrPages === false )
         {
@@ -854,7 +884,7 @@ class IndexController extends ControllerBase
 
         $this->view->arrPages = $arrPages;
 
-        $arrGroups = (new GroupFactory())->getAllGroups ($objUser, new GroupRequestFactory(), $searchText);
+        $arrGroups = (new GroupFactory())->getAllGroups ($objUser, new GroupRequestFactory (), $searchText);
 
         if ( $arrGroups === false )
         {

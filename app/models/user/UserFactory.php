@@ -166,37 +166,17 @@ class UserFactory
         return crypt ($password, $salt);
     }
 
+    /**
+     * 
+     * @param type $userId
+     * @return type
+     */
     public function getUser ($userId)
     {
         $arrResults = $this->db->_select ("users", "uid = :userId", [':userId' => $userId], "*", "fname ASC");
 
-        if ( $arrResults === FALSE )
-        {
-            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
-            return false;
-        }
-
-        if ( empty ($arrResults[0]) )
-        {
-            return [];
-        }
-
-
-        $arrUsers = [];
-
-        foreach ($arrResults as $arrResult) {
-            $objUser = new User ($arrResult['uid']);
-            $objUser->setEmail ($arrResult['email']);
-            $objUser->setFirstName ($arrResult['fname']);
-            $objUser->setIsActive ($arrResult['is_active']);
-            $objUser->setLastName ($arrResult['lname']);
-            $objUser->setPassword ($arrResult['password']);
-            $objUser->setUsername ($arrResult['username']);
-
-            $arrUsers[$arrResult['uid']] = $objUser;
-        }
-
-        return $arrUsers;
+        return $this->loadObject($arrResults);
+      
     }
 
     /**
@@ -272,20 +252,14 @@ class UserFactory
 
     public function getFriendRequests (User $objUser, $page = null, $limit = 1, $searchText = null)
     {
-        $sql = "SELECT u.uid, 
-                        u.username, 
-                        u.fname, 
-                        u.lname 
+        $sql = "SELECT u.*
                  FROM   `friends` f 
                         INNER JOIN users u 
                                 ON u.uid = f.friend_two 
                  WHERE  friend_one = :id1 
                         AND status = '1' 
                  UNION 
-                 SELECT u.uid, 
-                        u.username, 
-                        u.fname, 
-                        u.lname 
+                 SELECT u.*
                  FROM   friends 
                         INNER JOIN users u 
                                 ON u.uid = friend_one 
@@ -307,29 +281,7 @@ class UserFactory
 
         $arrResults = $this->db->_query ($sql, $arrParams);
 
-        if ( $arrResults === FALSE )
-        {
-            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
-            return FALSE;
-        }
-
-        if ( empty ($arrResults[0]) )
-        {
-            return [];
-        }
-
-        $arrUsers = [];
-
-        foreach ($arrResults as $arrResult) {
-            $objUser = new User ($arrResult['uid']);
-            $objUser->setUsername ($arrResult['username']);
-            $objUser->setFirstName ($arrResult['fname']);
-            $objUser->setLastName ($arrResult['lname']);
-
-            $arrUsers[] = $objUser;
-        }
-
-        return $arrUsers;
+        return $this->loadObject($arrResults);
     }
 
     /**
@@ -343,20 +295,14 @@ class UserFactory
     public function getFriendList (User $objUser, $page = null, $limit = 1, $searchText = null)
     {
 
-        $sql = "SELECT u.uid, 
-                        u.username, 
-                        u.fname, 
-                        u.lname 
+        $sql = "SELECT u.*
                  FROM   `friends` f 
                         INNER JOIN users u 
                                 ON u.uid = f.friend_two 
                  WHERE  friend_one = :id1 
                         AND status = '2' 
                  UNION 
-                 SELECT u.uid, 
-                        u.username, 
-                        u.fname, 
-                        u.lname 
+                 SELECT u.*
                  FROM   friends 
                         INNER JOIN users u 
                                 ON u.uid = friend_one 
@@ -378,29 +324,37 @@ class UserFactory
 
         $arrResults = $this->db->_query ($sql, $arrParams);
 
-        if ( $arrResults === FALSE )
+       return $this->loadObject($arrResults);
+    }
+
+    public function getUsersNotFriends(User $objUser)
+    {
+        $sql = "SELECT * 
+                FROM   `users` 
+                WHERE  uid NOT IN (SELECT friend_two 
+                                   FROM   friends 
+                                   WHERE  friend_one = :userId) 
+                       AND uid NOT IN (SELECT friend_one 
+                                       FROM   friends 
+                                       WHERE  friend_two = :userId) 
+                       AND uid != :userId ";
+
+        $arrParams = [':userId' => $objUser->getId ()];
+
+        if ( $searchText !== null )
         {
-            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
-            return FALSE;
+            $sql .= " AND (u.username LIKE :username OR u.fname LIKE :username)";
+            $arrParams[':username'] = '%' . $searchText . '%';
         }
 
-        if ( empty ($arrResults[0]) )
+        if ( $page !== null )
         {
-            return [];
+            $sql .= " LIMIT " . $page . ", " . $limit;
         }
 
-        $arrUsers = [];
+        $arrResults = $this->db->_query ($sql, $arrParams);
 
-        foreach ($arrResults as $arrResult) {
-            $objUser = new User ($arrResult['uid']);
-            $objUser->setUsername ($arrResult['username']);
-            $objUser->setFirstName ($arrResult['fname']);
-            $objUser->setLastName ($arrResult['lname']);
-
-            $arrUsers[] = $objUser;
-        }
-
-        return $arrUsers;
+        return $this->loadObject ($arrResults);
     }
 
     /**
@@ -436,6 +390,17 @@ class UserFactory
 
         $arrResults = $this->db->_query ($sql, $arrParameters);
 
+        return $this->loadObject($arrResults);
+        
+    }
+    
+    /**
+     * 
+     * @param type $arrResults
+     * @return \User|boolean
+     */
+    private function loadObject($arrResults)
+    {
         if ( $arrResults === FALSE )
         {
             trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
@@ -450,6 +415,7 @@ class UserFactory
         $arrUsers = [];
 
         foreach ($arrResults as $arrResult) {
+
             $objUser = new User ($arrResult['uid']);
             $objUser->setEmail ($arrResult['email']);
             $objUser->setFirstName ($arrResult['fname']);

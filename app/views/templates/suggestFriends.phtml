@@ -1,0 +1,48 @@
+
+
+
+<div class="vmiddle_other" style="border-bottom:0PX solid !important; display: none;" id="vasplus_wall_suggest_friends">
+
+    <a href="#" style="font-size:26px;" class="pull-left" onclick="vpb_show_find_new_friends_box ('suggest')"><i class="fa fa-search">Suggest Friends</i></a>
+    <a href="#" style="font-size:26px;" class="pull-left" onclick="vpb_show_find_new_friends_box ()"><i class="fa fa-users"></i>Friends</a>
+
+    <div class="vmiddle_other_title vprofile_o_title" style="border-bottom:0px solid;">
+        <div style="float:left;">Suggest Friend <?= count ($arrFilteredFriendList) ?></div>
+        <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+            <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" onclick="vpb_show_status_updates ();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Close">×</button>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+
+    <div style="padding:10px;" id="vpb_display_wall_suggest_friends"></div>
+
+    <div style="padding:10px;" id="vpb_get_all_the_users_friends">
+        <?php
+        if ( !empty ($arrFilteredFriendList) )
+        {
+            foreach ($arrFilteredFriendList as $key => $arrFriend) {
+                ?>
+                <div class="vfriendsPhotos_wraper">
+                    <a href="/blab/index/profile/<?= $arrFriend->getUsername () ?>">
+
+                        <?php
+                        if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg') )
+                        {
+                            echo '<img title="' . $arrFriend->getFirstName () . ' ' . $arrFriend->getLastName () . '" src="/blab/public/uploads/profile/' . $arrFriend->getUsername () . '.jpg">';
+                        }
+                        else
+                        {
+                            echo '<img src="/blab/public/img/avatar.gif">';
+                        }
+                        ?>
+
+                        <span><?= $arrFriend->getFirstname () . ' ' . $arrFriend->getLastname () ?></span>
+                    </a> 
+                </div>
+
+                <?php
+            }
+        }
+        ?>
+    </div>
+</div>

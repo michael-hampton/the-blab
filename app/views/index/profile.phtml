@@ -171,6 +171,9 @@ $postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true
         <!-- mike -->
         <?php $this->partial ("templates/searchFriends", ["arrFilteredFriendList" => $arrFilteredFriendList, "arrFriendList" => $arrFriendList, "objUser" => $objCurrentUser]); ?>
 
+        <!-- suggest friends -->
+        <?php $this->partial ("templates/suggestFriends", ["arrFilteredFriendList" => $arrSuggestedList]); ?>
+
         <div class="vmiddle_other enable_this_box" id="vasplus_notifications" style=" display: none; ">
             <div class="vmiddle_other_title vprofile_o_title">
                 <div style="float:left;">Notifications</div>
