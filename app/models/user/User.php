@@ -1269,7 +1269,7 @@ class User
     {
         $result = $this->db->_select ("users", "uid = :userId", [':userId' => $this->id]);
 
-        if ( $result === false )
+        if ( empty($result))
         {
             trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
             return false;

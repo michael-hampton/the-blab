@@ -112,7 +112,7 @@ class FriendController extends ControllerBase
     {
         $this->view->disable ();
 
-        if ( !isset ($_POST['action']) || !isset ($_POST['friend']) )
+        if ( empty ($_POST['action']) || empty ($_POST['friend']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }

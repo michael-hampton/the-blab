@@ -327,7 +327,7 @@ class UserFactory
        return $this->loadObject($arrResults);
     }
 
-    public function getUsersNotFriends(User $objUser)
+    public function getUsersNotFriends(User $objUser, $searchText = null, $page = null)
     {
         $sql = "SELECT * 
                 FROM   `users` 

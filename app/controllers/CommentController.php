@@ -148,47 +148,20 @@ class CommentController extends ControllerBase
         $objPost = new Post ($id);
 
 
-        $blResponse = (new CommentFactory())->createComment ($_POST['comment'], $objPost, $objUser);
+        $objComment = (new CommentFactory())->createComment ($_POST['comment'], $objPost, $objUser);
 
-        if ( $blResponse === FALSE )
+        if ( $objComment === FALSE )
         {
             $this->ajaxresponse ("error", "Unable to save");
         }
 
-        $arrCommentLikes = $blResponse->getArrLikes ();
-
-        $likeCommentClass = 'like';
-        $commentLikes = 'Be the first person to like this';
-        $likeCommentCount = 0;
-
-        if ( !empty ($arrCommentLikes) )
-        {
-
-            $userCommentLikes = array_reduce ($arrCommentLikes, function ($reduced, $current) {
-
-                $fullName = $current->getFirstName () . ' ' . $current->getLastName ();
-
-                $reduced[$current->getUsername ()] = $fullName;
-                return $reduced;
-            });
-
-            $likeCommentClass = !empty ($userCommentLikes) && array_key_exists ($_SESSION['user']['username'], $userCommentLikes) ? 'unlike' : $likeCommentClass;
-            $commentLikes = !empty ($userCommentLikes) && $userCommentLikes !== null ? implode (',', array_slice ($userCommentLikes, 0, 2)) : '';
-            $likeCommentCount = !empty ($userCommentLikes) && $userCommentLikes !== null ? count ($userCommentLikes) - 2 : 0;
-        }
-
+        require_once $this->rootPath. "/blab/app/views/templates/templateFunctions.php";
+        $content = buildComments ($objComment, $id, 0, 1, false);
+        
         $comment = array(
-            "date_added" => date ('Y-m-d H:i:s', strtotime ('- 1 hour')),
             "id" => $_POST['id'],
-            "comment" => $_POST['comment'],
-            "author" => $objUser->getFirstName () . ' ' . $objUser->getLastName (),
-            "username" => $objUser->getUsername (),
-            "current_user" => $_SESSION['user']['username'],
-            "comment_id" => $blResponse->getId (),
-            "likeCount" => $blResponse->getLikes (),
-            "likeCommentClass" => $likeCommentClass,
-            "commentLikes" => $commentLikes,
-            "likeCommentCount" => $likeCommentCount
+            "comment_id" => $objComment->getId (),
+            "content" => $content
         );
 
         echo json_encode ($comment);

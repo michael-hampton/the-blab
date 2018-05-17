@@ -661,50 +661,56 @@ function buildReplies ($comment)
     }
 }
 
-function buildComments ($arrComment, $totalCommentsToDisplay)
+/**
+ * 
+ * @param Comment $comment
+ * @param type $totalCommentsToDisplay
+ */
+function buildComments (Comment $comment, $postId, $count, $totalCommentsToDisplay, $blShowResponse = true)
 {
-    $comments = $arrComment->getArrComments ();
+
 
     $likeCommentClass = 'like';
 
-    if ( count ($comments) > 0 ):
 
 
-        foreach ($comments as $count => $comment):
+    $class = $count >= $totalCommentsToDisplay ? 'd-none' : '';
 
-            $class = $count >= $totalCommentsToDisplay ? 'd-none' : '';
+    $userCommentLikes = [];
+    $likeCommentCount = 0;
+    $commentLikes = '';
+    $likeCommentClass = 'like';
 
-            $userCommentLikes = [];
-            $likeCommentCount = 0;
-            $commentLikes = '';
-            $likeCommentClass = 'like';
+    $arrCommentLikes = $comment->getArrLikes ();
 
-            $arrCommentLikes = $comment->getArrLikes ();
+    if ( !empty ($arrCommentLikes) )
+    {
 
-            if ( !empty ($arrCommentLikes) )
-            {
+        $userCommentLikes = array_reduce ($arrCommentLikes, function ($reduced, $current) {
 
-                $userCommentLikes = array_reduce ($arrCommentLikes, function ($reduced, $current) {
+            $fullName = $current->getFirstName () . ' ' . $current->getLastName ();
 
-                    $fullName = $current->getFirstName () . ' ' . $current->getLastName ();
+            $reduced[$current->getUsername ()] = $fullName;
+            return $reduced;
+        });
 
-                    $reduced[$current->getUsername ()] = $fullName;
-                    return $reduced;
-                });
+        $likeCommentClass = !empty ($userCommentLikes) && array_key_exists ($_SESSION['user']['username'], $userCommentLikes) ? 'unlike' : $likeCommentClass;
+        $commentLikes = implode (',', array_slice ($userCommentLikes, 0, 2));
+        $likeCommentCount = count ($userCommentLikes) - 2;
+    }
 
-                $likeCommentClass = !empty ($userCommentLikes) && array_key_exists ($_SESSION['user']['username'], $userCommentLikes) ? 'unlike' : $likeCommentClass;
-                $commentLikes = implode (',', array_slice ($userCommentLikes, 0, 2));
-                $likeCommentCount = count ($userCommentLikes) - 2;
-            }
+    $content = '';
 
-            $likeCommentText = trim ($likeCommentClass) === "unlike" ? 'Unlike' : "Like";
+    $likeCommentText = trim ($likeCommentClass) === "unlike" ? 'Unlike' : "Like";
 
-            if ( $count === $totalCommentsToDisplay )
-            {
-                echo '<a id="' . $arrComment->getId () . '" href="#" class="viewMore">View More Comments</a>';
-            }
+    if ( $count === $totalCommentsToDisplay )
+    {
+        $content .= '<a id="' . $postId . '" href="#" class="viewMore">View More Comments</a>';
+    }
 
-            echo '<div style="margin:0px !important;display: inline-block;max-width:100% !important;max-height:100% !important;width:100% !important;height:100% !important;display:none !important;" id="vpb_hidden_comment_id_' . $comment->getId () . '">
+
+
+    $content .= '<div style="margin:0px !important;display: inline-block;max-width:100% !important;max-height:100% !important;width:100% !important;height:100% !important;display:none !important;" id="vpb_hidden_comment_id_' . $comment->getId () . '">
             <div class="vasplus_a">
             <div class="vasplus_b" style="background-color: #f6f7f8 !important;">
             <div class="vpb_wall_adjust_c">
@@ -716,69 +722,69 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
             </div>
             </div>';
 
-            echo '<div class="social-comment comment-a1 ' . $class . '" commentid="' . $comment->getId () . '">';
+    $content .= '<div class="social-comment comment-a1 ' . $class . '" commentid="' . $comment->getId () . '">';
 
 
-            echo '<span class="vpb_wrap_post_contents_b">
+    $content .= '<span class="vpb_wrap_post_contents_b">
                                     
                     <div class="dropdown">
                      <i id="menu' . $comment->getId () . '" data-toggle="dropdown" data-placement="top" class="fa fa-pencil vpb_wrap_coms_icons vasplus-tooltip-attached" onclick="vpb_hide_popup();" data-toggle="tooltip" data-placement="top" title="" data-original-title="Options"></i>
                       <ul class="dropdown-menu bullet pull-right" role="menu" aria-labelledby="menu' . $comment->getId () . '" style="right: -15px; left: auto; top:18px;border-radius:0px !important;">
                                               	<li><a onclick="vpb_show_editable_item(\'' . $comment->getId () . '\', \'comment\');">Edit Comment</a></li>';
 
-            if ( $comment->getUserId () == $_SESSION['user']['user_id'] )
-            {
-                echo '<li><a class="pull-right" onclick="vpb_delete_this_wall_item(\'' . $comment->getId () . '\', \'comment\');">Delete Comment</a></li>';
-            }
-            else
-            {
-                echo '<li><a class="pull-right ignoreComment" deleteid="' . $comment->getId () . '">Remove Comment From Feed</a></li>';
-            }
-            echo '</ul>
+    if ( $comment->getUserId () == $_SESSION['user']['user_id'] )
+    {
+        $content .= '<li><a class="pull-right" onclick="vpb_delete_this_wall_item(\'' . $comment->getId () . '\', \'comment\');">Delete Comment</a></li>';
+    }
+    else
+    {
+        $content .= '<li><a class="pull-right ignoreComment" deleteid="' . $comment->getId () . '">Remove Comment From Feed</a></li>';
+    }
+    $content .= '</ul>
                     </div>
                                 </span>';
 
-            echo '<a href="" class="pull-left">
+    $content .= '<a href="" class="pull-left">
                                                     <img alt="image" src="/blab/public/uploads/profile/' . $comment->getUsername () . '.jpg">
                                                 </a>';
 
-            $formattedUsername = $comment->getId () . trim (str_replace (".", "", $comment->getUsername ()));
-            echo '<div class="media-body">
+    $formattedUsername = $comment->getId () . trim (str_replace (".", "", $comment->getUsername ()));
+    $content .= '<div class="media-body">
                 
                                                 <span class="vpb_wall_comment_fullname" onmouseover="vpb_get_user_onmouseover_data(\'comment' . $formattedUsername . '\', \'' . $comment->getAuthor () . '\', \'United Kingdom\', \'/blab/public/uploads/profile/' . $comment->getUsername () . '.jpg\');" onmouseout="vpb_get_user_mouseout_data(\'comment' . $formattedUsername . '\', \'' . $comment->getAuthor () . '\', \'United Kingdom\', \'/blab/public/uploads/profile/' . $comment->getUsername () . '.jpg\');" onclick="window.location.href=\'/blab/index/profile/' . $comment->getUsername () . '\';">' . $comment->getAuthor () . '</span>
                                                     <small date="' . $comment->getCreated () . '" class="text-muted timeAgo">' . blab_time_ago ($comment->getCreated ()) . '</small> <br>';
 
-            if ( trim ($comment->getDateUpdated ()) !== "" && trim ($comment->getDateUpdated ()) !== "0000-00-00 00:00:00" )
-            {
-                echo "<small date='" . $comment->getDateUpdated () . "'>Updated this comment " . blab_time_ago ($comment->getDateUpdated ()) . "</small><br>";
-            }
+    if ( trim ($comment->getDateUpdated ()) !== "" && trim ($comment->getDateUpdated ()) !== "0000-00-00 00:00:00" )
+    {
+        $content .= "<small date='" . $comment->getDateUpdated () . "'>Updated this comment " . blab_time_ago ($comment->getDateUpdated ()) . "</small><br>";
+    }
 
-            $commentText = $comment->getComment ();
+    $commentText = $comment->getComment ();
 
-            $len = strlen ($commentText);
-            $post_Left = '';
-            $max_allowed = 400;
+    $len = strlen ($commentText);
+    $post_Left = '';
+    $max_allowed = 400;
 
-            if ( $len <= (int) $max_allowed )
-            {
-                $post_Left = $commentText;
-                $showMore = 'none';
-            }
-            else if ( $len >= (int) $max_allowed )
-            {
-                $post_trimed = substr ($commentText, 0, (int) $max_allowed);
-                $post_Left = $post_trimed . '...';
-                $showMore = 'inline-block';
-            }
+    if ( $len <= (int) $max_allowed )
+    {
+        $post_Left = $commentText;
+        $showMore = 'none';
+    }
+    else if ( $len >= (int) $max_allowed )
+    {
+        $post_trimed = substr ($commentText, 0, (int) $max_allowed);
+        $post_Left = $post_trimed . '...';
+        $showMore = 'inline-block';
+    }
 
 
 
-            echo '<div class="" id="vpb_default_comment_wrapper_' . $comment->getId () . '">';
-            echo '<div id="comment_box_a_' . $comment->getId () . '">';
-            echo '<span style="font-size:14px;" id="vcomments_' . $comment->getId () . '">
+    $content .= '<div class="" id="vpb_default_comment_wrapper_' . $comment->getId () . '">';
+    $content .= '<div id="comment_box_a_' . $comment->getId () . '">';
+    $content .= '<span style="font-size:14px;" id="vcomments_' . $comment->getId () . '">
                                                    ' . parseSmiley ($post_Left) . '
                                                        </span>
-                                                       <span id="show_more_' . $arrComment->getId () . '" style="display:' . $showMore . ';" class="vpb_hover" onclick="vpb_show_full_item(\'' . $comment->getId () . '\',\'comment\');">See more</span>
+                                                       <span id="show_more_' . $postId . '" style="display:' . $showMore . ';" class="vpb_hover" onclick="vpb_show_full_item(\'' . $comment->getId () . '\',\'comment\');">See more</span>
                                                            </div>
                                                            <div style="display:none;" id="comment_box_b_' . $comment->getId () . '">
                                                        <span id="vcomments_large_' . $comment->getId () . '">' . $commentText . '</span>
@@ -787,7 +793,7 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
                                                     
                                                 </div>';
 //
-            echo '<div style="max-width: 100% !important; max-height: 100% !important; width: 100% !important; height: 100% !important; display: none;" id="vpb_editable_comment_wrapper_' . $comment->getId () . '" class="vpb_editable_status_wrapper">
+    $content .= '<div style="max-width: 100% !important; max-height: 100% !important; width: 100% !important; height: 100% !important; display: none;" id="vpb_editable_comment_wrapper_' . $comment->getId () . '" class="vpb_editable_status_wrapper">
 				<div class="input-group">
 				<textarea id="vpb_wall_comment_editable_data_' . $comment->getId () . '" class="form-control vpb_textarea_editable_status_update" placeholder="Write a comment...">' . parseSmiley ($comment->getComment ()) . '</textarea>
 				<span class="input-group-addon" style="vertical-align:bottom; background-color:#FFF !important; border-left:0px solid;">
@@ -797,7 +803,7 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
                 <div id="save_changes_loading_' . $comment->getId () . '"></div>
 			   </div>';
 
-            echo '<div class="dropdown open v_load_user_detail" onmouseover="vpb_get_user_onmouseover_datas();" onmouseout="vpb_get_user_mouseout_datas();" id="vpb_load_user_comment' . $formattedUsername . '" style="text-align: left !important; margin: 0px !important; padding: 0px !important; display: none;"> 
+    $content .= '<div class="dropdown open v_load_user_detail" onmouseover="vpb_get_user_onmouseover_datas();" onmouseout="vpb_get_user_mouseout_datas();" id="vpb_load_user_comment' . $formattedUsername . '" style="text-align: left !important; margin: 0px !important; padding: 0px !important; display: none;"> 
     
     <ul class="dropdown-menu bullet" style="border-radius:0px !important; display:block; margin:15px; z-index:9999;text-align:left !important;margin-top:10px;">
     
@@ -824,53 +830,56 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
     </ul>
     </div>';
 
-            $arrImages = $comment->getArrImages ();
+    $arrImages = $comment->getArrImages ();
 
-            if ( !empty ($arrImages) )
-            {
-                echo '<div class="photos-frame">';
+    if ( !empty ($arrImages) )
+    {
+        $content .= '<div class="photos-frame">';
 
-                foreach ($arrImages as $key => $arrImage) {
+        foreach ($arrImages as $key => $arrImage) {
 
-                    echo '<input type="hidden" id="hidden_photo_link_' . $comment->getId () . '_' . ($key + 1) . '" value="' . $arrImage->getFileLocation () . '">';
+            $content .= '<input type="hidden" id="hidden_photo_link_' . $comment->getId () . '_' . ($key + 1) . '" value="' . $arrImage->getFileLocation () . '">';
 
-                    echo '<a class="v_photo_holders" onclick="vpb_popup_photo_box(\'' . $comment->getId () . '\', \'' . count ($arrImages) . '\', \'' . ($key + 1) . '\', \'' . $arrImage->getFileLocation () . '\');">';
-
-
-                    echo '<img style="width:100%;" src="' . $arrImage->getFileLocation () . '" class="img-responsive">';
-
-                    echo '</a>';
-                }
-
-                echo '</div>';
-            }
+            $content .= '<a class="v_photo_holders" onclick="vpb_popup_photo_box(\'' . $comment->getId () . '\', \'' . count ($arrImages) . '\', \'' . ($key + 1) . '\', \'' . $arrImage->getFileLocation () . '\');">';
 
 
-            echo '<div class="btn-group vpb_wrap_post_contents_e" style="margin-left:45px; margin-top:8px;" id="' . $comment->getId () . '">
+            $content .= '<img style="width:100%;" src="' . $arrImage->getFileLocation () . '" class="img-responsive">';
+
+            $content .= '</a>';
+        }
+
+        $content .= '</div>';
+    }
+
+
+    $content .= '<div class="btn-group vpb_wrap_post_contents_e" style="margin-left:45px; margin-top:8px;" id="' . $comment->getId () . '">
                     <span class="vpb_comment_update_bottom_links" title="Leave a reply" onclick="vpb_show_reply_box(\'' . $comment->getId () . '\');">Reply</span>
-                                      <button comment-id="' . $comment->getId () . '" id="' . $arrComment->getId () . '" class="btn btn-white btn-xs ' . $likeCommentClass . ' comment"><i class="fa fa-thumbs-up"></i> ' . $likeCommentText . '</button>
+                                      <button comment-id="' . $comment->getId () . '" id="' . $postId . '" class="btn btn-white btn-xs ' . $likeCommentClass . ' comment"><i class="fa fa-thumbs-up"></i> ' . $likeCommentText . '</button>
                                             <br><a href="#" class="showLikes pull-left col-lg-12" id="' . $comment->getId () . '" type="comment">' . (!empty ($commentLikes) && $commentLikes !== null ? $commentLikes : '') . ' ' . ($likeCommentCount > 0 ? ' and ' . $likeCommentCount . ' others' : ' ');
-            if ( $likeCommentCount > 0 || trim ($commentLikes) !== '' && trim ($commentLikes) != 'null' && $commentLikes !== null )
-            {
-                echo ' liked this';
-            }
+    if ( $likeCommentCount > 0 || trim ($commentLikes) !== '' && trim ($commentLikes) != 'null' && $commentLikes !== null )
+    {
+        $content .= ' liked this';
+    }
 
-            echo '</a>
+    $content .= '</a>
                                   </div>';
 //                                            </div>';
 //
-            echo '<input type="hidden" id="vtotal_replies_' . $comment->getId () . '" value="11">';
-            echo '<input type="hidden" id="vpb_replies_start_' . $comment->getId () . '" value="4">';
+    $content .= '<input type="hidden" id="vtotal_replies_' . $comment->getId () . '" value="11">';
+    $content .= '<input type="hidden" id="vpb_replies_start_' . $comment->getId () . '" value="4">';
 
 
-            buildReplies ($comment);
+    if ( $blShowResponse === true )
+    {
+        buildReplies ($comment);
+    }
 
 
 
-            echo '<div id="vpb_reply_updated_' . $comment->getId () . '"></div>';
-            echo '<div style="clear:both;"></div>';
+    $content .= '<div id="vpb_reply_updated_' . $comment->getId () . '"></div>';
+    $content .= '<div style="clear:both;"></div>';
 
-            echo '<div id="vpb_reply_box_' . $comment->getId () . '" class="vpb_reply_posting_wrapper" style="display: none;">
+    $content .= '<div id="vpb_reply_box_' . $comment->getId () . '" class="vpb_reply_posting_wrapper" style="display: none;">
                 <span id="replied_' . $comment->getId () . '"></span>
                
                 <div class="input-group">
@@ -881,7 +890,7 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
                 <div class="vpb_wrap_post_contents_r">
                 <textarea id="vpb_wall_reply_data_' . $comment->getId () . '" onclick="vpb_hide_reply_smiley_box(\'' . $comment->getId () . '\');" class="vpb_reply_textarea" placeholder="Write a reply..." onkeydown="javascript:return vpb_submit_reply(event,this, \'' . $comment->getId () . '\');"></textarea>';
 
-            echo '<ul class="dropdown-menu reply_smiley_dropdown_menu" id="vpb_the_reply_smiley_box' . $comment->getId () . '" style="right: 0px; left: auto; top: auto; border-radius: 0px !important; display: none;">
+    $content .= '<ul class="dropdown-menu reply_smiley_dropdown_menu" id="vpb_the_reply_smiley_box' . $comment->getId () . '" style="right: 0px; left: auto; top: auto; border-radius: 0px !important; display: none;">
                 <li class="dropdown-header vpb_wall_li_bottom_border">
                 <span class="v_wall_position_info_left">What is your current mood?</span> <span class="v_wall_position_info_right" onclick="vpb_hide_reply_smiley_box(\'' . $comment->getId () . '\');">x</span><div style="clear:both;"></div></li>
                 <li><span id="vpb_reply_smiley_box_' . $comment->getId () . '"></span></li>
@@ -898,9 +907,9 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
 
 
 
-            echo '</div>';
+    $content .= '</div>';
 
-            echo '<span class="vpb_no_radius_b">
+    $content .= '<span class="vpb_no_radius_b">
                 <input type="file" id="reply_photo_' . $comment->getId () . '" onchange="vpb_add_file_to_reply_clicked(\'' . $comment->getId () . '\');vpb_reply_image_preview(this, \'Please click on the continue button below to proceed to your post or click on the Browse photos button above to select a new photo or multiple photos at a time.\', \'Photo Enlargement\', \'' . $comment->getId () . '\');" style="display:none;">
                 
                 <div id="vpb_reply_bottom_icons_' . $comment->getId () . '" style="">
@@ -917,16 +926,15 @@ function buildComments ($arrComment, $totalCommentsToDisplay)
 
 
 
-            echo '</span>'; //input group
+    $content .= '</span>'; //input group
 
-            echo '</div>'; //reply box
+    $content .= '</div>'; //reply box
 
-            echo '</div>';
+    $content .= '</div>';
 
 
-            //here
-            echo '</div>';
-        endforeach;
+    //here
+    $content .= '</div>';
 
-    endif;
+    return $content;
 }

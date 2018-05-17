@@ -1,0 +1,114 @@
+<?php
+foreach ($arrMessages as $arrMessage):
+
+    $width = 300;
+    $height = 300;
+    $embed = '';
+
+    $comment = $arrMessage->getMessage ();
+
+    if ( preg_match ('/https:\/\/(?:www.)?(youtube).com\/watch\\?v=(.*?)/', $comment) )
+    {
+        $embed = preg_replace ("/\s*[a-zA-Z\/\/:\.]*youtube.com\/watch\?v=([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i", "<iframe class=\"embed-responsive-item\" width=\"" . $width . "\" height=\"" . $height . "\" src=\"//www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>", $comment);
+    }
+
+    if ( preg_match ('/https:\/\/vimeo.com\/(\\d+)/', $comment, $regs) )
+    {
+        $embed = '<iframe class="embed-responsive-item" src="http://player.vimeo.com/video/' . $regs[1] . '?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;color=ffffff" width="' . $width . '" height="' . $height . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+    }
+
+    if ( $embed != "" )
+    {
+        $comment = '<div class="vasplus_a">
+			<div class="vasplus_b">
+			<div class="vasplus_c">
+			<div class="vpb_video_link_a">
+			<div class="vpb_data_size">
+				  ' . $embed . '
+				</div>
+			
+			
+			</div>
+			</div>
+			</div></div>';
+    }
+
+    if ( $arrMessage->getSender () == $_SESSION['user']['user_id'] )
+    {
+        ?>
+
+        <div class="chat-message right chatWrappera">
+            <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
+            <img class="message-avatar" src="/blab/public/uploads/profile/<?= $arrMessage->getUsername () ?>.jpg" alt="">
+            <div class="message">
+                <a class="message-author" href="#">  <?= $arrMessage->getAuthor () ?> </a>
+                <span class="message-date"> <?= date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())); ?> </span>
+                <span class="message-content">
+
+                    <?php
+                    if ( $arrMessage->getType () == "img" )
+                    {
+                        echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
+                        echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
+                        echo '</a>';
+                    }
+                    elseif ( $arrMessage->getType () == "audio" )
+                    {
+                        echo '<audio style="width:100%; float:left;" controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
+                    }
+                    elseif ( $arrMessage->getType () == "file" )
+                    {
+                        echo '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
+                    }
+                    ?>
+
+                    <?= $comment ?>
+                </span>
+            </div>
+        </div>
+
+
+        <?php
+    }
+    else
+    {
+        ?>
+
+        <div class="chat-message left chatWrappera">
+            <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
+
+            <img class="message-avatar" src="/blab/public/uploads/profile/<?= $arrMessage->getUsername () ?>.jpg" alt="">
+            <div class="message">
+                <a class="message-author" href="#"> <?= $arrMessage->getAuthor () ?> </a>
+                <span class="message-date"> <?= date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())); ?>  </span>
+                <span class="message-content">
+
+                    <?php
+                    if ( $arrMessage->getType () == "img" )
+                    {
+                        echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
+                        echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
+                        echo '</a>';
+                    }
+                    elseif ( $arrMessage->getType () == "file" )
+                    {
+                        echo '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
+                    }
+                    elseif ( $arrMessage->getType () == "audio" )
+                    {
+                        echo '<audio controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
+                    }
+                    ?>
+
+                    <?= $comment ?>
+                </span>
+            </div>
+        </div>
+
+        <?php
+    }
+    ?>
+
+
+
+<?php endforeach; ?>

@@ -310,7 +310,19 @@ else
         echo '</div>';
 
         echo '<div class="social-footer" id="' . $arrComment->getId () . '">';
-        buildComments ($arrComment, $totalCommentsToDisplay);
+
+
+        $comments = $arrComment->getArrComments ();
+
+        if ( count ($comments) > 0 )
+        {
+            foreach ($comments as $commentCount => $comment) {
+                echo buildComments ($comment, $arrComment->getId(), $commentCount, $totalCommentsToDisplay);
+            }
+        }
+
+
+
 
         //end social comment
 

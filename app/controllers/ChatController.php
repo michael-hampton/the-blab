@@ -90,44 +90,12 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", "Unable to get messages");
         }
 
-        $message = '';
+        $message = $this->view->getPartial (
+                "chat/viewMessage", [
+            "arrMessages" => $arrMessages,
+                ]
+        );
 
-        foreach ($arrMessages as $arrMessage) {
-
-            $class = $arrMessage->getUsername () === $_SESSION['user']['username'] ? 'right' : 'left';
-
-            $message .= '<div class="chat-message ' . $class . ' chatWrappera">
-                    <a href="#" class="deleteChatMessage pull-right" deleteid="' . $arrMessage->getId () . '"><i class="fa fa-trash"></i></a>
-             <img class="message-avatar" src="/blab/public/uploads/profile/' . $arrMessage->getUsername () . '.jpg" alt="">
-            <div class="message">
-                <a class="message-author" href="#">  ' . $arrMessage->getAuthor () . ' </a>
-                <span class="message-date"> ' . date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())) . ' </span>';
-
-            if ( $arrMessage->getType () == "img" )
-            {
-                $message .= '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
-                $message .= '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
-                $message .= '</a>';
-            }
-            elseif ( $arrMessage->getType () == "audio" )
-            {
-                $message .= '<audio controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
-            }
-            elseif ( $arrMessage->getType () == "file" )
-            {
-                $message .= '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
-            }
-//            elseif ( $arrMessage->getType () == "file" )
-//            {
-//                $message .= '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
-//            }
-
-            $message .= '<span class="message-content">
-                    ' . $arrMessage->getMessage () . '
-                </span>
-            </div>
-        </div>';
-        }
 
         $this->ajaxresponse ("success", "success", ["message_id" => 1, "message" => $message]);
     }
@@ -293,13 +261,17 @@ class ChatController extends ControllerBase
 
             foreach ($tags as $taggedUser) {
 
-                $objNewUser = new User ($taggedUser);
+                try {
+                    $objNewUser = new User ($taggedUser);
 
-                $blResult = $objNotification->createNotification ($objNewUser, $message);
+                    $objNotification->createNotification ($objNewUser, $message);
 
-                $blResult2 = (new TagUserFactory())->createTagForPost ($objNewUser, $objPost);
-                $objEmail = new EmailNotification ($objNewUser, $message, $_POST['comment']);
-                $objEmail->sendEmail ();
+                    $objEmail = new EmailNotification ($objNewUser, $message, $_POST['comment']);
+                    $objEmail->sendEmail ();
+                } catch (Exception $ex) {
+                    trigger_error ($ex->getMessage (), E_USER_WARNING);
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
             }
         }
 
@@ -450,10 +422,6 @@ class ChatController extends ControllerBase
                 $this->ajaxresponse ("error", $this->defaultErrrorMessage);
             }
         }
-        else
-        {
-            
-        }
 
 
         if ( $blResponse === false )
@@ -508,12 +476,17 @@ class ChatController extends ControllerBase
 
             foreach ($tags as $taggedUser) {
 
-                $objNewUser = new User ($taggedUser);
+                try {
+                    $objNewUser = new User ($taggedUser);
 
-                $objNotification->createNotification ($objNewUser, $message);
+                    $objNotification->createNotification ($objNewUser, $message);
 
-                $objEmail = new EmailNotification ($objNewUser, $message, $_POST['msg']);
-                $objEmail->sendEmail ();
+                    $objEmail = new EmailNotification ($objNewUser, $message, $_POST['msg']);
+                    $objEmail->sendEmail ();
+                } catch (Exception $ex) {
+                    trigger_error ($ex->getMessage (), E_USER_WARNING);
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
             }
         }
 
@@ -572,11 +545,16 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objUser = new User ($_SESSION['user']['user_id']);
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
 
-        $newMessage = trim ($_POST['newMessage']) === "yes" ? true : false;
+            $newMessage = trim ($_POST['newMessage']) === "yes" ? true : false;
 
-        $blResult = (new MessageFactory())->addUserToGroupChat ($objUser, $_POST['group_id'], $_POST['username'], $newMessage);
+            $blResult = (new MessageFactory())->addUserToGroupChat ($objUser, $_POST['group_id'], $_POST['username'], $newMessage);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $blResult === false )
         {
@@ -682,11 +660,6 @@ class ChatController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
-        echo '<pre>';
-        print_r ($_FILES);
-        print_r ($_POST);
-        die;
     }
 
     public function deleteConversationAction ()
@@ -963,80 +936,7 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        foreach ($arrMessages as $arrMessage) {
-
-            if ( $arrMessage->getSender () == $_SESSION['user']['user_id'] )
-            {
-
-
-                echo '<div class="chat-message right chatWrappera">
-                    <a href="#" class="deleteChatMessage pull-right" deleteid="' . $arrMessage->getId () . '"><i class="fa fa-trash"></i></a>
-             <img class="message-avatar" src="/blab/public/uploads/profile/' . $arrMessage->getUsername () . '.jpg" alt="">
-            <div class="message">
-                <a class="message-author" href="#">  ' . $arrMessage->getAuthor () . ' </a>
-                <span class="message-date"> ' . date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())) . ' </span>';
-
-                if ( $arrMessage->getType () == "img" )
-                {
-                    echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
-                    echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
-                    echo '</a>';
-                }
-                elseif ( $arrMessage->getType () == "audio" )
-                {
-                    echo '<audio controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
-                }
-
-                echo '<span class="message-content">
-                    ' . $arrMessage->getMessage () . '
-                </span>
-            </div>
-        </div>';
-            }
-            else
-            {
-
-
-                echo '<div class="chat-message left chatWrappera">
-             <img class="message-avatar" src="/blab/public/uploads/profile/' . $arrMessage->getUsername () . '.jpg" alt="">
-            <div class="message">
-                <a class="message-author" href="#"> ' . $arrMessage->getAuthor () . ' </a>
-                <span class="message-date"> ' . date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())) . '  </span>
-                <span class="message-content">
-                    ' . $arrMessage->getMessage () . '
-                </span>
-            </div>
-        </div>';
-            }
-        }
+        $this->view->partial ("chat/viewMessage", ["arrMessages" => $arrMessages]);
     }
 
-//    public function add_messageAction ()
-//    {
-//        $this->view->disable ();
-// 
-//        if ( !isset ($_SESSION['user']['user_id']) || empty ($_SESSION['user']['user_id']) )
-//        {
-//            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-//        }
-//
-//        try {
-//            $objUser = new User ($_SESSION['user']['user_id']);
-//
-//            $blResponse = (new Message())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), $_POST['userId'], $objUser);
-//        } catch (Exception $ex) {
-//            trigger_error ($ex->getMessage (), E_USER_WARNING);
-//            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-//        }
-//
-//        if ( $blResponse === FALSE )
-//        {
-//            $this->ajaxresponse ("error", "CANT SAVE");
-//        }
-//    }
-//
-//    public function add_msgAction ()
-//    {
-//        
-//    }
 }

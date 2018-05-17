@@ -555,7 +555,7 @@ and (max-width : 1024px)  {
     color: #3b5998;
     cursor: pointer;
     text-decoration: none;
-    font-weight:bold;.vpb-like-post-wrap
+    font-weight:bold;
     display:inline-block;
 }
 
@@ -782,42 +782,36 @@ and (max-width : 1024px)  {
 }
 
 .feeling-like {
-    left: 10px;
+    left: -16px;
     transition-delay: 0s;
     background-image: url('/blab/public/img/feelings_like.png');
 }
 .feeling-haha {
-    left: 68px;
+    left: 80px;
     transition-delay: .05s;
     background-image: url(/blab/public/img/feelings_haha.png);
 }
 
 .feeling-love {
-    left: 68px;
+    left: 32px;
     transition-delay: .05s;
     background-image: url('/blab/public/img/feelings_love.png');
 }
 
-.feeling-haha {
-    left: 126px;
-    transition-delay: .1s;
-    background-image: url('/blab/public/img/feelings_haha.png');
-}
-
 .feeling-wow {
-    left: 184px;
+    left: 128px;
     transition-delay: .15s;
     background-image: url('/blab/public/img/feelings_wow.png');
 }
 
 .feeling-sad {
-    left: 242px;
+    left: 177px;
     transition-delay: .2s;
     background-image: url('/blab/public/img/feelings_sad.png');
 }
 
 .feeling-angry {
-    left: 300px;
+    left: 226px;
     transition-delay: .25s;
     background-image: url('/blab/public/img/feelings_angry.png');
 }
@@ -1108,7 +1102,7 @@ and (max-width : 1024px)  {
 
 .vpb_wrap_post_contents_r
 {
-    width:width:100% !important;  display:block !important; 
+    width:100% !important;  display:block !important; 
 }
 
 .vpb_reply_textarea {
@@ -3476,7 +3470,7 @@ and (max-width : 1024px)  {
 
 .vpb_wrap_post_contents_r
 {
-    width:width:100% !important;  display:block !important; 
+    width:100% !important;  display:block !important; 
 }
 
 #the_selected_location { color:#3b5998 !important; }
@@ -4180,7 +4174,6 @@ textarea{
     width: 100% !important;
     height: auto !important;
 }
-But what about when the browser window starts getting narrow? 5 columns might be great for a very large browser window but too many for a smaller browser window (5 images side-by-side might get too narrow). We can fix the problem super easily by having media queries test the browser width and adjust the number of columns accordingly.
 
 @media (max-width: 1200px) {
     .photos-frame {
@@ -4802,7 +4795,7 @@ But what about when the browser window starts getting narrow? 5 columns might be
 
 .vpb_wrap_post_contents_f
 {
-    width:width:100% !important; display:block !important; background-color: transparent !important;
+    width:100% !important; display:block !important; background-color: transparent !important;
 }
 
 /*.vpb_no_radius_b {border-radius: 0px  !important; border: 0px solid #e5e5e5; border-left:0px solid !important;border-top:0px solid !important; padding:5px 8px; position:absolute; bottom:1px; right:0px; }
@@ -5024,7 +5017,7 @@ But what about when the browser window starts getting narrow? 5 columns might be
 
 .vpb_wrap_post_contents_r
 {
-    width:width:100% !important;  display:block !important; 
+    width:100% !important;  display:block !important; 
 }
 
 .vpb_reply_textarea {
@@ -5553,7 +5546,7 @@ But what about when the browser window starts getting narrow? 5 columns might be
     max-width:50%;
     padding-right:10px;
     width:100%;
-    display: inline-block; !important; 
+    display: inline-block !important; 
     background-color: transparent !important;
     float: left;
     text-align:left;
