@@ -912,7 +912,14 @@ class PageController extends ControllerBase
 
             $objUser = new User ($userId);
 
-            $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($objPage->getUserId ()), $objUser, "", "text");
+            if ( !empty ($_POST['user_id']) )
+            {
+                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), $objUser, new User ($objPage->getUserId ()), "", "text");
+            }
+            else
+            {
+                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($objPage->getUserId ()), $objUser, "", "text");
+            }
 
             if ( $objMessage === false )
             {
@@ -1032,6 +1039,7 @@ class PageController extends ControllerBase
         $message = $this->view->getPartial (
                 "page/getMessages", [
             "arrMessages" => $arrMessages,
+            "user_id" => $userId
                 ]
         );
 

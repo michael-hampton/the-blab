@@ -112,8 +112,9 @@ class PageInboxFactory
 
         foreach ($arrResults as $arrResult) {
 
-            if ( !in_array ($arrUsed, $arrResult['user_id']) )
+            if (empty($arrUsed) || !in_array ($arrResult['user_id'], $arrUsed) )
             {
+                                
                 $objUser = new User ($arrResult['user_id']);
                 $objMessage = new Message ($arrResult['message_id']);
                 $objPageInbox = new PageInbox($arrResult['id']);
@@ -124,9 +125,9 @@ class PageInboxFactory
                 $arrFollowers[] = $objPageInbox;
             }
 
-            $arrUsed = $arrResult['user_id'];
+            $arrUsed[] = $arrResult['user_id'];
         }
-
+        
         return $arrFollowers;
     }
 
