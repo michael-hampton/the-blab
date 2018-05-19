@@ -13,7 +13,8 @@
  */
 class MessageFactory
 {
-   use MessageEncrypt;
+
+    use MessageEncrypt;
 
     private $db;
 
@@ -51,7 +52,7 @@ class MessageFactory
             $objMessage = new Message ($arrResult['chat_id']);
             $objMessage->setDate ($arrResult['sent_on']);
             $objMessage->setRecipient ($arrResult['sent_to']);
-            $objMessage->setMessage ($this->encrypt_decrypt('decrypt', $arrResult['message']));
+            $objMessage->setMessage ($this->encrypt_decrypt ('decrypt', $arrResult['message']));
             $objMessage->setSender ($arrResult['user_id']);
             $objMessage->setAuthor ($arrResult['author']);
             $objMessage->setUsername ($arrResult['username']);
@@ -91,6 +92,27 @@ class MessageFactory
 
     /**
      * 
+     * @param type $id
+     * @return type
+     */
+    public function getMessageById ($id)
+    {
+        $arrResults = $this->db->_query ("SELECT c.*, 
+                                                u.username,
+                                                 CONCAT(u.fname, ' ' , u.lname)  AS author
+                                        FROM chat c
+                                        INNER JOIN users u ON u.uid = c.user_id
+                                        WHERE c.chat_id = :messageId", ['messageId' => $id]);
+
+
+        $arrMessages = $this->populateObject ($arrResults);
+
+
+        return $arrMessages;
+    }
+
+    /**
+     * 
      * @param User $objUser
      * @return \Message|boolean
      */
@@ -107,10 +129,6 @@ class MessageFactory
 
         $arrMessages = $this->populateObject ($arrResults);
 
-        if ( $arrResults === false )
-        {
-            return false;
-        }
 
         return $arrMessages;
     }
@@ -194,18 +212,18 @@ class MessageFactory
         return $arrResults;
     }
 
-   /**
-    * 
-    * @param type $message
-    * @param \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter
-    * @param EmailNotificationFactory $objEmailFactory
-    * @param User $objRecipient
-    * @param User $objUser
-    * @param type $filename
-    * @param type $messageType
-    * @param type $groupId
-    * @return \Message|boolean
-    */
+    /**
+     * 
+     * @param type $message
+     * @param \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter
+     * @param EmailNotificationFactory $objEmailFactory
+     * @param User $objRecipient
+     * @param User $objUser
+     * @param type $filename
+     * @param type $messageType
+     * @param type $groupId
+     * @return \Message|boolean
+     */
     public function sendMessage ($message, \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, EmailNotificationFactory $objEmailFactory, User $objRecipient, User $objUser, $filename, $messageType, $groupId = null)
     {
 
@@ -222,7 +240,7 @@ class MessageFactory
         }
 
         $message = $objBadWordFilter->clean ($message);
-        $message = $this->encrypt_decrypt('encrypt', $message);
+        $message = $this->encrypt_decrypt ('encrypt', $message);
 
         $result = $this->db->create ('chat', array(
             'message' => $message,
@@ -248,7 +266,7 @@ class MessageFactory
             if ( time () - $dbdate > 15 * 60 )
             {
                 //$objEmail = new EmailNotification ($objRecipient, $notification, $body);
-                $objEmail = $objEmailFactory->createNotification($objRecipient, $notification, $body);
+                $objEmail = $objEmailFactory->createNotification ($objRecipient, $notification, $body);
                 $objEmail->sendEmail ();
             }
 

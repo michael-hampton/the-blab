@@ -29,8 +29,8 @@
         </div>
 
         <div class = "col-md-6">
-            <div class = "ibox">
-                <div class = "ibox-content">
+            <div class = "ibox pull-left" style="width:100%;">
+                <div class = "ibox-content pull-left" style="width:100%">
                     <div class = "text-center m-t-md">
                         <!--timeline profile picture -->
 
@@ -71,35 +71,68 @@
                                 <?php endif; ?>
 
                             </div>
-                            
+
                             <div style="clear:both;"></div>
-                            
-                            <div class=""> <div class="likeCount"><?= $objPage->getLikeCount () ?></div>
 
-                                <?php if(!empty($arrUserLikes) && in_array($_SESSION['user']['user_id'], $arrUserLikes)) {
-                                     echo '<a class="unlikePage" href="#" onclick="unlikePage(\''. $objPage->getUrl() .'\')">Unlike Page</a>';
-                                 } else {
-                                     echo '<a class="likePage" href="#" onclick="likePage(\''. $objPage->getUrl() .'\')">Like Page</a>';
-                                 }
-                                 ?>
-                                  
-                            </div>
-                            
-                            <div class=""> <div class="followCount"><?= $followCount ?></div>
+                            <div class="col-lg-12" style="margin-top: 16px;">
+                                <div class="col-lg-6 pull-left">
+                                    <div class=""> <div class="likeCount"><?= $objPage->getLikeCount () ?></div>
 
-                                <?php if(!empty($arrFollowers) && in_array($_SESSION['user']['user_id'], $arrFollowers)) {
-                                     echo '<a class="unfollowPage" href="#" onclick="unfollowPage(\''. $objPage->getUrl() .'\')">Unfollow Page</a>';
-                                 } else {
-                                     echo '<a class="followPage" href="#" onclick="followPage(\''. $objPage->getUrl() .'\')">Follow Page</a>';
-                                 }
-                                 ?>
-                                  
+                                        <?php
+                                        if ( !empty ($arrUserLikes) && in_array ($_SESSION['user']['user_id'], $arrUserLikes) )
+                                        {
+                                            echo '<a class="unlikePage" href="#" onclick="unlikePage(\'' . $objPage->getUrl () . '\')">Unlike Page</a>';
+                                        }
+                                        else
+                                        {
+                                            echo '<a class="likePage" href="#" onclick="likePage(\'' . $objPage->getUrl () . '\')">Like Page</a>';
+                                        }
+                                        ?>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 pull-left">
+                                    <div class=""> <div class="followCount"><?= $followCount ?></div>
+
+                                        <?php
+                                        if ( !empty ($arrFollowers) && in_array ($_SESSION['user']['user_id'], $arrFollowers) )
+                                        {
+                                            echo '<a class="unfollowPage" href="#" onclick="unfollowPage(\'' . $objPage->getUrl () . '\')">Unfollow Page</a>';
+                                        }
+                                        else
+                                        {
+                                            echo '<a class="followPage" href="#" onclick="followPage(\'' . $objPage->getUrl () . '\')">Follow Page</a>';
+                                        }
+                                        ?>
+
+                                    </div>
+                                </div>
+
+                                <div style="width:100%; margin-top: 12px;">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sendPageMessage">
+                                        Send Message
+                                    </button>
+
+                                    <?php
+                                    if ( trim ($objPage->getTelephoneNo ()) !== "" )
+                                    {
+                                        echo '<a class="btn btn-success" href="tel:' . trim ($objPage->getTelephoneNo ()) . '">Call</a>';
+                                    }
+                                    ?>
+                                </div>
+
+
                             </div>
+
+
+
+
 
 
                         </div>
-                        
-                       
+
+
 
 
 
@@ -142,7 +175,7 @@
                 ?>
 
                 <div class="row">
-                    <?php //$this->partial ("templates/sortingBox");      ?>
+                    <?php //$this->partial ("templates/sortingBox");       ?>
                 </div>
 
 
@@ -253,8 +286,10 @@
 
                                 echo '<a href="#"  onclick="vpb_popup_photo_box(\'' . $arrPhoto->getId () . '\', \'' . count ($arrPhotos) . '\', \'' . ($key + 1) . '\', \'' . $arrPhoto->getFileLocation () . '\');" title="Image from Unsplash" data-gallery=""><img src="' . $arrPhoto->getFileLocation () . '"></a>';
                             }
-                        } else {
-                             echo '<h2>The group currently has no photos</h2>';
+                        }
+                        else
+                        {
+                            echo '<h2>The group currently has no photos</h2>';
                         }
                         ?>
 
@@ -279,13 +314,39 @@
 
         </div>
 
-        <script src="/blab/public/js/geocomplete.js"></script>
-        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1COtE7cJxfGxNWiTjEgtSNhbvDBCiiqQ&libraries=places"></script>
-        <script src="/blab/public/js/geocomplete.js"></script>
-        <script src="/blab/public/js/newsFeed.js"></script>
-        <script src="/blab/public/js/page.js"></script>
+        <div class="modal inmodal" id="sendPageMessage" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content animated bounceInRight">
+                    <div class="modal-header" style="text-align: center;">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <i class="fa fa-laptop modal-icon"></i>
+                        <h4 class="modal-title" style="text-align: center !important;">Modal title</h4>
+                    </div>
+                    <div class="modal-body">
 
-        <script>
+                        <div class="form-group">
+                            <textarea id="pageMessage" name="pageMessage" placeholder="Enter your Message" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary SendPageMessage">Send Message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script src="/blab/public/js/geocomplete.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1COtE7cJxfGxNWiTjEgtSNhbvDBCiiqQ&libraries=places"></script>
+<script src="/blab/public/js/geocomplete.js"></script>
+<script src="/blab/public/js/newsFeed.js"></script>
+<script src="/blab/public/js/page.js"></script>
+
+<script>
 
                             var lat = '<?= $lat ?>';
                             var lng = '<?= $lng ?>';
@@ -368,6 +429,45 @@
                             //Jquery Code 
                             $ (document).ready (function ()
                             {
+
+                                $ (".SendPageMessage").on ("click", function ()
+                                {
+
+                                    var message = $ ("#pageMessage").val ();
+
+                                    if ($.trim (message) === "")
+                                    {
+                                        showErrorMessage ('Message cannot be empty');
+                                        return false;
+                                    }
+
+                                    if (!groupId)
+                                    {
+                                        showErrorMessage ('Invalid page id');
+                                        return false;
+                                    }
+
+                                    $.ajax ({
+                                        type: "POST",
+                                        url: "/blab/page/sendMessage",
+                                        data: {"pageId": groupId, "message": message},
+                                        success: function (response)
+                                        {
+
+                                            formatResponse (response, 'The message was sent successfully.');
+                                            return false;
+                                        },
+                                        error: function (e)
+                                        {
+                                            showErrorMessage('Ajax requested could not complete successfully');
+
+                                        }
+                                    });
+
+
+                                    alert ("Mike");
+                                });
+
                                 //        $ ("#check").click (function ()
                                 //        {
                                 //            var lat = $.cookie ("MyLat");
@@ -422,7 +522,7 @@
                                         },
                                         error: function (e)
                                         {
-
+                                            showErrorMessage('Ajax requested could not complete successfully');
 
                                         }
                                     });
@@ -561,4 +661,4 @@
 
 
 
-        </script>
+</script>

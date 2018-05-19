@@ -304,7 +304,6 @@ class PageController extends ControllerBase
     public function createPageAction ()
     {
 
-
         $objPageType = new PageTypeFactory();
 
         $this->view->arrPageTypes = $objPageType->getPageTypes ();
@@ -556,6 +555,38 @@ class PageController extends ControllerBase
         $this->ajaxresponse ("success", "success", ["id" => $objPage->getId (), "photo" => $imageLocation]);
     }
 
+    public function getFollowsForPageAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['pageId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objPage = new Page ($_POST['pageId']);
+
+            $arrFollowers = (new PageReactionFactory())->getFollowersForPage ($objPage);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrFollowers === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->arrFollowers = $arrFollowers;
+        $this->view->partial ("templates/followList");
+    }
+
     public function getLikesForPageAction ()
     {
         $this->view->disable ();
@@ -570,9 +601,14 @@ class PageController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPage = new Page ($_POST['pageId']);
+        try {
+            $objPage = new Page ($_POST['pageId']);
 
-        $arrLikes = (new PageReactionFactory())->getLikeListForPage ($objPage);
+            $arrLikes = (new PageReactionFactory())->getLikeListForPage ($objPage);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $arrLikes === false )
         {
@@ -597,16 +633,21 @@ class PageController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPage = new Page ($_POST['pageId']);
+        try {
+            $objPage = new Page ($_POST['pageId']);
 
-        $blResult = (new PageReaction())->likePage (new User ($_SESSION['user']['user_id']), $objPage);
+            $blResult = (new PageReaction())->likePage (new User ($_SESSION['user']['user_id']), $objPage);
 
-        if ( $blResult === false )
-        {
+            if ( $blResult === false )
+            {
+                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            }
+
+            (new NotificationFactory())->sendNotificationToPageFollowers (new PageReactionFactory (), $objPage, $_SESSION['user']['username'] . ' just liked ' . $objPage->getName ());
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
-        (new NotificationFactory())->sendNotificationToPageFollowers (new PageReactionFactory (), $objPage, $_SESSION['user']['username'] . ' just liked ' . $objPage->getName ());
 
         $this->ajaxresponse ("success", "success");
     }
@@ -625,9 +666,14 @@ class PageController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPage = new Page ($_POST['pageId']);
+        try {
+            $objPage = new Page ($_POST['pageId']);
 
-        $blResult = (new PageReaction())->followPage (new User ($_SESSION['user']['user_id']), $objPage);
+            $blResult = (new PageReaction())->followPage (new User ($_SESSION['user']['user_id']), $objPage);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $blResult === false )
         {
@@ -651,9 +697,14 @@ class PageController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPage = new Page ($_POST['pageId']);
+        try {
+            $objPage = new Page ($_POST['pageId']);
 
-        $blResult = (new PageReaction())->unlikePage (new User ($_SESSION['user']['user_id']), $objPage);
+            $blResult = (new PageReaction())->unlikePage (new User ($_SESSION['user']['user_id']), $objPage);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $blResult === false )
         {
@@ -830,6 +881,162 @@ class PageController extends ControllerBase
         }
 
         $this->ajaxresponse ("success", "success");
+    }
+
+    public function sendMessageAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['pageId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_POST['message']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objPage = new Page ($_POST['pageId']);
+
+        try {
+
+            $objMessageFactory = new MessageFactory();
+
+            $userId = isset ($_POST['user_id']) && !empty ($_POST['user_id']) ? $_POST['user_id'] : $_SESSION['user']['user_id'];
+
+            $objUser = new User ($userId);
+
+            $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($objPage->getUserId ()), $objUser, "", "text");
+
+            if ( $objMessage === false )
+            {
+                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            }
+
+            $blResult = (new PageInboxFactory())->createMessage ($objPage, $objUser, $objMessage);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
+    }
+
+    /**
+     * 
+     * @param type $pageId
+     */
+    public function inboxAction ($pageId)
+    {
+
+        if ( empty ($pageId) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->pageId = $pageId;
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+    }
+
+    public function getInboxUsersAction ()
+    {
+
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( empty ($_POST['pageId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objPage = new Page ($_POST['pageId']);
+
+        try {
+
+            $objMessage = new PageInboxFactory();
+
+            $userId = isset ($_POST['user_id']) && !empty ($_POST['user_id']) ? $_POST['user_id'] : $_SESSION['user']['user_id'];
+
+            $arrUsers = $objMessage->getUsers ($objPage);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrUsers === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->arrUsers = $arrUsers;
+    }
+
+    public function getMessagesAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['pageId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_POST['group_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objPage = new Page ($_POST['pageId']);
+
+        try {
+
+            $objMessage = new PageInboxFactory();
+
+            $userId = $_POST['group_id'];
+
+            $objUser = new User ($userId);
+            $arrMessages = $objMessage->getMessages ($objPage, new MessageFactory (), $objUser);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrMessages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $message = $this->view->getPartial (
+                "page/getMessages", [
+            "arrMessages" => $arrMessages,
+                ]
+        );
+
+
+        echo json_encode (array("message" => $message, "pagination" => "test", "total" => 5));
     }
 
 }

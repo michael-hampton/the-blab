@@ -13,6 +13,8 @@
  */
 class Message
 {
+    
+    use MessageEncrypt;
 
     /**
      *
@@ -140,7 +142,7 @@ class Message
      */
     public function getMessage ()
     {
-        return $this->message;
+        return $this->encrypt_decrypt("decrypt", $this->message);
     }
 
     /**

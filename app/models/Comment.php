@@ -527,7 +527,14 @@ class Comment
     private function loadObjectFromArray ()
     {
 
-        $result = $this->db->_select ("comments", "com_id = :commentId", [":commentId" => $this->id]);
+        $result = $this->db->_query ("SELECT 
+                                            CONCAT(u.fname, ' ' , u.lname)  AS author,
+                                            u.username,
+                                            u.uid,
+                                            m.*
+                                            FROM comments m
+                                        INNER JOIN users u ON u.uid = m.uid_fk
+                                        WHERE com_id = :commentId", [":commentId" => $this->id]);
 
         if ( $result === false || empty ($result[0]) )
         {
@@ -541,6 +548,8 @@ class Comment
         $this->msgId = $result[0]['msg_id_fk'];
         $this->imageIds = $result[0]['image_id'];
         $this->userId = $result[0]['uid_fk'];
+        $this->author = $result[0]['author'];
+        $this->username = $result[0]['username'];
 
         return true;
     }
