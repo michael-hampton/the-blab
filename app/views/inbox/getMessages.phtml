@@ -13,7 +13,14 @@
 
         foreach ($arrMessages as $objMessage) {
 
-
+            if(!empty($objPage)) {
+                $image = $objPage->getFileLocation();
+                $user = $objPage->getName();
+            } else {
+                $image = "/blab/public/uploads/profile/".$objMessage->getUsername () .".jpg";
+                $user = $objMessage->getAuthor();
+            }
+            
             $backgroundColour = trim ($objMessage->getDirection ()) === "OUT" ? '#EEE' : '#FFF';
             ?>
 
@@ -22,8 +29,8 @@
 
                     <div style="display:table; width:100%;">
                         <div class="ccleft">
-                            <img src="/blab/public/uploads/profile/<?= $objMessage->getUsername () ?>.jpg" class="photo" align="absmiddle">
-                            <div class="names"><?= $objMessage->getAuthor () ?></div>
+                            <img src="<?= $image ?>" class="photo" align="absmiddle">
+                            <div class="names"><?= $user ?></div>
                             <div style="clear:both;"></div>
                             <span class="small_date" title="<?= date ("d F", strtotime ($objMessage->getDate ())) ?>"><?= date ("d F", strtotime ($objMessage->getDate ())) ?></span>
                             <span class="sent_via">Sent to: The blab </span>

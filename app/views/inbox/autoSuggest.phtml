@@ -1,0 +1,16 @@
+<div class="msg_suggested_users_overflow_box"> 
+
+    <?php foreach ($arrUsers as $objUser) { ?>
+
+        <div class="msg_suggested_users_inner" id="vpb_user_selected_<?= $objUser->getUsername () ?>" onclick="vpb_add_new_user_to_group ('<?= $objUser->getFirstname () . ' ' . $objUser->getLastname () ?>', '<?= $objUser->getId () ?>');">
+            <div class="msg_suggested_users_photo">
+                <!--<div class="uphoto">G</div>-->
+                <img src="/blab/public/uploads/profile/<?= $objUser->getUsername () ?>.jpg" title="<?= $objUser->getFirstname () . ' ' . $objUser->getLastname () ?>" class="uphoto" align="absmiddle">
+            </div>
+            <div class="msg_suggested_users_text">
+                <?= $objUser->getFirstname () . ' ' . $objUser->getLastname () ?>
+            </div>
+        </div> 
+
+    <?php } ?>
+</div>

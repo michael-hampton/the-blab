@@ -1099,5 +1099,10 @@ class IndexController extends ControllerBase
 					</li>';
         }
     }
+    
+    public function testAction()
+    {
+        
+    }
 
 }

@@ -112,7 +112,7 @@
 
                                 <?php
            if ( (int) $objPage->getUserId () === (int) $_SESSION['user']['user_id'] ) {
-          echo '<a class="btn btn-success" href="/blab/pageInbox/inbox/' . $objPage->getUrl () .'">Inbox</a>';
+          echo '<a class="btn btn-success" href="/blab/inbox/inbox/' . $objPage->getUrl () .'">Inbox</a>';
 
           
 
@@ -452,7 +452,7 @@ alert(6);
 
                                     $.ajax ({
                                         type: "POST",
-                                        url: "/blab/pageInbox/sendMessage",
+                                        url: "/blab/inbox/sendMessage",
                                         data: {"pageId": groupId, "message": message},
                                         success: function (response)
                                         {
