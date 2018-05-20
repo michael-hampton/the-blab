@@ -1,11 +1,11 @@
-<div class="demo_user_box">Welcome <b>Victor Olu</b></div>
+<div class="demo_user_box">Welcome <b><?= $objPage->getName() ?></b></div>
 
 <div class="message_body">
 
 
     <div class="mtop">
         <ul>
-            <li class="btn btn-danger" onclick="vpb_click ('vcompose_now');" id="compose_mail_text"><i class="fa fa-plus" aria-hidden="true"></i> Compose</li>
+<!--            <li class="btn btn-danger" onclick="vpb_click ('vcompose_now');" id="compose_mail_text"><i class="fa fa-plus" aria-hidden="true"></i> Compose</li>-->
 
             <span style=" display:none;" id="discard_mail_text">
                 <li class="btn btn-default" onclick="vpb_discard_msg ();"><i class="fa fa-window-close" aria-hidden="true"></i> Discard</li>
@@ -117,7 +117,7 @@
 
             <li role="presentation"><a id="vpb_clicked_sent" href="#vpb_sent_mail" onclick="vpb_load_sent ('1');" aria-controls="vpb_sent_mail" role="tab" data-toggle="tab" class="vpb_btn"><span class="vtotal_sent" id="total_sent" style="display: inline-block;">11</span> Sent Messages</a></li>
 
-            <li role="presentation"><a id="vpb_clicked_draft" href="#vpb_draft" onclick="vpb_load_draft ('1');" aria-controls="vpb_draft" role="tab" data-toggle="tab" class="vpb_btn"><span class="vtotal_draft" id="total_draft" style="display: inline-block;">0</span> Draft</a></li>
+            <!--  <li role="presentation"><a id="vpb_clicked_draft" href="#vpb_draft" onclick="vpb_load_draft ('1');" aria-controls="vpb_draft" role="tab" data-toggle="tab" class="vpb_btn"><span class="vtotal_draft" id="total_draft" style="display: inline-block;">0</span> Draft</a></li> -->
 
             <li role="presentation"><a id="vpb_clicked_trash" href="#vpb_trash" onclick="vpb_load_trash ('1');" aria-controls="vpb_trash" role="tab" data-toggle="tab" class="vpb_btn"><span class="vtotal_trash" id="total_trash" style="display: inline-block;">6</span> Trash</a></li>
 
@@ -143,61 +143,7 @@
 
             <!-- In-Box -->
             <div role="tabpanel" class="tab-pane active" id="vpb_inbox">
-                <div id="vpb_loading_inbox"><div class="vmail_text top">
-
-                        <div class="first" style="cursor:default;">
-                            <input id="mail_check_all_inbox" type="checkbox" onclick="vpb_check_uncheck ('inbox')" class="regular-checkbox mail_check_all_inbox" novalidate="novalidate" value="select">
-                            <label for="mail_check_all_inbox"></label>
-                        </div>
-
-                        <div class="second" style="cursor:default;">Sender</div>
-                        <div class="third" style="cursor:default;">Subject</div>
-                        <div class="forth" style="cursor:default;">Date</div>
-
-                    </div>
-                    
-                    <?php
-                    
-                    ?>
-                    
-                    <?php foreach($arrUsers as $arrUser) { 
-//                        echo "<pre>";
-//                    print_r($arrUser->getObjUser());
-//                    
-                    $objSender = $arrUser->getObjUser();
-                    $objMessage = $arrUser->getObjMessage();
-                        
-                        
-                        ?>
-                    <div class="vmail_text bottom" id="inbox_<?= $arrUser->getId() ?>">
-
-                        <div class="first">
-                            <input id="check_mail_inbox_<?= $arrUser->getId() ?>" onclick="vpb_single_check_uncheck ('check_mail_inbox_<?= $arrUser->getId() ?>', 'inbox_<?= $arrUser->getId() ?>', 'inbox');" type="checkbox" name="each_mail[]" class="regular-checkbox check_mail_inbox_<?= $arrUser->getId() ?>" novalidate="novalidate" value="<?= $arrUser->getId() ?>">
-
-                            <label for="check_mail_inbox_<?= $arrUser->getId() ?>"></label>
-                        </div>
-
-                        <div id="msg_name_<?= $arrUser->getId() ?>" class="second unbold" style="position:relative;" onclick="vpb_open_message ('<?= $objSender->getId() ?>');">
-                            <?= $objSender->getFirstname() . '   ' . $objSender->getLastname() ?><span style="font-weight:normal !important;">(<?= $arrUser->getMessageCount() ?>)</span>
-
-                        </div>
-
-                        <div id="msg_subject_<?= $arrUser->getId() ?>" class="third unbold" onclick="vpb_open_message ('<?= $objSender->getId() ?>');">
-                            <span class="vmessage_desc"><?= $objMessage->getMessage() ?></span>
-                        </div>
-
-                        <div title="19 Apr, 2018" id="msg_date_<?= $arrUser->getId() ?>" class="forth unbold" onclick="vpb_open_message ('<?= $objSender->getId() ?>');">
-                            <?= $objMessage->getDate() ?>
-                        </div>
-
-                    </div>
-                    
-                    <?php } ?>
-                   
-
-
-
-
+                <div id="vpb_loading_inbox">
                 </div>
             </div>
 

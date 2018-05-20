@@ -75,6 +75,12 @@ class Message
      * @var type 
      */
     private $filename;
+    
+    /**
+     *
+     * @var type 
+     */
+    private $direction;
 
     /**
      *
@@ -125,6 +131,24 @@ class Message
     public function getSender ()
     {
         return $this->sender;
+    }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function getDirection ()
+    {
+        return $this->direction;
+    }
+
+    /**
+     * 
+     * @param type $direction
+     */
+    public function setDirection ($direction)
+    {
+        $this->direction = $direction;
     }
 
     /**
