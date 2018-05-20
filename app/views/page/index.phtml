@@ -109,7 +109,15 @@
                                     </div>
                                 </div>
 
-                                <div style="width:100%; margin-top: 12px;">
+
+                                <?php
+           if ( (int) $objPage->getUserId () === (int) $_SESSION['user']['user_id'] ) {
+          echo '<a class="btn btn-success" href="/blab/pageInbox/inbox/' . $objPage->getUrl () .'">Inbox</a>';
+
+          
+
+          } else { ?>
+               <div style="width:100%; margin-top: 12px;">
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sendPageMessage">
                                         Send Message
                                     </button>
@@ -121,6 +129,12 @@
                                     }
                                     ?>
                                 </div>
+           <?php
+           }
+          ?>
+
+                               
+                        
 
 
                             </div>
@@ -314,30 +328,7 @@
 
         </div>
 
-        <div class="modal inmodal" id="sendPageMessage" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content animated bounceInRight">
-                    <div class="modal-header" style="text-align: center;">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <i class="fa fa-laptop modal-icon"></i>
-                        <h4 class="modal-title" style="text-align: center !important;">Modal title</h4>
-                    </div>
-                    <div class="modal-body">
-
-                        <div class="form-group">
-                            <textarea id="pageMessage" name="pageMessage" placeholder="Enter your Message" class="form-control"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary SendPageMessage">Send Message</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</div>
+       
 
 
 <script src="/blab/public/js/geocomplete.js"></script>
@@ -358,7 +349,14 @@
                             var selectedImageType = "page";
                             var selectedImageId = groupId;
 
-                            success (lat, lng);
+
+try {
+success (lat, lng);
+} catch(error) {
+//alert(error);
+}
+
+                            
 
                             function success (lat, lng)
                             {
@@ -399,6 +397,7 @@
                                 s.className = 'Fail';
                             }
 
+
                             //        if (navigator.geolocation)
                             //        {
                             //            navigator.geolocation.getCurrentPosition (success, error);
@@ -430,8 +429,12 @@
                             $ (document).ready (function ()
                             {
 
-                                $ (".SendPageMessage").on ("click", function ()
+                                $(document).off('click', '.SendPageMessage');
+                                $(document).on('click', '.SendPageMessage', function()
+                                //$ (".SendPageMessage").on ("click", function ()
                                 {
+
+alert(6);
 
                                     var message = $ ("#pageMessage").val ();
 
@@ -449,10 +452,11 @@
 
                                     $.ajax ({
                                         type: "POST",
-                                        url: "/blab/page/sendMessage",
+                                        url: "/blab/pageInbox/sendMessage",
                                         data: {"pageId": groupId, "message": message},
                                         success: function (response)
                                         {
+                                            alert(response);
 
                                             formatResponse (response, 'The message was sent successfully.');
                                             return false;
@@ -463,9 +467,6 @@
 
                                         }
                                     });
-
-
-                                    alert ("Mike");
                                 });
 
                                 //        $ ("#check").click (function ()
