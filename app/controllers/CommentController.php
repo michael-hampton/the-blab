@@ -156,7 +156,7 @@ class CommentController extends ControllerBase
         }
 
         require_once $this->rootPath. "/blab/app/views/templates/templateFunctions.php";
-        $content = buildComments ($objComment, $id, 0, 1, false);
+        $content = buildComments ($objComment, $objPost, 0, 1, false);
         
         $comment = array(
             "id" => $_POST['id'],

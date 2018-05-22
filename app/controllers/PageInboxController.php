@@ -8,7 +8,7 @@
 use Phalcon\Mvc\View;
 use Phalcon\Dispatcher;
 
-class InboxController extends ControllerBase
+class PageInboxController extends ControllerBase
 {
 
     public function markAsReadAction ()
@@ -146,7 +146,7 @@ class InboxController extends ControllerBase
         }
 
         $message = $this->view->getPartial (
-                "inbox/getMessages", [
+                "pageInbox/getMessages", [
             "arrMessages" => $arrMessages,
             "user_id" => $userId
                 ]
@@ -217,7 +217,7 @@ class InboxController extends ControllerBase
         $this->view->arrUsers = $arrUsers;
 
         $message = $this->view->getPartial (
-                "inbox/getInbox", [
+                "pageInbox/getInbox", [
             "arrUsers" => $arrUsers,
                 ]
         );
@@ -259,7 +259,7 @@ class InboxController extends ControllerBase
         $this->view->arrUsers = $arrUsers;
 
         $message = $this->view->getPartial (
-                "inbox/getInbox", [
+                "pageInbox/getInbox", [
             "arrUsers" => $arrUsers,
                 ]
         );
@@ -301,7 +301,7 @@ class InboxController extends ControllerBase
         $this->view->arrUsers = $arrUsers;
 
         $message = $this->view->getPartial (
-                "inbox/getInbox", [
+                "pageInbox/getInbox", [
             "arrUsers" => $arrUsers,
                 ]
         );
@@ -323,7 +323,7 @@ class InboxController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( empty ($_POST['message']) && empty ($_FILES) )
+        if ( empty ($_POST['message']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
@@ -334,37 +334,18 @@ class InboxController extends ControllerBase
 
             $objMessageFactory = new MessageFactory();
 
-            $objFileUpload = new FileUpload ($this->rootPath . "/blab/public/uploads/chat/");
-
             $userId = isset ($_POST['user_id']) && !empty ($_POST['user_id']) ? $_POST['user_id'] : $_SESSION['user']['user_id'];
 
             $objUser = new User ($userId);
 
-            $objBadWordFilter = new \JCrowe\BadWordFilter\BadWordFilter();
-
-            $objEmailNotificationFactory = new EmailNotificationFactory();
-
-            $objPageInboxFactory = new PageInboxFactory();
-        } catch (Exception $ex) {
-            trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        if ( !empty ($_POST['message']) )
-        {
             if ( !empty ($_POST['user_id']) )
             {
-                $objRecipient = new User ($objPage->getUserId ());
-                $objUser2 = $objUser;
-
-                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], $objBadWordFilter, $objEmailNotificationFactory, $objUser2, $objRecipient, "", "text");
+                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), $objUser, new User ($objPage->getUserId ()), "", "text");
                 $strDir = 'OUT';
             }
             else
             {
-                $objRecipient = $objUser;
-                $objUser2 = new User ($objPage->getUserId ());
-                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], $objBadWordFilter, $objEmailNotificationFactory, $objUser2, $objRecipient, "", "text");
+                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($objPage->getUserId ()), $objUser, "", "text");
                 $strDir = 'IN';
             }
 
@@ -372,49 +353,20 @@ class InboxController extends ControllerBase
             {
                 $this->ajaxresponse ("error", $this->defaultErrrorMessage);
             }
-        }
 
-        $blResult = $objPageInboxFactory->createMessage ($objPage, $objUser, $objMessage, $strDir);
+            $blResult = (new PageInboxFactory())->createMessage ($objPage, $objUser, $objMessage, $strDir);
+
+
+            $arrMessages = (new PageInboxFactory())->getMessages ($objPage, $objMessageFactory, $objUser);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $blResult === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
-        if ( !empty ($_FILES) && count ($_FILES) > 0 )
-        {
-
-            if ( empty ($strDir) )
-            {
-                $strDir = "OUT";
-            }
-
-            foreach ($_FILES as $arrFile) {
-                $objFileUpload->prepareUpload ($arrFile);
-
-                if ( $objFileUpload->validateUpload () === false )
-                {
-                    $this->ajaxresponse ("error", implode ("<br/>", $objFileUpload->getValidationFailures ()));
-                }
-
-                if ( $objFileUpload->saveUpload () === false )
-                {
-                    $this->ajaxresponse ("error", "Unable to upload file");
-                }
-
-                $targetFile = $objFileUpload->getTargetFile ();
-                $objUploadedMessage = $objMessageFactory->sendMessage ('New file uploaded', $objBadWordFilter, $objEmailNotificationFactory, $objUser2, $objRecipient, $targetFile, 'img', null);
-
-                if ( $objUploadedMessage === false )
-                {
-                    continue;
-                }
-
-                $blUploadResult = $objPageInboxFactory->createMessage ($objPage, $objUser, $objUploadedMessage, $strDir);
-            }
-        }
-
-        $arrMessages = $objPageInboxFactory->getMessages ($objPage, $objMessageFactory, $objUser);
 
         if ( $arrMessages === false )
         {
@@ -422,7 +374,7 @@ class InboxController extends ControllerBase
         }
 
         $message = $this->view->getPartial (
-                "inbox/getMessages", [
+                "pageInbox/getMessages", [
             "arrMessages" => $arrMessages,
             "show_reply_box" => false,
             "user_id" => $userId
@@ -450,70 +402,6 @@ class InboxController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-    }
-
-    public function autoSuggestAction ()
-    {
-        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
-
-        if ( !isset ($_POST['system_username']) )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        $objUsers = new UserFactory();
-        $term = urldecode ($_POST['system_username']);
-
-        $arrUsers = $objUsers->getUsers ($term);
-
-        if ( $arrUsers === false )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        $this->view->arrUsers = $arrUsers;
-    }
-
-    public function sendNewMessageAction ()
-    {
-        $this->view->disable ();
-
-        if ( empty ($_POST['subject']) || empty ($_POST['message']) || empty ($_POST['recipients']) || empty ($_POST['pageId']) )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        $userIds = explode (",", $_POST['recipients']);
-
-        try {
-
-            $objPage = new Page ($_POST['pageId']);
-            $objMessageFactory = new MessageFactory();
-
-            foreach ($userIds as $userId) {
-
-                $objUser = new User ($userId);
-
-                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), $objUser, new User ($objPage->getUserId ()), "", "text");
-
-                if ( $objMessage === false )
-                {
-                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-                }
-
-                $blResult = (new PageInboxFactory())->createMessage ($objPage, $objUser, $objMessage, "OUT");
-            }
-        } catch (Exception $ex) {
-            trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        if ( $blResult === false )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        $this->ajaxresponse ("success", "success");
     }
 
 }

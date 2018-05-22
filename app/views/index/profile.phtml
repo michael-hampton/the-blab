@@ -201,8 +201,8 @@ $postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true
                                 "templates/friends", ["arrFriendList" => $arrFriendList
                                 ]
                         );
-                        
-                         $this->partial (
+
+                        $this->partial (
                                 "templates/photos", ["arrPhotos" => $arrPhotos
                                 ]
                         );
@@ -391,7 +391,6 @@ $postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true
                     </div>
 
                     <div class="col-md-3 l-sidebar">
-
                         <?php
                         $this->partial ("templates/events", ["arrEvents" => $arrEvents]);
 

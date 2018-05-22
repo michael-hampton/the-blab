@@ -348,6 +348,7 @@ class Message
         $this->recipient = $result[0]['sent_to'];
         $this->sender = $result[0]['user_id'];
         $this->type = $result[0]['type'];
+        $this->filename = $result[0]['filename'];
 
         return true;
     }

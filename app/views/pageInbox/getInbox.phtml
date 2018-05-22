@@ -1,0 +1,54 @@
+<div class="vmail_text top">
+
+    <div class="first" style="cursor:default;">
+        <input id="mail_check_all_inbox" type="checkbox" onclick="vpb_check_uncheck ('inbox')" class="regular-checkbox mail_check_all_inbox" novalidate="novalidate" value="select">
+        <label for="mail_check_all_inbox"></label>
+    </div>
+
+    <div class="second" style="cursor:default;">Sender</div>
+    <div class="third" style="cursor:default;">Subject</div>
+    <div class="forth" style="cursor:default;">Date</div>
+
+</div>
+
+<?php
+?>
+
+<?php
+foreach ($arrUsers as $arrUser) {
+    $objSender = $arrUser->getObjUser ();
+    $objMessage = $arrUser->getObjMessage ();
+    
+    $readClass =  (int)$arrUser->getHasRead() === 0 ? 'bold' : 'unbold';
+    
+    ?>
+    <div class="vmail_text bottom" id="inbox_<?= $arrUser->getId () ?>">
+
+        <div class="first">
+            <input id="check_mail_inbox_<?= $arrUser->getId () ?>" onclick="vpb_single_check_uncheck ('check_mail_inbox_<?= $objSender->getId () ?>', 'inbox_<?= $objSender->getId () ?>', 'inbox');" type="checkbox" name="each_mail[]" class="regular-checkbox check_mail_inbox_<?= $objSender->getId () ?>" novalidate="novalidate" value="<?= $objSender->getId () ?>">
+
+            <label for="check_mail_inbox_<?= $arrUser->getId () ?>"></label>
+        </div>
+
+        <div id="msg_name_<?= $arrUser->getId () ?>" class="second <?= $readClass ?>" style="position:relative;" onclick="vpb_open_message ('<?= $objSender->getId () ?>');">
+    <?= $objSender->getFirstname () . '   ' . $objSender->getLastname () ?><span style="font-weight:normal !important;">(<?= $arrUser->getMessageCount () ?>)</span>
+
+        </div>
+
+        <div id="msg_subject_<?= $arrUser->getId () ?>" class="third <?= $readClass ?>" onclick="vpb_open_message ('<?= $objSender->getId () ?>');">
+            <span class="vmessage_desc <?= $readClass ?>"><?= $objMessage->getMessage () ?></span>
+        </div>
+
+        <div title="<?= date ("d M Y", strtotime ($objMessage->getDate ())) ?>" id="msg_date_<?= $arrUser->getId () ?>" class="forth <?= $readClass ?>" onclick="vpb_open_message ('<?= $objSender->getId () ?>');">
+    <?= date ("d F", strtotime ($objMessage->getDate ())) ?>
+        </div>
+
+    </div>
+
+<?php } ?>
+
+
+
+
+
+</div>

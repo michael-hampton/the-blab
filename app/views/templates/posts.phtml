@@ -317,7 +317,7 @@ else
         if ( count ($comments) > 0 )
         {
             foreach ($comments as $commentCount => $comment) {
-                echo buildComments ($comment, $arrComment->getId(), $commentCount, $totalCommentsToDisplay);
+                echo buildComments ($comment, $arrComment, $commentCount, $totalCommentsToDisplay);
             }
         }
 

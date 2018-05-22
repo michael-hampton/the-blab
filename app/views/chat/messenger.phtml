@@ -13,12 +13,20 @@
                 </div>
 
                 <ul class="category-list" style="padding: 0">
+
+                    <div class="col-lg-12" style="width:100%; font-size: 14px; margin-bottom: 12px;">
+                        <a href="#" class="showActiveUsers btn btn-success">Active</a>
+                        <a href="#" class="showGroups btn btn-warning">Groups</a>
+                         <a href="#" class="showAllChat btn btn-primary">All</a>
+                    </div>
+
                     <?php
                     echo '<h5>Friends</h5>';
 
                     foreach ($arrUsers as $arrUser):
 
                         $onlineLabel = 'text-danger';
+                        $activeLabel = 'chat-not-active-user';
 
                         if ( trim ($arrUser->getLastLogin ()) !== "" )
                         {
@@ -26,21 +34,24 @@
                             if ( time () - $dbdate <= 15 * 60 )
                             {
                                 $onlineLabel = 'text-navy';
+                                $activeLabel = 'chat-active-user';
                             }
                             else
                             {
                                 $onlineLabel = 'text-danger';
+                                 $activeLabel = 'chat-not-active-user';
                             }
                         }
                         else
                         {
                             $onlineLabel = 'text-danger';
+                             $activeLabel = 'chat-not-active-user';
                         }
 
 
                         if ( $arrUser->getId () !== $_SESSION['user']['user_id'] ):
                             ?>
-                            <li><a class="show-chat single" groupname="" groupid="" username="<?= $arrUser->getUsername () ?>" fullname="<?= $arrUser->getFirstName () . '|' . $arrUser->getLastName () ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $arrUser->getId () ?>" href="#"> <i class="fa fa-circle <?= $onlineLabel ?>"></i> <?= $arrUser->getFirstName () . ' ' . $arrUser->getLastName () ?> </a></li>
+                            <li><a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $arrUser->getUsername () ?>" fullname="<?= $arrUser->getFirstName () . '|' . $arrUser->getLastName () ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $arrUser->getId () ?>" href="#"> <i class="fa fa-circle <?= $onlineLabel ?>"></i> <?= $arrUser->getFirstName () . ' ' . $arrUser->getLastName () ?> </a></li>
 
                             <?php
                         endif;

@@ -666,13 +666,12 @@ function buildReplies ($comment)
  * @param Comment $comment
  * @param type $totalCommentsToDisplay
  */
-function buildComments (Comment $comment, $postId, $count, $totalCommentsToDisplay, $blShowResponse = true)
+function buildComments (Comment $comment, Post $objPost, $count, $totalCommentsToDisplay, $blShowResponse = true)
 {
 
+    $postId = $objPost->getId();
 
     $likeCommentClass = 'like';
-
-
 
     $class = $count >= $totalCommentsToDisplay ? 'd-none' : '';
 
