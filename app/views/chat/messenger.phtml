@@ -2,35 +2,41 @@
 <link href="/blab/public/css/chat.css" rel="stylesheet" type="text/css">
 
 <div class="row">
-    <div class="col-md-4 pull-left">
-        <div class="ibox">
-            <div class="ibox-content" style="padding: 10px;">
+    <div class="col-md-6 pull-left userChatList">
+        <div class="ibox" style="float:left; width: 100%">
+            <div class="ibox-content" style="padding: 10px; float: left; width: 100%;">
                 <h2>Chat</h2>
 
-                <div class="input-group">
+                <div class="input-group" style="width:100%;">
                     <input type="text" placeholder="Search Users " id="chatUserSearchBox" class="input form-control pull-left">
 
                 </div>
 
-                <ul class="category-list" style="padding: 0">
+                <ul class="category-list" style="padding: 0; width: 100%;">
 
                     <div class="col-lg-12" style="width:100%; font-size: 14px; margin-bottom: 12px;">
                         <a href="#" class="showActiveUsers btn btn-success">Active</a>
                         <a href="#" class="showGroups btn btn-warning">Groups</a>
-                         <a href="#" class="showAllChat btn btn-primary">All</a>
+                        <a href="#" class="showAllChat btn btn-primary">All</a>
                     </div>
 
                     <?php
                     echo '<h5>Friends</h5>';
 
-                    foreach ($arrUsers as $arrUser):
+                    foreach ($arrMessages as $objMessage):
+                        
+                        if(  trim ($objMessage->getRecipient()) !== "") {
+                             $from = (int) $objMessage->getRecipient() === (int) $_SESSION['user']['user_id'] ? $objMessage->getAuthor() : 'You';
+                        } else {
+                            $from = '';
+                        }
 
                         $onlineLabel = 'text-danger';
                         $activeLabel = 'chat-not-active-user';
 
-                        if ( trim ($arrUser->getLastLogin ()) !== "" )
+                        if ( trim ($objMessage->getLastLogin ()) !== "" )
                         {
-                            $dbdate = strtotime ($arrUser->getLastLogin ());
+                            $dbdate = strtotime ($objMessage->getLastLogin ());
                             if ( time () - $dbdate <= 15 * 60 )
                             {
                                 $onlineLabel = 'text-navy';
@@ -39,19 +45,44 @@
                             else
                             {
                                 $onlineLabel = 'text-danger';
-                                 $activeLabel = 'chat-not-active-user';
+                                $activeLabel = 'chat-not-active-user';
                             }
                         }
                         else
                         {
                             $onlineLabel = 'text-danger';
-                             $activeLabel = 'chat-not-active-user';
+                            $activeLabel = 'chat-not-active-user';
                         }
 
 
-                        if ( $arrUser->getId () !== $_SESSION['user']['user_id'] ):
+                        if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
+                            
+                            if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg') )
+                        {
+                            $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessage->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
+                        }
+                        else
+                        {
+                            $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+                        }
+                            
                             ?>
-                            <li><a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $arrUser->getUsername () ?>" fullname="<?= $arrUser->getFirstName () . '|' . $arrUser->getLastName () ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $arrUser->getId () ?>" href="#"> <i class="fa fa-circle <?= $onlineLabel ?>"></i> <?= $arrUser->getFirstName () . ' ' . $arrUser->getLastName () ?> </a></li>
+                            <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left;">
+                                <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= str_replace (" ", "|", $objMessage->getAuthor ()) ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getUserId () ?>" href="#"> 
+                                   
+                                    <div class="col-lg-9">
+                                        <?= $image ?>
+                                   
+                                        <?= $objMessage->getAuthor () ?> <br>
+                                        <?= $from . ' ' . substr($objMessage->getMessage(), 0, 20) ?>
+                                    </div>
+                                    
+                                    <div class="col-lg-3">
+                                        <?= date("d F", strtotime($objMessage->getDate()))  ?>
+                                         <i class="fa fa-circle <?= $onlineLabel ?>"></i> 
+                                    </div>
+                                </a>
+                            </li>
 
                             <?php
                         endif;
@@ -63,7 +94,9 @@
 
                         foreach ($arrChatGroups as $arrChatGroup):
                             ?>
-                            <li><a class="show-chat group" groupname="<?= $arrChatGroup['name'] ?>" groupid="<?= $arrChatGroup['group_id'] ?>" username="<?= $arrChatGroup['users'] ?>" fullname="<?= $arrChatGroup['fullname'] ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> <i class="fa fa-circle text-danger"></i> <?= $arrChatGroup['name'] ?> </a></li>
+                            <li>
+                                <a class="show-chat group" groupname="<?= $arrChatGroup['name'] ?>" groupid="<?= $arrChatGroup['group_id'] ?>" username="<?= $arrChatGroup['users'] ?>" fullname="<?= $arrChatGroup['fullname'] ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> 
+                                    <i class="fa fa-circle text-danger"></i> <?= $arrChatGroup['name'] ?> </a></li>
 
                             <?php
                         endforeach;
@@ -75,7 +108,7 @@
         </div>
     </div>
 
-    <div class="col-md-8 chatWindow pull-left">
+    <div class="col-md-12 chatWindow pull-left">
 
     </div>
 </div>

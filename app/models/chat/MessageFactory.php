@@ -333,4 +333,89 @@ class MessageFactory
         return new GroupChat ($groupId);
     }
 
+    /**
+     * 
+     * @param type $searchText
+     * @param User $objUser
+     * @return \User|boolean
+     */
+    public function getChatUsers ($searchText = null, User $objUser)
+    {
+        $arrParams = [];
+
+        $sql = "SELECT * 
+                    FROM   (SELECT u.uid, 
+                                   u.username, 
+                                   u.fname, 
+                                   u.lname, 
+                                   u.last_login, 
+                                   Concat(u.fname, ' ', u.lname) AS author, 
+                                   sent_on, 
+                                   message, 
+                                   sent_to 
+                            FROM   chat c 
+                                   INNER JOIN users u 
+                                           ON u.uid = c.sent_to 
+                            WHERE  uid NOT IN (SELECT user_added 
+                                               FROM   blocked_friend 
+                                               WHERE  blocked_user = :userId) 
+                            GROUP  BY u.uid 
+                            UNION 
+                            SELECT uid, 
+                                   username, 
+                                   fname, 
+                                   lname, 
+                                   last_login, 
+                                   Concat(fname, ' ', lname) AS author, 
+                                   NULL                      AS sent_on, 
+                                   NULL                      AS message, 
+                                   NULL                      AS sent_to 
+                            FROM   users 
+                            WHERE  uid NOT IN (SELECT user_added 
+                                               FROM   blocked_friend 
+                                               WHERE  blocked_user = :userId)) AS u ";
+
+        $arrParams[':userId'] = $objUser->getId ();
+
+        if ( $searchText !== null )
+        {
+            $sql .= " WHERE username LIKE :username3";
+            //$arrParams[':username1'] = '%' . strtolower ($searchText) . '%';
+            //$arrParams[':username2'] = '%' . strtolower ($searchText) . '%';
+            $arrParams[':username3'] = '%' . strtolower ($searchText) . '%';
+        }
+
+        $sql .= " GROUP BY uid";
+        
+        $arrResults = $this->db->_query ($sql, $arrParams);
+        
+        if ( $arrResults === false )
+        {
+            return false;
+        }
+
+        if ( empty ($arrResults) )
+        {
+            return [];
+        }
+
+        $arrUsers = [];
+
+        foreach ($arrResults as $arrResult) {
+            
+            $objMessage = new Message();
+            if(!empty($arrResult['message'])) $objMessage->setMessage ( $arrResult['message']);
+            $objMessage->setAuthor($arrResult['author']);
+            if(!empty($arrResult['sent_to'])) $objMessage->setRecipient($arrResult['sent_to']);
+            $objMessage->setUsername($arrResult['username']);
+            if(!empty($arrResult['sent_on'])) $objMessage->setDate($arrResult['sent_on']);
+            $objMessage->setLastLogin($arrResult['last_login']);
+            $objMessage->setUserId($arrResult['uid']);
+
+            $arrUsers[] = $objMessage;
+        }
+        
+        return $arrUsers;
+    }
+
 }

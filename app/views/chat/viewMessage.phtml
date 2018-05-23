@@ -39,6 +39,7 @@ foreach ($arrMessages as $arrMessage):
 
         <div class="chat-message chat-message-reply right chatWrappera">
             <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
+            <a href="#" class="forwardChatMessage pull-right" messageid="<?= $arrMessage->getId () ?>"><i class="fa fa-mail-forward"></i></a>
             <img class="message-avatar" src="/blab/public/uploads/profile/<?= $arrMessage->getUsername () ?>.jpg" alt="">
             <div class="message">
                 <a class="message-author" href="#">  <?= $arrMessage->getAuthor () ?> </a>

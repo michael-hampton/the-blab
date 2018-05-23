@@ -113,9 +113,14 @@ class ChatController extends ControllerBase
             );
         }
 
-        $arrFriends = (new UserFactory())->getUsers ();
+        try {
+            $arrChatUsers = (new MessageFactory())->getChatUsers (null, new User ($_SESSION['user']['user_id']));
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
-        if ( $arrFriends === false )
+        if ( $arrChatUsers === false )
         {
             return $this->dispatcher->forward (
                             [
@@ -126,7 +131,7 @@ class ChatController extends ControllerBase
             );
         }
 
-        $this->view->arrUsers = $arrFriends;
+        $this->view->arrMessages = $arrChatUsers;
     }
 
     public function uploadFileAction ()
@@ -772,19 +777,26 @@ class ChatController extends ControllerBase
 
         try {
             $objMessageFactory = new MessageFactory();
-
-            $arrUsers = (new UserFactory())->getChatUsers ($_POST['searchText'], new User ($_SESSION['user']['user_id']));
+            $objUser = new User ($_SESSION['user']['user_id']);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( $arrUsers === false )
+        $arrUsers = $objMessageFactory->getChatUsers ($_POST['searchText'], $objUser);
+        
+      
+
+
+        $arrAllUsers = $objMessageFactory->getChatUsers (null, $objUser);
+
+        if ( $arrUsers === false || $arrAllUsers === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
         $this->view->arrUsers = $arrUsers;
+        $this->view->arrAllUsers = $arrAllUsers;
 
 
         $arrChatGroups = $objMessageFactory->getGroupChats (new User ($_SESSION['user']['user_id']));

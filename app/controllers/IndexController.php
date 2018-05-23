@@ -67,9 +67,10 @@ class IndexController extends ControllerBase
             $arrUsers = $objUserFactory->getUsers ();
             $objCurrentUser = new User ($_SESSION['user']['user_id']);
             $objEventFactory = new EventFactory();
+            $objMessageFactory = new MessageFactory();
             $objGroupFactory = new GroupFactory();
             $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-            $arrChatUsers = $objUserFactory->getChatUsers (null, $objCurrentUser);
+            $arrChatUsers = $objMessageFactory->getChatUsers (null, $objCurrentUser);
 
 
             $objUser = $objUserFactory->getUsers ($username);
