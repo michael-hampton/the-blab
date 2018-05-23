@@ -147,8 +147,9 @@ class InboxController extends ControllerBase
 
         $message = $this->view->getPartial (
                 "inbox/getMessages", [
-            "arrMessages" => $arrMessages,
-            "user_id" => $userId
+                    "arrMessages" => $arrMessages,
+                    "user_id" => $userId,
+                     "objPage" => $objPage
                 ]
         );
 
@@ -423,9 +424,10 @@ class InboxController extends ControllerBase
 
         $message = $this->view->getPartial (
                 "inbox/getMessages", [
-            "arrMessages" => $arrMessages,
-            "show_reply_box" => false,
-            "user_id" => $userId
+                    "arrMessages" => $arrMessages,
+                    "show_reply_box" => false,
+                     "user_id" => $userId,
+                     "objPage" => $objPage
                 ]
         );
 
