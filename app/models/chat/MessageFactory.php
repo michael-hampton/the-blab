@@ -386,9 +386,9 @@ class MessageFactory
         }
 
         $sql .= " GROUP BY uid";
-        
+
         $arrResults = $this->db->_query ($sql, $arrParams);
-        
+
         if ( $arrResults === false )
         {
             return false;
@@ -402,20 +402,63 @@ class MessageFactory
         $arrUsers = [];
 
         foreach ($arrResults as $arrResult) {
-            
+
             $objMessage = new Message();
-            if(!empty($arrResult['message'])) $objMessage->setMessage ( $arrResult['message']);
-            $objMessage->setAuthor($arrResult['author']);
-            if(!empty($arrResult['sent_to'])) $objMessage->setRecipient($arrResult['sent_to']);
-            $objMessage->setUsername($arrResult['username']);
-            if(!empty($arrResult['sent_on'])) $objMessage->setDate($arrResult['sent_on']);
-            $objMessage->setLastLogin($arrResult['last_login']);
-            $objMessage->setUserId($arrResult['uid']);
+            if ( !empty ($arrResult['message']) )
+                $objMessage->setMessage ($arrResult['message']);
+            $objMessage->setAuthor ($arrResult['author']);
+            if ( !empty ($arrResult['sent_to']) )
+                $objMessage->setRecipient ($arrResult['sent_to']);
+            $objMessage->setUsername ($arrResult['username']);
+            if ( !empty ($arrResult['sent_on']) )
+                $objMessage->setDate ($arrResult['sent_on']);
+            $objMessage->setLastLogin ($arrResult['last_login']);
+            $objMessage->setUserId ($arrResult['uid']);
 
             $arrUsers[] = $objMessage;
         }
-        
+
         return $arrUsers;
+    }
+
+    /**
+     * 
+     * @param User $objUser
+     * @param Message $objMessaage
+     * @param EmailNotificationFactory $objEmailFactory
+     * @param User $objRecipient
+     * @param type $comment
+     * @return boolean
+     */
+    public function cloneMessage (User $objUser, Message $objMessaage, EmailNotificationFactory $objEmailFactory, User $objRecipient, $comment = '')
+    {
+        $comment .= $this->encrypt_decrypt ('encrypt', $objMessaage->getMessage ());
+
+        $blResult = $this->db->create ("chat", ["user_id" => $objUser->getId (), "message" => $comment, "sent_on" => date ("Y-m-d H:i:s"), "sent_to" => $objRecipient->getId (), "filename" => $objMessaage->getFilename (), "type" => $objMessaage->getType (), "group_id" => $objMessaage->getGroupId ()]);
+
+        if ( $blResult === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        $notification = "You have received a new chat message on The Blab Philippines:";
+        $body = $objUser->getUsername () . " said - {$objMessaage->getMessage ()}";
+
+        try {
+            $dbdate = strtotime ($objRecipient->getLastLogin ());
+            if ( time () - $dbdate > 15 * 60 )
+            {
+                //$objEmail = new EmailNotification ($objRecipient, $notification, $body);
+                $objEmail = $objEmailFactory->createNotification ($objRecipient, $notification, $body);
+                $objEmail->sendEmail ();
+            }
+        } catch (Exception $e) {
+            trigger_error ($e->getMessage (), E_USER_WARNING);
+            return false;
+        }
+
+        return true;
     }
 
 }

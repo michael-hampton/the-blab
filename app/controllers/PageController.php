@@ -750,7 +750,7 @@ class PageController extends ControllerBase
 
         $arrPages = $objPageFactory->getAllPages ($objUser, new PageReactionFactory (), null, 0, $this->paginationLimit);
 
-        $totalCount = $objPageFactory->getAllPages ($objUser, new PageReactionFactory (), null, null, null);
+        $totalCount = $objPageFactory->getAllPages ($objUser, new PageReactionFactory ());
 
         if ( $arrPages === false || $totalCount === false )
         {

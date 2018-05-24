@@ -114,10 +114,27 @@ class ChatController extends ControllerBase
         }
 
         try {
-            $arrChatUsers = (new MessageFactory())->getChatUsers (null, new User ($_SESSION['user']['user_id']));
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objMessageFactory = new MessageFactory();
+            $arrChatUsers = $objMessageFactory->getChatUsers (null, $objUser);
+            $arrPages = (new PageFactory())->getAllPages (null, new PageReactionFactory ());
+            $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrChatGroups = $objMessageFactory->getGroupChats ($objUser);
+
+        if ( $arrChatGroups === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get chat groups"]
+                            ]
+            );
         }
 
         if ( $arrChatUsers === false )
@@ -131,7 +148,32 @@ class ChatController extends ControllerBase
             );
         }
 
+        if ( $arrPages === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get pages"]
+                            ]
+            );
+        }
+
+        if ( $arrPageCategories === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get pages"]
+                            ]
+            );
+        }
+
         $this->view->arrMessages = $arrChatUsers;
+        $this->view->arrPageCategories = $arrPageCategories;
+        $this->view->arrPages = $arrPages;
+        $this->view->arrChatGroups = $arrChatGroups;
     }
 
     public function uploadFileAction ()
@@ -776,16 +818,61 @@ class ChatController extends ControllerBase
         }
 
         try {
-            $objMessageFactory = new MessageFactory();
             $objUser = new User ($_SESSION['user']['user_id']);
+            $objMessageFactory = new MessageFactory();
+            $arrUsers = $objMessageFactory->getChatUsers ($_POST['searchText'], $objUser);
+            $arrPages = (new PageFactory())->getAllPages (null, new PageReactionFactory ());
+            $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $arrUsers = $objMessageFactory->getChatUsers ($_POST['searchText'], $objUser);
-        
-      
+        $arrChatGroups = $objMessageFactory->getGroupChats ($objUser);
+
+        if ( $arrChatGroups === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get chat groups"]
+                            ]
+            );
+        }
+
+        if ( $arrChatUsers === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get friends list"]
+                            ]
+            );
+        }
+
+        if ( $arrPages === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get pages"]
+                            ]
+            );
+        }
+
+        if ( $arrPageCategories === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get pages"]
+                            ]
+            );
+        }
 
 
         $arrAllUsers = $objMessageFactory->getChatUsers (null, $objUser);
@@ -797,6 +884,9 @@ class ChatController extends ControllerBase
 
         $this->view->arrUsers = $arrUsers;
         $this->view->arrAllUsers = $arrAllUsers;
+        $this->view->arrPageCategories = $arrPageCategories;
+        $this->view->arrPages = $arrPages;
+        $this->view->arrChatGroups = $arrChatGroups;
 
 
         $arrChatGroups = $objMessageFactory->getGroupChats (new User ($_SESSION['user']['user_id']));
@@ -868,7 +958,8 @@ class ChatController extends ControllerBase
 
             $this->view->arrUser = $objUser;
             $this->view->userId = $userId;
-
+            $this->view->objUser = $objUser;
+            
             $this->view->groupId = '';
         }
         elseif ( isset ($_POST['groupId']) )
@@ -883,6 +974,7 @@ class ChatController extends ControllerBase
 
             $this->view->arrUser = $arrUser;
             $this->view->userId = $userId;
+             $this->view->objUser = null;
         }
         else
         {
@@ -949,6 +1041,108 @@ class ChatController extends ControllerBase
         }
 
         $this->view->partial ("chat/viewMessage", ["arrMessages" => $arrMessages]);
+    }
+
+    /**
+     * 
+     * @param type $messageId
+     */
+    public function getUsersToForwardAction ($messageId)
+    {
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
+        if ( !is_numeric ($messageId) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objUser = new User ($_SESSION['user']['user_id']);
+
+        $arrFriends = (new UserFactory())->getFriendList ($objUser);
+
+        if ( $arrFriends === false )
+        {
+            $this->ajaxresponse ("error", "Unable to get friends");
+        }
+
+        $this->view->arrFriends = $arrFriends;
+        $this->view->messageId = $messageId;
+    }
+
+    public function sendMessageForwardAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['messageId']) || empty ($_POST['userId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
+        try {
+            $objMessage = new Message ($_POST['messageId']);
+            $objMessageFactory = new MessageFactory();
+            $objRecipient = new User ($_POST['userId']);
+            $objUser = new User ($_SESSION['user']['user_id']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $blResult = $objMessageFactory->cloneMessage ($objUser, $objMessage, new EmailNotificationFactory (), $objRecipient, '');
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
+    }
+    
+    public function getPageMessagesAction ()
+    {
+        $this->view->disable ();
+        
+        if ( empty ($_POST['pageId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+        
+        try {
+            $objPage = new Page ($_POST['pageId']);
+            
+            $objMessage = new PageInboxFactory();
+            
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $arrMessages = $objMessage->getMessages ($objPage, new MessageFactory (), $objUser);
+            
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrMessages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->partial ("chat/chat", ["arrMessages" => $arrMessages]);
+
+
     }
 
 }

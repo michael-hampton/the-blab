@@ -46,7 +46,7 @@ class PageFactory
      * @param PageCategory $category
      * @return type
      */
-    public function getAllPages (User $objUser, PageReactionFactory $objPageReactionFactory, $searchText = null, $page = null, $pageLimit = null, PageCategory $category = null)
+    public function getAllPages (User $objUser = null, PageReactionFactory $objPageReactionFactory, $searchText = null, $page = null, $pageLimit = null, PageCategory $category = null)
     {
 
         $arrWhere = [];
@@ -54,8 +54,13 @@ class PageFactory
         $sql = "SELECT  p.*, COUNT(pf.id) AS followers, COUNT(pl.id) AS like_count  FROM `page` p  
                 LEFT JOIN page_follower pf ON pf.page_id = p.id
                 LEFT JOIN page_like pl ON pl.page_id = p.id
-                WHERE p.user_id != :userId";
-        $arrWhere[':userId'] = $objUser->getId ();
+                WHERE 1=1";
+        
+        if($objUser !== null) {
+            $sql .= " AND p.user_id != :userId";
+            $arrWhere[':userId'] = $objUser->getId ();
+        }
+        
 
         if ( $searchText !== null )
         {

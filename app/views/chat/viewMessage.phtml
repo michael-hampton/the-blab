@@ -5,6 +5,11 @@ foreach ($arrMessages as $arrMessage):
     $height = 300;
     $embed = '';
 
+    if ( $arrMessage->getType () == "img" )
+    {
+        continue;
+    }
+
     $comment = $arrMessage->getMessage ();
 
     if ( preg_match ('/https:\/\/(?:www.)?(youtube).com\/watch\\?v=(.*?)/', $comment) )

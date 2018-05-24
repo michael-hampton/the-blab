@@ -1,9 +1,76 @@
 <link rel="stylesheet" type="text/css" href="/blab/public/css/pms.css">    
 <link rel="stylesheet" href="/blab/public/css/colorPicker.css">
 
+<?php
+
+function getOnlineStatusLabel (User $objUser)
+{
+    $onlineLabel = '<span class="label label-danger">Offline</span>';
+
+    if ( trim ($objUser->getLastLogin ()) !== "" )
+    {
+        $dbdate = strtotime ($objUser->getLastLogin ());
+        if ( time () - $dbdate <= 15 * 60 )
+        {
+
+            $onlineLabel = '<span class="label label-navy">Online</span>';
+        }
+        else
+        {
+            $onlineLabel = '<span class="label label-danger">Offline</span>';
+        }
+    }
+    else
+    {
+        $onlineLabel = '<span class="label label-danger">Offline</span>';
+    }
+
+    return $onlineLabel;
+}
+
+function time_elapsed_string ($datetime, $full = false)
+{
+    if ( trim ($datetime) === "" )
+    {
+        return "";
+    }
+
+    $now = new DateTime;
+    $ago = new DateTime ($datetime);
+    $diff = $now->diff ($ago);
+
+    $diff->w = floor ($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    foreach ($string as $k => &$v) {
+        if ( $diff->$k )
+        {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        }
+        else
+        {
+            unset ($string[$k]);
+        }
+    }
+
+    if ( !$full )
+        $string = array_slice ($string, 0, 1);
+    return $string ? implode (', ', $string) . ' ago' : 'just now';
+}
+?>
+
 
 <div class="panel panel-chat" id="<?= $groupId ?>">
-    
+
     <a href="#" class="chatGoBack">Back</a>
 
 
@@ -39,6 +106,22 @@
                 <div class="pms_right_view_inner_left">
 
                     <div style="display:table-cell;vertical-align:middle; padding-right:10px;" id="vpb-current-group-name" onmouseover="vpb_get_user_onmouseover_data ('', '', '', '', 'group');" onmouseout="vpb_get_user_mouseout_data ('', '', '', '', 'group');"><span class="vpb_added_users_names">Vasplus</span>, <span class="vpb_added_users_names">Williams</span>, <span class="vpb_added_users_names">Patricia</span> and 3 <span class="vpb_added_users_names">others</span></div>
+
+                    <?php
+                    if ( $objUser !== null )
+                    {
+                        ?>
+                        <div style="text-align:center">
+                            <small>
+                                Last Active:<?= time_elapsed_string ($objUser->getLastLogin (), true) ?>
+                                <?= getOnlineStatusLabel ($objUser) ?>
+
+                            </small>
+                        </div>
+                        <?php
+                    }
+                    ?>
+
 
                     <div id="vpb_add_more_people_button" style="display:table-cell;" class="vasplus_tooltip_icons"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Leave conversation"><div style="display:inline-block;padding-left:0px; vertical-align:middle;"><i class="fa fa-times add_more_people_hover" onclick="vpb_confirm_remove_self_from_group ('grace');"></i></div></div>
 

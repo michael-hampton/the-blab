@@ -17,17 +17,22 @@
                     <div class="col-lg-12" style="width:100%; font-size: 14px; margin-bottom: 12px;">
                         <a href="#" class="showActiveUsers btn btn-success">Active</a>
                         <a href="#" class="showGroups btn btn-warning">Groups</a>
+                        <a href="#" class="showDiscover btn btn-danger">Discover</a>
                         <a href="#" class="showAllChat btn btn-primary">All</a>
                     </div>
 
+                    <div class="usersDiv">
                     <?php
                     echo '<h5>Friends</h5>';
 
                     foreach ($arrMessages as $objMessage):
-                        
-                        if(  trim ($objMessage->getRecipient()) !== "") {
-                             $from = (int) $objMessage->getRecipient() === (int) $_SESSION['user']['user_id'] ? $objMessage->getAuthor() : 'You';
-                        } else {
+
+                        if ( trim ($objMessage->getRecipient ()) !== "" )
+                        {
+                            $from = (int) $objMessage->getRecipient () === (int) $_SESSION['user']['user_id'] ? $objMessage->getAuthor () : 'You';
+                        }
+                        else
+                        {
                             $from = '';
                         }
 
@@ -56,30 +61,29 @@
 
 
                         if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
-                            
+
                             if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg') )
-                        {
-                            $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessage->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
-                        }
-                        else
-                        {
-                            $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
-                        }
-                            
+                            {
+                                $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessage->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
+                            }
+                            else
+                            {
+                                $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+                            }
                             ?>
                             <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left;">
                                 <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= str_replace (" ", "|", $objMessage->getAuthor ()) ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getUserId () ?>" href="#"> 
-                                   
+
                                     <div class="col-lg-9">
                                         <?= $image ?>
-                                   
-                                        <?= $objMessage->getAuthor () ?> <br>
-                                        <?= $from . ' ' . substr($objMessage->getMessage(), 0, 20) ?>
+
+        <?= $objMessage->getAuthor () ?> <br>
+        <?= $from . ' ' . substr ($objMessage->getMessage (), 0, 20) ?>
                                     </div>
-                                    
+
                                     <div class="col-lg-3">
-                                        <?= date("d F", strtotime($objMessage->getDate()))  ?>
-                                         <i class="fa fa-circle <?= $onlineLabel ?>"></i> 
+        <?= date ("d F", strtotime ($objMessage->getDate ())) ?>
+                                        <i class="fa fa-circle <?= $onlineLabel ?>"></i> 
                                     </div>
                                 </a>
                             </li>
@@ -87,6 +91,10 @@
                             <?php
                         endif;
                     endforeach;
+                    
+                    echo '</div>';
+                    
+                    echo '<div class="groupsDiv" style="width:100%;">';
 
                     if ( isset ($arrChatGroups) && !empty ($arrChatGroups) ):
 
@@ -101,11 +109,47 @@
                             <?php
                         endforeach;
                     endif;
+                    
+                    echo '</div>';
+
+                    echo '<div class="discover" style="width:100%; display:none;">';
+                    
+                    if ( !empty ($arrPages) ):
+
+                        echo '<h5>Pages</h5>';
+
+                        foreach ($arrPages as $objPage):
+                            
+                              if ( file_exists ($rootPath . $objPage->getFileLocation()) )
+                            {
+                                $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objPage->getName () . '" alt="image" class="img-circle img-responsive" src="' . $objPage->getFileLocation() . '">';
+                            }
+                            else
+                            {
+                                $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+                            }
+                            ?>
+                            <li>
+                                <a class="show-chat page" groupname="<?= $objPage->getName () ?>" groupid="<?= $objPage->getUrl () ?>" href="#"> 
+                                   <?= $image ?>
+                                    <i class="fa fa-circle text-danger"></i> <?= $objPage->getName () ?> 
+                                </a>
+                            </li>
+
+                            <?php
+                        endforeach;
+                    endif;
+                    
+                    echo '</div>';
                     ?>
 
                 </ul>
             </div>
         </div>
+    </div>
+
+    <div class="col-md-12 discoverWindow pull-left">
+
     </div>
 
     <div class="col-md-12 chatWindow pull-left">
