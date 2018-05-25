@@ -309,7 +309,21 @@ function time_elapsed_string ($datetime, $full = false)
     <div class="v_chat_bx_inner" id="vpb_chat_bx_inner_<?= $groupId ?>">
         <div class="panel-body">
             <div class="over-body" style="height:200px !important; overflow:auto;">
-                <?php $this->partial ("chat/viewMessage", ["arrMessages" => $arrMessages]); ?>
+
+                <?php
+                $arrParams["arrMessages"] = $arrMessages;
+
+                if ( !empty ($objPage) )
+                {
+                    $arrParams["objPage"] = $objPage;
+                }
+                elseif ( !empty ($objUser) )
+                {
+                    $arrParams["objUser"] = $objUser;
+                }
+
+                $this->partial ("chat/viewMessage", $arrParams);
+                ?>
             </div>
             <div class="clearFix"></div>
         </div>

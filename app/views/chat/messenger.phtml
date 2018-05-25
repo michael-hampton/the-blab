@@ -1,6 +1,52 @@
 <link href="/blab/public/css/newsFeed.css" rel="stylesheet" type="text/css">
 <link href="/blab/public/css/chat.css" rel="stylesheet" type="text/css">
 
+
+<?php
+
+/**
+ * build html ordered by page category
+ * @return string
+ */
+function getPageHtml ($arrPages, $rootPath)
+{
+    if ( !empty ($arrPages) )
+    {
+
+        $arrPageData = [];
+
+        foreach ($arrPages as $key => $objPage) {
+
+            if ( !isset ($arrPageData[$objPage->getCategories ()]) )
+            {
+                $arrPageData[$objPage->getCategories ()][$key] = array();
+            }
+
+
+            if ( file_exists ($rootPath . $objPage->getFileLocation ()) )
+            {
+                $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objPage->getName () . '" alt="image" class="img-circle img-responsive" src="' . $objPage->getFileLocation () . '">';
+            }
+            else
+            {
+                $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+            }
+
+            $html = '<li>
+                                    <a class="show-chat page" groupname="' . $objPage->getName () . '" groupid="' . $objPage->getUrl () . '" href="#"> 
+                                        ' . $image . '
+                                        <i class="fa fa-circle text-danger"></i> ' . $objPage->getName () . ' 
+                                    </a>
+                                </li>';
+
+            $arrPageData[$objPage->getCategories ()][$key] = $html;
+        }
+    }
+
+    return $arrPageData;
+}
+?>
+
 <div class="row">
     <div class="col-md-6 pull-left userChatList">
         <div class="ibox" style="float:left; width: 100%">
@@ -22,126 +68,138 @@
                     </div>
 
                     <div class="usersDiv">
-                    <?php
-                    echo '<h5>Friends</h5>';
+                        <?php
+                        echo '<h5>Friends</h5>';
 
-                    foreach ($arrMessages as $objMessage):
+                        foreach ($arrMessages as $objMessage):
 
-                        if ( trim ($objMessage->getRecipient ()) !== "" )
-                        {
-                            $from = (int) $objMessage->getRecipient () === (int) $_SESSION['user']['user_id'] ? $objMessage->getAuthor () : 'You';
-                        }
-                        else
-                        {
-                            $from = '';
-                        }
-
-                        $onlineLabel = 'text-danger';
-                        $activeLabel = 'chat-not-active-user';
-
-                        if ( trim ($objMessage->getLastLogin ()) !== "" )
-                        {
-                            $dbdate = strtotime ($objMessage->getLastLogin ());
-                            if ( time () - $dbdate <= 15 * 60 )
+                            if ( trim ($objMessage->getRecipient ()) !== "" )
                             {
-                                $onlineLabel = 'text-navy';
-                                $activeLabel = 'chat-active-user';
+                                $from = (int) $objMessage->getRecipient () === (int) $_SESSION['user']['user_id'] ? $objMessage->getAuthor () : 'You';
+                            }
+                            else
+                            {
+                                $from = '';
+                            }
+
+                            $onlineLabel = 'text-danger';
+                            $activeLabel = 'chat-not-active-user';
+
+                            if ( trim ($objMessage->getLastLogin ()) !== "" )
+                            {
+                                $dbdate = strtotime ($objMessage->getLastLogin ());
+                                if ( time () - $dbdate <= 15 * 60 )
+                                {
+                                    $onlineLabel = 'text-navy';
+                                    $activeLabel = 'chat-active-user';
+                                }
+                                else
+                                {
+                                    $onlineLabel = 'text-danger';
+                                    $activeLabel = 'chat-not-active-user';
+                                }
                             }
                             else
                             {
                                 $onlineLabel = 'text-danger';
                                 $activeLabel = 'chat-not-active-user';
                             }
-                        }
-                        else
-                        {
-                            $onlineLabel = 'text-danger';
-                            $activeLabel = 'chat-not-active-user';
-                        }
 
 
-                        if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
+                            if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
 
-                            if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg') )
-                            {
-                                $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessage->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
-                            }
-                            else
-                            {
-                                $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
-                            }
-                            ?>
-                            <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left;">
-                                <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= str_replace (" ", "|", $objMessage->getAuthor ()) ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getUserId () ?>" href="#"> 
+                                if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg') )
+                                {
+                                    $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessage->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
+                                }
+                                else
+                                {
+                                    $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+                                }
+                                ?>
+                                <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left;">
+                                    <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= str_replace (" ", "|", $objMessage->getAuthor ()) ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getUserId () ?>" href="#"> 
 
-                                    <div class="col-lg-9">
-                                        <?= $image ?>
+                                        <div class="col-lg-9">
+                                            <?= $image ?>
 
-        <?= $objMessage->getAuthor () ?> <br>
-        <?= $from . ' ' . substr ($objMessage->getMessage (), 0, 20) ?>
-                                    </div>
+                                            <?= $objMessage->getAuthor () ?> <br>
+                                            <?= $from . ' ' . substr ($objMessage->getMessage (), 0, 20) ?>
+                                        </div>
 
-                                    <div class="col-lg-3">
-        <?= date ("d F", strtotime ($objMessage->getDate ())) ?>
-                                        <i class="fa fa-circle <?= $onlineLabel ?>"></i> 
-                                    </div>
-                                </a>
-                            </li>
+                                        <div class="col-lg-3">
+                                            <?= date ("d F", strtotime ($objMessage->getDate ())) ?>
+                                            <i class="fa fa-circle <?= $onlineLabel ?>"></i> 
+                                        </div>
+                                    </a>
+                                </li>
 
-                            <?php
+                                <?php
+                            endif;
+                        endforeach;
+
+                        echo '</div>';
+
+                        echo '<div class="groupsDiv" style="width:100%;">';
+
+                        if ( isset ($arrChatGroups) && !empty ($arrChatGroups) ):
+
+                            echo '<h5>Groups</h5>';
+
+                            foreach ($arrChatGroups as $arrChatGroup):
+                                ?>
+                                <li>
+                                    <a class="show-chat group" groupname="<?= $arrChatGroup['name'] ?>" groupid="<?= $arrChatGroup['group_id'] ?>" username="<?= $arrChatGroup['users'] ?>" fullname="<?= $arrChatGroup['fullname'] ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> 
+                                        <i class="fa fa-circle text-danger"></i> <?= $arrChatGroup['name'] ?> </a></li>
+
+                                <?php
+                            endforeach;
                         endif;
-                    endforeach;
-                    
-                    echo '</div>';
-                    
-                    echo '<div class="groupsDiv" style="width:100%;">';
 
-                    if ( isset ($arrChatGroups) && !empty ($arrChatGroups) ):
+                        echo '</div>';
 
-                        echo '<h5>Groups</h5>';
+                        echo '<div class="discover" style="width:100%; display:none;">';
 
-                        foreach ($arrChatGroups as $arrChatGroup):
-                            ?>
-                            <li>
-                                <a class="show-chat group" groupname="<?= $arrChatGroup['name'] ?>" groupid="<?= $arrChatGroup['group_id'] ?>" username="<?= $arrChatGroup['users'] ?>" fullname="<?= $arrChatGroup['fullname'] ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> 
-                                    <i class="fa fa-circle text-danger"></i> <?= $arrChatGroup['name'] ?> </a></li>
+                        echo '<div style="width:100%; border-bottom: 1px dotted #CCC">';
 
-                            <?php
-                        endforeach;
-                    endif;
-                    
-                    echo '</div>';
+                        echo '<h2>Pages</h2>';
 
-                    echo '<div class="discover" style="width:100%; display:none;">';
-                    
-                    if ( !empty ($arrPages) ):
+                        $arrPageData = getPageHtml ($arrPages, $rootPath);
 
-                        echo '<h5>Pages</h5>';
+                        // pages here
+                        if ( !empty ($arrPageData) )
+                        {
+                            foreach ($arrPageData as $categoryId => $pageCategory) {
+                                echo '<h3>' . $arrPageCategories[$categoryId]->getName () . '</h3>';
 
-                        foreach ($arrPages as $objPage):
-                            
-                              if ( file_exists ($rootPath . $objPage->getFileLocation()) )
-                            {
-                                $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objPage->getName () . '" alt="image" class="img-circle img-responsive" src="' . $objPage->getFileLocation() . '">';
+                                foreach ($pageCategory as $pageHtml) {
+                                    echo $pageHtml;
+                                }
                             }
-                            else
-                            {
-                                $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
-                            }
-                            ?>
-                            <li>
-                                <a class="show-chat page" groupname="<?= $objPage->getName () ?>" groupid="<?= $objPage->getUrl () ?>" href="#"> 
-                                   <?= $image ?>
-                                    <i class="fa fa-circle text-danger"></i> <?= $objPage->getName () ?> 
-                                </a>
-                            </li>
+                        }
 
-                            <?php
-                        endforeach;
-                    endif;
-                    
-                    echo '</div>';
-                    ?>
+                        echo '</div>';
+
+
+
+                        echo '<div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
+
+                                        <h2>Page Categories</h2>
+
+                                        <ul class="list-group clear-list">';
+
+                        foreach ($arrPageCategories as $arrPageCategory) {
+
+                            echo '<li class="list-group-item fist-item filterPageCategory" style="border-bottom:1px dotted #CCC;" id="' . $arrPageCategory->getId () . '">
+                                               ' . $arrPageCategory->getName () . '
+                                            </li>';
+                        }
+                        echo '</ul>
+
+                            </div>';
+
+                        echo '</div>';
+                        ?>
 
                 </ul>
             </div>
@@ -169,8 +227,9 @@
 if ( !empty ($_GET['username']) )
 {
     ?>
-        var username = '<?= $_GET['username']; ?>';
-        $ (".single[username='" + username + "']").click ();
+        var username = '<? = $_GET['username'];
+                ? > ';
+                $ (".single[username='" + username + "']").click ();
 <?php } ?>
 </script>
 
