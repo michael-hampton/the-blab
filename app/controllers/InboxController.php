@@ -357,14 +357,14 @@ class InboxController extends ControllerBase
                 $objRecipient = new User ($objPage->getUserId ());
                 $objUser2 = $objUser;
 
-                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], $objBadWordFilter, $objEmailNotificationFactory, $objUser2, $objRecipient, "", "text");
+                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], $objBadWordFilter, $objEmailNotificationFactory, $objUser2, $objRecipient, "", "page");
                 $strDir = 'OUT';
             }
             else
             {
                 $objRecipient = $objUser;
                 $objUser2 = new User ($objPage->getUserId ());
-                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], $objBadWordFilter, $objEmailNotificationFactory, $objUser2, $objRecipient, "", "text");
+                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], $objBadWordFilter, $objEmailNotificationFactory, $objUser2, $objRecipient, "", "page");
                 $strDir = 'IN';
             }
 
@@ -500,7 +500,7 @@ class InboxController extends ControllerBase
 
                 $objUser = new User ($userId);
 
-                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), $objUser, new User ($objPage->getUserId ()), "", "text");
+                $objMessage = $objMessageFactory->sendMessage ($_POST['message'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), $objUser, new User ($objPage->getUserId ()), "", "page");
 
                 if ( $objMessage === false )
                 {

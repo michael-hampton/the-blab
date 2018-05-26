@@ -82,7 +82,7 @@ class PageCategoryFactory
             $objCategory = new PageCategory ($arrResult['category_id']);
             $objCategory->setName ($arrResult['name']);
 
-            $arrCategories[] = $objCategory;
+            $arrCategories[$arrResult['category_id']] = $objCategory;
         }
 
         return $arrCategories;

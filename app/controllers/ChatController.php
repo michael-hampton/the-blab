@@ -113,9 +113,31 @@ class ChatController extends ControllerBase
             );
         }
 
-        $arrFriends = (new UserFactory())->getUsers ();
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objMessageFactory = new MessageFactory();
+            $arrChatUsers = $objMessageFactory->getChatUsers (null, $objUser);
+            $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory ());
+            $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
-        if ( $arrFriends === false )
+        $arrChatGroups = $objMessageFactory->getGroupChats ($objUser);
+
+        if ( $arrChatGroups === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get chat groups"]
+                            ]
+            );
+        }
+
+        if ( $arrChatUsers === false )
         {
             return $this->dispatcher->forward (
                             [
@@ -126,7 +148,32 @@ class ChatController extends ControllerBase
             );
         }
 
-        $this->view->arrUsers = $arrFriends;
+        if ( $arrPages === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get pages"]
+                            ]
+            );
+        }
+
+        if ( $arrPageCategories === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get pages"]
+                            ]
+            );
+        }
+
+        $this->view->arrMessages = $arrChatUsers;
+        $this->view->arrPageCategories = $arrPageCategories;
+        $this->view->arrPages = $arrPages;
+        $this->view->arrChatGroups = $arrChatGroups;
     }
 
     public function uploadFileAction ()
@@ -432,20 +479,87 @@ class ChatController extends ControllerBase
         $this->ajaxresponse ("success", "success");
     }
 
-    public function addMessageAction ()
+    public function addPageMessageAction ($pageId)
     {
         $this->view->disable ();
 
-        if ( !isset ($_SESSION['user']['user_id']) || empty ($_SESSION['user']['user_id']) )
+        if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", "You dont have permission to do this");
         }
 
-        if ( !isset ($_POST['userId']) )
+        if ( trim ($pageId) === "" )
+        {
+            $this->ajaxresponse ("error", "Invalid Page");
+        }
+
+        try {
+
+            $objPage = new Page ($pageId);
+
+            $objUser = new User ($_SESSION['user']['user_id']);
+
+            $objMessage = (new MessageFactory())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($objPage->getUserId ()), $objUser, $_POST['filename'], "page", null);
+
+            if ( $objMessage === false )
+            {
+                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            }
+
+            $blPageResult = (new PageInboxFactory())->createMessage ($objPage, $objUser, $objMessage);
+
+            if ( $blPageResult === false )
+            {
+                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            }
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( !empty ($_POST['tags']) )
+        {
+
+            $objNotification = new NotificationFactory();
+
+            $tags = explode (",", $_POST['tags']);
+
+            $username = $_SESSION['user']['username'];
+
+            $message = $username . " Tagged you in a chat message";
+
+            foreach ($tags as $taggedUser) {
+
+                try {
+                    $objNewUser = new User ($taggedUser);
+
+                    $objNotification->createNotification ($objNewUser, $message);
+
+                    $objEmail = new EmailNotification ($objNewUser, $message, $_POST['msg']);
+                    $objEmail->sendEmail ();
+                } catch (Exception $ex) {
+                    trigger_error ($ex->getMessage (), E_USER_WARNING);
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
+            }
+        }
+
+        echo $objMessage->getId ();
+    }
+
+    public function addMessageAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "You dont have permission to do this");
+        }
+
+        if ( empty ($_POST['userId']) )
         {
             $this->ajaxresponse ("error", "Invalid User");
         }
-
 
         try {
             $objUser = new User ($_SESSION['user']['user_id']);
@@ -771,20 +885,75 @@ class ChatController extends ControllerBase
         }
 
         try {
+            $objUser = new User ($_SESSION['user']['user_id']);
             $objMessageFactory = new MessageFactory();
-
-            $arrUsers = (new UserFactory())->getChatUsers ($_POST['searchText'], new User ($_SESSION['user']['user_id']));
+            $arrUsers = $objMessageFactory->getChatUsers ($_POST['searchText'], $objUser);
+            $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory ());
+            $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( $arrUsers === false )
+        $arrChatGroups = $objMessageFactory->getGroupChats ($objUser);
+
+        if ( $arrChatGroups === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get chat groups"]
+                            ]
+            );
+        }
+
+        if ( $arrChatUsers === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get friends list"]
+                            ]
+            );
+        }
+
+        if ( $arrPages === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get pages"]
+                            ]
+            );
+        }
+
+        if ( $arrPageCategories === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get pages"]
+                            ]
+            );
+        }
+
+
+        $arrAllUsers = $objMessageFactory->getChatUsers (null, $objUser);
+
+        if ( $arrUsers === false || $arrAllUsers === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
         $this->view->arrUsers = $arrUsers;
+        $this->view->arrAllUsers = $arrAllUsers;
+        $this->view->arrPageCategories = $arrPageCategories;
+        $this->view->arrPages = $arrPages;
+        $this->view->arrChatGroups = $arrChatGroups;
 
 
         $arrChatGroups = $objMessageFactory->getGroupChats (new User ($_SESSION['user']['user_id']));
@@ -823,59 +992,85 @@ class ChatController extends ControllerBase
         $this->ajaxresponse ("success", "success");
     }
 
-    public function chatAction ()
+    public function getGroupMessagesAction ()
     {
-        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
-
-        $objMessage = new MessageFactory();
+        $this->view->disable ();
 
         if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( isset ($_POST['userId']) )
-        {
-            $userId = $_POST['userId'];
-
-            $objUser = new User ($_POST['userId']);
-
-            if ( $objUser === false )
-            {
-                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-            }
-
-            $arrMessages = $objMessage->getMessagesNew (new User ($_SESSION['user']['user_id']), $objUser);
-
-            if ( $arrMessages === false )
-            {
-                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-            }
-
-            $this->view->arrMessages = $arrMessages;
-
-            $this->view->arrUser = $objUser;
-            $this->view->userId = $userId;
-
-            $this->view->groupId = '';
-        }
-        elseif ( isset ($_POST['groupId']) )
-        {
-            $groupId = $_POST['groupId'];
-            $this->view->groupId = $groupId;
-
-            $this->view->arrMessages = $objMessage->getMessagesForGroup ($groupId);
-
-            $userId = $_SESSION['user']['user_id'];
-            $arrUser[$userId] = (new User ($userId));
-
-            $this->view->arrUser = $arrUser;
-            $this->view->userId = $userId;
-        }
-        else
+        if ( empty ($_POST['groupId']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
+
+        $groupId = $_POST['groupId'];
+        $this->view->groupId = $groupId;
+
+        try {
+            $objMessage = new MessageFactory();
+            $userId = $_SESSION['user']['user_id'];
+            $arrUser[$userId] = (new User ($userId));
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrUser === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrMessages = $objMessage->getMessagesForGroup ($groupId);
+
+        if ( $arrMessages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->partial ("chat/chat", ["arrMessages" => $arrMessages, "arrUser" => $arrUser, "userId" => $userId, "objUser" => null]);
+    }
+
+    public function chatAction ()
+    {
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_POST['userId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objMessage = new MessageFactory();
+            $userId = $_POST['userId'];
+
+            $objUser = new User ($_POST['userId']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrMessages = $objMessage->getMessagesNew (new User ($_SESSION['user']['user_id']), $objUser);
+
+        if ( $arrMessages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->arrMessages = $arrMessages;
+
+        $this->view->arrUser = $objUser;
+        $this->view->userId = $userId;
+        $this->view->objUser = $objUser;
+
+        $this->view->groupId = '';
 
         if ( $this->view->arrMessages === false )
         {
@@ -900,34 +1095,24 @@ class ChatController extends ControllerBase
         }
     }
 
-    public function getMessageAction ($groupId = null, $userId = null)
+    /**
+     * 
+     * @param type $groupId
+     */
+    public function getGroupMessageAction ($groupId)
     {
         $this->view->disable ();
 
-        $objMessage = new MessageFactory();
-
-        if ( $groupId !== null && trim ($groupId) !== "" && is_numeric ($groupId) )
+        if ( empty ($_SESSION['user']['user_id']) )
         {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objMessage = new MessageFactory();
             $arrMessages = $objMessage->getMessagesForGroup ($groupId);
-        }
-        else
-        {
-
-            if ( $userId !== null && trim ($userId) !== "" && is_numeric ($userId) )
-            {
-                $objUser = new User ($_SESSION['user']['user_id']);
-
-
-                $arrMessages = $objMessage->getMessagesNew ($objUser, new User ($userId));
-            }
-            else
-            {
-                $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-            }
-        }
-
-        if ( !isset ($_SESSION['user']['user_id']) )
-        {
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
@@ -937,6 +1122,206 @@ class ChatController extends ControllerBase
         }
 
         $this->view->partial ("chat/viewMessage", ["arrMessages" => $arrMessages]);
+    }
+
+    /**
+     * 
+     * @param type $pageId
+     */
+    public function getSinglePageMessageAction ($pageId)
+    {
+        $this->view->disable ();
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objMessage = new PageInboxFactory();
+            $objMessageFactory = new MessageFactory();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objPage = new Page ($pageId);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrMessages = $objMessage->getMessages ($objPage, $objMessageFactory, $objUser);
+
+        if ( $arrMessages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->partial ("chat/viewMessage", ["arrMessages" => $arrMessages, "objPage" => $objPage]);
+    }
+
+    /**
+     * 
+     * @param type $userId
+     */
+    public function getUserMessageAction ($userId)
+    {
+        $this->view->disable ();
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+
+        try {
+            $objMessage = new MessageFactory();
+            $objRecipient = new User ($userId);
+            $objUser = new User ($_SESSION['user']['user_id']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrMessages = $objMessage->getMessagesNew ($objUser, $objRecipient);
+
+        if ( $arrMessages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->partial ("chat/viewMessage", ["arrMessages" => $arrMessages, "objUser" => $objRecipient]);
+    }
+
+    /**
+     * 
+     * @param type $messageId
+     */
+    public function getUsersToForwardAction ($messageId)
+    {
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
+        if ( !is_numeric ($messageId) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objUser = new User ($_SESSION['user']['user_id']);
+
+        $arrFriends = (new UserFactory())->getFriendList ($objUser);
+
+        if ( $arrFriends === false )
+        {
+            $this->ajaxresponse ("error", "Unable to get friends");
+        }
+
+        $this->view->arrFriends = $arrFriends;
+        $this->view->messageId = $messageId;
+    }
+
+    public function sendMessageForwardAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['messageId']) || empty ($_POST['userId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
+        try {
+            $objMessage = new Message ($_POST['messageId']);
+            $objMessageFactory = new MessageFactory();
+            $objRecipient = new User ($_POST['userId']);
+            $objUser = new User ($_SESSION['user']['user_id']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $blResult = $objMessageFactory->cloneMessage ($objUser, $objMessage, new EmailNotificationFactory (), $objRecipient, '');
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
+    }
+
+    public function getPageMessagesAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['pageId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objPage = new Page ($_POST['pageId']);
+
+            $objMessage = new PageInboxFactory();
+
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $arrMessages = $objMessage->getMessages ($objPage, new MessageFactory (), $objUser);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrMessages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->partial ("chat/chat", ["arrMessages" => $arrMessages, "objPage" => $objPage]);
+    }
+
+    public function filterDiscoveryAction ()
+    {
+        $this->view->disable ();
+
+        if ( !isset ($_POST['categoryId']) || !isset ($_POST['searchText']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $searchText = trim ($_POST['searchText']) !== "" ? $_POST['searchText'] : null;
+        $objPageCategory = trim ($_POST['categoryId']) !== "" && is_numeric ($_POST['categoryId']) ? new PageCategory ($_POST['categoryId']) : null;
+
+        try {
+            $objPageCategoryFactory = new PageCategoryFactory();
+            $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory (), null, $searchText, null, null, $objPageCategory);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrPageCategories = $objPageCategoryFactory->getAllCategories ();
+
+        if ( $arrPageCategories === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrPages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+        
+        $this->view->partial("chat/discovery", ["arrPages" => $arrPages, "arrPageCategories" => $arrPageCategories]);
     }
 
 }

@@ -1,6 +1,10 @@
 <?php
+/*
+ * @param Message $objUser
+ * @return string
+ */
 
-function getOnlineStatusLabel (User $objUser)
+function getOnlineStatusLabel (Message $objUser)
 {
     $onlineLabel = 'text-danger';
 
@@ -24,21 +28,115 @@ function getOnlineStatusLabel (User $objUser)
     return $onlineLabel;
 }
 
+echo '<div class="col-lg-12" style="width:100%; font-size: 14px; margin-bottom: 12px;">
+                        <a href="#" class="showActiveUsers btn btn-success">Active</a>
+                        <a href="#" class="showGroups btn btn-warning">Groups</a>
+                        <a href="#" class="showDiscover btn btn-danger">Discover</a>
+                         <a href="#" class="showAllChat btn btn-primary">All</a>
+                    </div>';
+
+echo '<div class="usersDiv">';
 echo '<h5>Friends</h5>';
 
-foreach ($arrUsers as $arrUser):
+foreach ($arrUsers as $objMessage):
 
-    $onlineLabel = getOnlineStatusLabel ($arrUser);
+    if ( trim ($objMessage->getRecipient ()) !== "" )
+    {
+        $from = (int) $objMessage->getRecipient () === (int) $_SESSION['user']['user_id'] ? $objMessage->getAuthor () : 'You';
+    }
+    else
+    {
+        $from = '';
+    }
 
-    if ( $arrUser->getId () !== $_SESSION['user']['user_id'] ):
+    $onlineLabel = getOnlineStatusLabel ($objMessage);
+
+    $activeLabel = trim ($onlineLabel) === 'text-navy' ? 'chat-active-user' : 'chat-not-active-user';
+
+    if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
+
+        if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg') )
+        {
+            $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessage->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
+        }
+        else
+        {
+            $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+        }
         ?>
-        <li><a class="show-chat single" groupname="" groupid="" username="<?= $arrUser->getUsername () ?>" fullname="<?= $arrUser->getFirstName () . '|' . $arrUser->getLastName () ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $arrUser->getId () ?>" href="#"> <i class="fa fa-circle <?= $onlineLabel ?>"></i> <?= $arrUser->getFirstName () . ' ' . $arrUser->getLastName () ?> </a></li>
+        <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left;">
+            <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= str_replace (" ", "|", $objMessage->getAuthor ()) ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getUserId () ?>" href="#"> 
+
+                <div class="col-lg-9">
+                    <?= $image ?>
+
+                    <?= $objMessage->getAuthor () ?> <br>
+                    <?= $from . ' ' . substr ($objMessage->getMessage (), 0, 20) ?>
+                </div>
+
+                <div class="col-lg-3">
+                    <?= date ("d F", strtotime ($objMessage->getDate ())) ?>
+                    <i class="fa fa-circle <?= $onlineLabel ?>"></i> 
+                </div>
+            </a>
+        </li>
 
         <?php
     endif;
 endforeach;
 
-if ( isset ($arrChatGroups) && !empty ($arrChatGroups) ):
+foreach ($arrAllUsers as $objMessages):
+
+    if ( trim ($objMessages->getRecipient ()) !== "" )
+    {
+        $from = (int) $objMessages->getRecipient () === (int) $_SESSION['user']['user_id'] ? $objMessages->getAuthor () : 'You';
+    }
+    else
+    {
+        $from = '';
+    }
+
+    $onlineLabel = getOnlineStatusLabel ($objMessages);
+
+    $activeLabel = trim ($onlineLabel) === 'text-navy' ? 'chat-active-user' : 'chat-not-active-user';
+
+    if ( $objMessages->getUsername () !== $_SESSION['user']['username'] ):
+
+        if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $objMessages->getUsername () . '.jpg') )
+        {
+            $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessages->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
+        }
+        else
+        {
+            $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+        }
+        ?>
+        <li style="width:100%; min-height: 32px; float: left;">
+            <a style="display:none; border-bottom: 1px dotted #CCC;" class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessages->getUsername () ?>" fullname="<?= str_replace (" ", "|", $objMessages->getAuthor ()) ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessages->getUserId () ?>" href="#"> 
+
+                <div class="col-lg-9">
+                    <?= $image ?>
+
+                    <?= $objMessages->getAuthor () ?> <br>
+                    <?= $from . ' ' . substr ($objMessages->getMessage (), 0, 20) ?>
+                </div>
+
+                <div class="col-lg-3">
+                    <?= date ("d F", strtotime ($objMessages->getDate ())) ?>
+                    <i class="fa fa-circle <?= $onlineLabel ?>"></i> 
+                </div>
+            </a>
+        </li>
+
+        <?php
+    endif;
+endforeach;
+
+echo '</div>';
+
+echo '<div class="groupsDiv" style="width:100%;">';
+
+if ( !empty ($arrChatGroups) ):
 
     echo '<h5>Groups</h5>';
 
@@ -49,4 +147,12 @@ if ( isset ($arrChatGroups) && !empty ($arrChatGroups) ):
         <?php
     endforeach;
 endif;
+
+echo '</div>';
+
+echo '<div class="discover" style="width:100%; display:none;">';
+$this->partial ("chat/discovery", ["arrPages" => $arrPages, "arrPageCategories" => $arrPageCategories]);
+
+
+echo '</div>';
 ?>
