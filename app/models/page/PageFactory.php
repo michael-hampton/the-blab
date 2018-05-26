@@ -46,7 +46,7 @@ class PageFactory
      * @param PageCategory $category
      * @return type
      */
-    public function getAllPages (User $objUser = null, PageReactionFactory $objPageReactionFactory, $searchText = null, $page = null, $pageLimit = null, PageCategory $category = null)
+    public function getAllPages (PageReactionFactory $objPageReactionFactory, User $objUser = null, $searchText = null, $page = null, $pageLimit = null, PageCategory $category = null)
     {
 
         $arrWhere = [];

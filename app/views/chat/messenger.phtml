@@ -1,49 +1,81 @@
 <link href="/blab/public/css/newsFeed.css" rel="stylesheet" type="text/css">
 <link href="/blab/public/css/chat.css" rel="stylesheet" type="text/css">
 
-
 <?php
 
 /**
- * build html ordered by page category
+ * 
+ * @param Message $objMessage
+ * @param type $rootPath
  * @return string
  */
-function getPageHtml ($arrPages, $rootPath)
+function getImage (Message $objMessage, $rootPath)
 {
-    if ( !empty ($arrPages) )
+    if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg') )
     {
-
-        $arrPageData = [];
-
-        foreach ($arrPages as $key => $objPage) {
-
-            if ( !isset ($arrPageData[$objPage->getCategories ()]) )
-            {
-                $arrPageData[$objPage->getCategories ()][$key] = array();
-            }
-
-
-            if ( file_exists ($rootPath . $objPage->getFileLocation ()) )
-            {
-                $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objPage->getName () . '" alt="image" class="img-circle img-responsive" src="' . $objPage->getFileLocation () . '">';
-            }
-            else
-            {
-                $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
-            }
-
-            $html = '<li>
-                                    <a class="show-chat page" groupname="' . $objPage->getName () . '" groupid="' . $objPage->getUrl () . '" href="#"> 
-                                        ' . $image . '
-                                        <i class="fa fa-circle text-danger"></i> ' . $objPage->getName () . ' 
-                                    </a>
-                                </li>';
-
-            $arrPageData[$objPage->getCategories ()][$key] = $html;
-        }
+        $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessage->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
+    }
+    else
+    {
+        $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
     }
 
-    return $arrPageData;
+    return $image;
+}
+
+/**
+ * 
+ * @param Message $objMessage
+ * @return string
+ */
+function getActiveLabel (Message $objMessage)
+{
+    $onlineLabel = 'text-danger';
+    $activeLabel = 'chat-not-active-user';
+
+    if ( trim ($objMessage->getLastLogin ()) !== "" )
+    {
+        $dbdate = strtotime ($objMessage->getLastLogin ());
+        if ( time () - $dbdate <= 15 * 60 )
+        {
+            $activeLabel = 'chat-active-user';
+        }
+        else
+        {
+            $activeLabel = 'chat-not-active-user';
+        }
+    }
+    else
+    {
+        $activeLabel = 'chat-not-active-user';
+    }
+
+    return $activeLabel;
+}
+
+function getOnlineLabel (Message $objMessage)
+{
+    $onlineLabel = 'text-danger';
+    $activeLabel = 'chat-not-active-user';
+
+    if ( trim ($objMessage->getLastLogin ()) !== "" )
+    {
+        $dbdate = strtotime ($objMessage->getLastLogin ());
+        if ( time () - $dbdate <= 15 * 60 )
+        {
+            $onlineLabel = 'text-navy';
+        }
+        else
+        {
+            $onlineLabel = 'text-danger';
+        }
+    }
+    else
+    {
+        $onlineLabel = 'text-danger';
+    }
+
+    return $onlineLabel;
 }
 ?>
 
@@ -55,6 +87,7 @@ function getPageHtml ($arrPages, $rootPath)
 
                 <div class="input-group" style="width:100%;">
                     <input type="text" placeholder="Search Users " id="chatUserSearchBox" class="input form-control pull-left">
+                    <input style="display:none;" type="text" placeholder="Search Pages" id="chatPageSearchBox" class="input form-control pull-left">
 
                 </div>
 
@@ -82,40 +115,12 @@ function getPageHtml ($arrPages, $rootPath)
                                 $from = '';
                             }
 
-                            $onlineLabel = 'text-danger';
-                            $activeLabel = 'chat-not-active-user';
+                            $image = getImage ($objMessage, $rootPath);
 
-                            if ( trim ($objMessage->getLastLogin ()) !== "" )
-                            {
-                                $dbdate = strtotime ($objMessage->getLastLogin ());
-                                if ( time () - $dbdate <= 15 * 60 )
-                                {
-                                    $onlineLabel = 'text-navy';
-                                    $activeLabel = 'chat-active-user';
-                                }
-                                else
-                                {
-                                    $onlineLabel = 'text-danger';
-                                    $activeLabel = 'chat-not-active-user';
-                                }
-                            }
-                            else
-                            {
-                                $onlineLabel = 'text-danger';
-                                $activeLabel = 'chat-not-active-user';
-                            }
-
+                            $onlineLabel = getOnlineLabel ($objMessage);
+                            $activeLabel = getActiveLabel ($objMessage);
 
                             if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
-
-                                if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg') )
-                                {
-                                    $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objMessage->getAuthor () . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg">';
-                                }
-                                else
-                                {
-                                    $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
-                                }
                                 ?>
                                 <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left;">
                                     <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= str_replace (" ", "|", $objMessage->getAuthor ()) ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getUserId () ?>" href="#"> 
@@ -159,44 +164,8 @@ function getPageHtml ($arrPages, $rootPath)
                         echo '</div>';
 
                         echo '<div class="discover" style="width:100%; display:none;">';
+                        $this->partial ("chat/discovery", ["arrPages" => $arrPages, "arrPageCategories" => $arrPageCategories]);
 
-                        echo '<div style="width:100%; border-bottom: 1px dotted #CCC">';
-
-                        echo '<h2>Pages</h2>';
-
-                        $arrPageData = getPageHtml ($arrPages, $rootPath);
-
-                        // pages here
-                        if ( !empty ($arrPageData) )
-                        {
-                            foreach ($arrPageData as $categoryId => $pageCategory) {
-                                echo '<h3>' . $arrPageCategories[$categoryId]->getName () . '</h3>';
-
-                                foreach ($pageCategory as $pageHtml) {
-                                    echo $pageHtml;
-                                }
-                            }
-                        }
-
-                        echo '</div>';
-
-
-
-                        echo '<div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
-
-                                        <h2>Page Categories</h2>
-
-                                        <ul class="list-group clear-list">';
-
-                        foreach ($arrPageCategories as $arrPageCategory) {
-
-                            echo '<li class="list-group-item fist-item filterPageCategory" style="border-bottom:1px dotted #CCC;" id="' . $arrPageCategory->getId () . '">
-                                               ' . $arrPageCategory->getName () . '
-                                            </li>';
-                        }
-                        echo '</ul>
-
-                            </div>';
 
                         echo '</div>';
                         ?>

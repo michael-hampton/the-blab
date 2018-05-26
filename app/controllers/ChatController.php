@@ -117,7 +117,7 @@ class ChatController extends ControllerBase
             $objUser = new User ($_SESSION['user']['user_id']);
             $objMessageFactory = new MessageFactory();
             $arrChatUsers = $objMessageFactory->getChatUsers (null, $objUser);
-            $arrPages = (new PageFactory())->getAllPages (null, new PageReactionFactory ());
+            $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory ());
             $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
@@ -488,15 +488,15 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", "You dont have permission to do this");
         }
 
-        if ( trim ($pageId) === "")
+        if ( trim ($pageId) === "" )
         {
             $this->ajaxresponse ("error", "Invalid Page");
         }
 
         try {
-            
-            $objPage = new Page($pageId);
-            
+
+            $objPage = new Page ($pageId);
+
             $objUser = new User ($_SESSION['user']['user_id']);
 
             $objMessage = (new MessageFactory())->sendMessage ($_POST['msg'], new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), new User ($objPage->getUserId ()), $objUser, $_POST['filename'], "page", null);
@@ -888,7 +888,7 @@ class ChatController extends ControllerBase
             $objUser = new User ($_SESSION['user']['user_id']);
             $objMessageFactory = new MessageFactory();
             $arrUsers = $objMessageFactory->getChatUsers ($_POST['searchText'], $objUser);
-            $arrPages = (new PageFactory())->getAllPages (null, new PageReactionFactory ());
+            $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory ());
             $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
@@ -1287,6 +1287,41 @@ class ChatController extends ControllerBase
         }
 
         $this->view->partial ("chat/chat", ["arrMessages" => $arrMessages, "objPage" => $objPage]);
+    }
+
+    public function filterDiscoveryAction ()
+    {
+        $this->view->disable ();
+
+        if ( !isset ($_POST['categoryId']) || !isset ($_POST['searchText']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $searchText = trim ($_POST['searchText']) !== "" ? $_POST['searchText'] : null;
+        $objPageCategory = trim ($_POST['categoryId']) !== "" && is_numeric ($_POST['categoryId']) ? new PageCategory ($_POST['categoryId']) : null;
+
+        try {
+            $objPageCategoryFactory = new PageCategoryFactory();
+            $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory (), null, $searchText, null, null, $objPageCategory);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrPageCategories = $objPageCategoryFactory->getAllCategories ();
+
+        if ( $arrPageCategories === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrPages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+        
+        $this->view->partial("chat/discovery", ["arrPages" => $arrPages, "arrPageCategories" => $arrPageCategories]);
     }
 
 }

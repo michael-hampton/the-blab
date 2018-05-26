@@ -1,3 +1,19 @@
+<style>
+    .chat-message {
+        width:90% !important;
+        clear:both;
+    }
+
+    .right {
+        float: right !important;
+    }
+
+    .left {
+        float: left !important;
+    }
+</style>
+
+
 <?php
 if ( !empty ($objPage) )
 {
@@ -74,34 +90,47 @@ foreach ($arrMessages as $arrMessage):
         ?>
 
         <div class="chat-message chat-message-reply right chatWrappera">
-            <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
-            <a href="#" class="forwardChatMessage pull-right" messageid="<?= $arrMessage->getId () ?>"><i class="fa fa-mail-forward"></i></a>
-            <img class="message-avatar" src="<?= $image ?>" alt="">
-            <div class="message">
-                <a class="message-author" href="#">  <?= $name ?> </a>
-                <span class="message-date"> <?= date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())); ?> </span>
-                <span class="message-content">
 
-                    <?php
-                    if ( $arrMessage->getType () == "img" )
-                    {
-                        echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
-                        echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
-                        echo '</a>';
-                    }
-                    elseif ( $arrMessage->getType () == "audio" )
-                    {
-                        echo '<audio style="width:100%; float:left;" controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
-                    }
-                    elseif ( $arrMessage->getType () == "file" )
-                    {
-                        echo '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
-                    }
-                    ?>
 
-        <?= $comment ?>
-                </span>
+            <div style="width:10%; float:right">
+                <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
+                <a href="#" class="forwardChatMessage pull-right" messageid="<?= $arrMessage->getId () ?>"><i class="fa fa-mail-forward"></i></a>
+                <img class="message-avatar pull-right" src="<?= $image ?>" alt="">
             </div>
+
+            <div style="width:90%; float: right">
+                <div class="message" style="text-align:right">
+                    <a class="message-author" href="#">  <?= $name ?> </a>
+                    <span class="message-date"> <?= date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())); ?> </span>
+                    <span class="message-content">
+
+                        <?php
+                        if ( $arrMessage->getType () == "img" )
+                        {
+                            echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
+                            echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
+                            echo '</a>';
+                        }
+                        elseif ( $arrMessage->getType () == "audio" )
+                        {
+                            echo '<audio style="width:100%; float:left;" controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
+                        }
+                        elseif ( $arrMessage->getType () == "file" )
+                        {
+                            echo '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
+                        }
+                        ?>
+
+                        <?= $comment ?>
+                    </span>
+                </div>
+            </div>
+
+
+
+
+
+
         </div>
 
 
@@ -112,33 +141,39 @@ foreach ($arrMessages as $arrMessage):
         ?>
 
         <div class="chat-message left chatWrappera">
-            <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
 
-            <img class="message-avatar" src="<?= $image ?>" alt="">
-            <div class="message">
-                <a class="message-author" href="#"> <?= $name ?> </a>
-                <span class="message-date"> <?= date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())); ?>  </span>
-                <span class="message-content">
+            <div style="width:10%; float: left;">
+                <a href="#" class="deleteChatMessage pull-right" deleteid="<?= $arrMessage->getId () ?>"><i class="fa fa-trash"></i></a>
+                <a href="#" class="forwardChatMessage pull-right" messageid="<?= $arrMessage->getId () ?>"><i class="fa fa-mail-forward"></i></a>
+                <img class="message-avatar" src="<?= $image ?>" alt="">
+            </div>
 
-                    <?php
-                    if ( $arrMessage->getType () == "img" )
-                    {
-                        echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
-                        echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
-                        echo '</a>';
-                    }
-                    elseif ( $arrMessage->getType () == "file" )
-                    {
-                        echo '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
-                    }
-                    elseif ( $arrMessage->getType () == "audio" )
-                    {
-                        echo '<audio controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
-                    }
-                    ?>
+            <div style="width:90%; float: left">
+                <div class="message" style="text-align:left;">
+                    <a class="message-author" href="#"> <?= $name ?> </a>
+                    <span class="message-date"> <?= date ('F j, Y, g:i a', strtotime ($arrMessage->getDate ())); ?>  </span>
+                    <span class="message-content">
 
-        <?= $comment ?>
-                </span>
+                        <?php
+                        if ( $arrMessage->getType () == "img" )
+                        {
+                            echo '<a class="v_photo_holder" onclick="vpb_popup_photo_box(\'' . $arrMessage->getId () . '\', \'1\', 1, \'/blab/public/uploads/chat/' . $arrMessage->getFilename () . '\');">';
+                            echo '<img style="width:110px; clear:both;" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '">';
+                            echo '</a>';
+                        }
+                        elseif ( $arrMessage->getType () == "file" )
+                        {
+                            echo '<a href="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '" download>' . $arrMessage->getFilename () . '</a>';
+                        }
+                        elseif ( $arrMessage->getType () == "audio" )
+                        {
+                            echo '<audio controls="controls" src="/blab/public/uploads/chat/' . $arrMessage->getFilename () . '"></audio>';
+                        }
+                        ?>
+
+                        <?= $comment ?>
+                    </span>
+                </div>
             </div>
         </div>
 

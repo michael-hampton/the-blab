@@ -876,7 +876,7 @@ class IndexController extends ControllerBase
 
         $this->view->arrUsers = $arrUsers;
 
-        $arrPages = (new PageFactory())->getAllPages ($objUser, new PageReactionFactory (), $searchText);
+        $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory (), $objUser, $searchText);
 
         if ( $arrPages === false )
         {

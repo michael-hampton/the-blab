@@ -748,9 +748,9 @@ class PageController extends ControllerBase
 
 
 
-        $arrPages = $objPageFactory->getAllPages ($objUser, new PageReactionFactory (), null, 0, $this->paginationLimit);
+        $arrPages = $objPageFactory->getAllPages (new PageReactionFactory (), $objUser, null, 0, $this->paginationLimit);
 
-        $totalCount = $objPageFactory->getAllPages ($objUser, new PageReactionFactory ());
+        $totalCount = $objPageFactory->getAllPages (new PageReactionFactory (), $objUser);
 
         if ( $arrPages === false || $totalCount === false )
         {
@@ -846,7 +846,7 @@ class PageController extends ControllerBase
         $page = $searchText === null && $category === null ? (int) $_POST['vpb_start'] : null;
         $totalToLoad = $searchText === null && $category === null ? (int) $_POST['vpb_total_per_load'] : null;
 
-        $arrPages = (new PageFactory())->getAllPages ($objUser, new PageReactionFactory (), $searchText, $page, $totalToLoad, $category);
+        $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory (), $objUser, $searchText, $page, $totalToLoad, $category);
 
         if ( $arrPages === false )
         {
@@ -883,5 +883,4 @@ class PageController extends ControllerBase
         $this->ajaxresponse ("success", "success");
     }
 
-    
 }
