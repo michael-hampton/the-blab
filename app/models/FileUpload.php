@@ -106,7 +106,6 @@ class FileUpload
      */
     public function validateUpload ()
     {
-        $uploadOk = true;
 
         $check = getimagesize ($this->tempName);
 
@@ -115,21 +114,18 @@ class FileUpload
         if ( $check === false )
         {
             $this->validationFailures[] = "File is not an image.";
-            $uploadOk = false;
         }
 
         // Check file size
         if ( $this->size > $this->maxSize )
         {
             $this->validationFailures[] = "Sorry, your file is too large.";
-            $uploadOk = false;
         }
 
         // Allow certain file formats
         if ( $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" )
         {
             $this->validationFailures[] = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-            $uploadOk = false;
         }
 
         if ( count ($this->validationFailures) > 0 )

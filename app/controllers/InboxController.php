@@ -147,14 +147,13 @@ class InboxController extends ControllerBase
 
         $message = $this->view->getPartial (
                 "inbox/getMessages", [
-                    "arrMessages" => $arrMessages,
-                    "user_id" => $userId,
-                     "objPage" => $objPage
+            "arrMessages" => $arrMessages,
+            "user_id" => $userId,
+            "objPage" => $objPage
                 ]
         );
 
-
-        echo json_encode (array("message" => $message, "pagination" => "", "total" => ''));
+        $this->ajaxresponse ("success", "success", ["message" => $message, "pagination" => "", "total" => ""]);
     }
 
     public function getInboxUsersAction ()
@@ -175,8 +174,8 @@ class InboxController extends ControllerBase
         try {
             $objPage = new Page ($_POST['pageId']);
         } catch (Exception $ex) {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
             trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
         $this->view->objPage = $objPage;
@@ -223,7 +222,7 @@ class InboxController extends ControllerBase
                 ]
         );
 
-        echo json_encode (array("message" => $message, "pagination" => "", "total" => ''));
+        $this->ajaxresponse ("success", "success", ["message" => $message, "pagination" => "", "total" => '']);
     }
 
     public function getTrashAction ()
@@ -265,7 +264,7 @@ class InboxController extends ControllerBase
                 ]
         );
 
-        echo json_encode (array("message" => $message, "pagination" => "", "total" => ''));
+        $this->ajaxresponse ("success", "success", ["message" => $message, "pagination" => "", "total" => '']);
     }
 
     public function getSentAction ()
@@ -307,7 +306,7 @@ class InboxController extends ControllerBase
                 ]
         );
 
-        echo json_encode (array("message" => $message, "pagination" => "", "total" => ''));
+        $this->ajaxresponse ("success", "success", ["message" => $message, "pagination" => "", "total" => '']);
     }
 
     public function sendMessageAction ()
@@ -412,6 +411,11 @@ class InboxController extends ControllerBase
                 }
 
                 $blUploadResult = $objPageInboxFactory->createMessage ($objPage, $objUser, $objUploadedMessage, $strDir);
+
+                if ( $blUploadResult === false )
+                {
+                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+                }
             }
         }
 
@@ -424,14 +428,14 @@ class InboxController extends ControllerBase
 
         $message = $this->view->getPartial (
                 "inbox/getMessages", [
-                    "arrMessages" => $arrMessages,
-                    "show_reply_box" => false,
-                     "user_id" => $userId,
-                     "objPage" => $objPage
+            "arrMessages" => $arrMessages,
+            "show_reply_box" => false,
+            "user_id" => $userId,
+            "objPage" => $objPage
                 ]
         );
 
-        echo json_encode (array("reply" => $message, "pagination" => "", "total" => ''));
+        $this->ajaxresponse ("success", "success", ["reply" => $message, "pagination" => "", "total" => '']);
     }
 
     /**
