@@ -32,7 +32,8 @@
                         <h2>Page Type</h2>
                         <div class="col-lg-12 pull-left">
                             <?php foreach ($arrPageTypes as $arrPageType): ?>
-                                <div typeid="<?= $arrPageType->getId () ?>" class="col-lg-2 pageType" style="height:250px; border: 1px solid #000; padding: 12px; margin-right: 6px; margin-top: 10px;">
+                                <div typeid="<?= $arrPageType->getId () ?>" class="col-lg-2 pageType" style="height:200px; border: 1px solid #000; padding: 12px; margin-right: 6px; margin-top: 10px;">
+                                    <img style="width:100%;" src="<?= $arrPageType->getImageUrl() ?>">
                                     <?= $arrPageType->getName () ?>
                                 </div>
                             <?php endforeach; ?> 

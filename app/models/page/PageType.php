@@ -20,6 +20,13 @@ class PageType
     private $name;
     
     /**
+     *
+     * @var type 
+     */
+    private $imageUrl;
+
+
+    /**
      * 
      * @param type $id
      */
@@ -63,4 +70,24 @@ class PageType
     {
         $this->name = $name;
     }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function getImageUrl ()
+    {
+        return $this->imageUrl;
+    }
+
+    /**
+     * 
+     * @param type $imageUrl
+     */
+    public function setImageUrl ($imageUrl)
+    {
+        $this->imageUrl = $imageUrl;
+    }
+
+
 }

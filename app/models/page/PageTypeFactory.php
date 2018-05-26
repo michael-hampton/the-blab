@@ -40,7 +40,7 @@ class PageTypeFactory
 
         if ( $arrResults === false )
         {
-            trigger_error("DATABASE QUERY FAILED", E_USER_WARNING);
+            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
             return false;
         }
 
@@ -52,8 +52,9 @@ class PageTypeFactory
         $arrPageTypes = [];
 
         foreach ($arrResults as $arrResult) {
-            $objPageType = new PageType($arrResult['id']);
+            $objPageType = new PageType ($arrResult['id']);
             $objPageType->setName ($arrResult['name']);
+            $objPageType->setImageUrl ($arrResult['image_url']);
 
             $arrPageTypes[] = $objPageType;
         }
