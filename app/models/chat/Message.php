@@ -13,7 +13,7 @@
  */
 class Message
 {
-    
+
     use MessageEncrypt;
 
     /**
@@ -21,6 +21,12 @@ class Message
      * @var type 
      */
     private $id;
+    
+    /**
+     *
+     * @var type 
+     */
+    private $userId;
 
     /**
      *
@@ -75,12 +81,18 @@ class Message
      * @var type 
      */
     private $filename;
-    
+
     /**
      *
      * @var type 
      */
     private $direction;
+    
+    /**
+     *
+     * @var type 
+     */
+    private $lastLogin;
 
     /**
      *
@@ -88,21 +100,24 @@ class Message
      */
     private $objDb;
 
-   /**
-    * 
-    * @param type $id
-    * @throws Exception
-    */
-    public function __construct ($id)
+    /**
+     * 
+     * @param type $id
+     * @throws Exception
+     */
+    public function __construct ($id = null)
     {
         $this->id = $id;
 
         $this->objDb = new Database();
         $this->objDb->connect ();
 
-        if ( $this->populateObject () === false )
+        if ( $id !== null )
         {
-            throw new Exception ("Failed to populate object");
+            if ( $this->populateObject () === false )
+            {
+                throw new Exception ("Failed to populate object");
+            }
         }
     }
 
@@ -132,7 +147,7 @@ class Message
     {
         return $this->sender;
     }
-    
+
     /**
      * 
      * @return type
@@ -166,7 +181,7 @@ class Message
      */
     public function getMessage ()
     {
-        return $this->encrypt_decrypt("decrypt", $this->message);
+        return $this->encrypt_decrypt ("decrypt", $this->message);
     }
 
     /**
@@ -231,7 +246,26 @@ class Message
     {
         $this->author = $author;
     }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function getUserId ()
+    {
+        return $this->userId;
+    }
 
+    /**
+     * 
+     * @param type $userId
+     */
+    public function setUserId ($userId)
+    {
+        $this->userId = $userId;
+    }
+
+    
     /**
      * 
      * @return type
@@ -303,7 +337,26 @@ class Message
     {
         $this->filename = $filename;
     }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function getLastLogin ()
+    {
+        return $this->lastLogin;
+    }
 
+    /**
+     * 
+     * @param type $lastLogin
+     */
+    public function setLastLogin ($lastLogin)
+    {
+        $this->lastLogin = $lastLogin;
+    }
+
+    
     /**
      * 
      * @return boolean
