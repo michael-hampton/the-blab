@@ -70,7 +70,7 @@ class IndexController extends ControllerBase
             $objMessageFactory = new MessageFactory();
             $objGroupFactory = new GroupFactory();
             $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-            $arrChatUsers = $objMessageFactory->getChatUsers (null, $objCurrentUser);
+            $arrChatUsers = $objMessageFactory->getChatUsers ($objCurrentUser);
 
 
             $objUser = $objUserFactory->getUsers ($username);
