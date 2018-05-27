@@ -335,11 +335,11 @@ class MessageFactory
 
     /**
      * 
-     * @param type $searchText
      * @param User $objUser
-     * @return \User|boolean
+     * @param type $searchText
+     * @return \Message|boolean
      */
-    public function getChatUsers ($searchText = null, User $objUser)
+    public function getChatUsers (User $objUser, $searchText = null)
     {
         $arrParams = [];
 
@@ -352,7 +352,8 @@ class MessageFactory
                                    Concat(u.fname, ' ', u.lname) AS author, 
                                    sent_on, 
                                    message, 
-                                   sent_to 
+                                   sent_to,
+                                   chat_id
                             FROM   chat c 
                                    INNER JOIN users u 
                                            ON u.uid = c.sent_to 
@@ -369,7 +370,8 @@ class MessageFactory
                                    Concat(fname, ' ', lname) AS author, 
                                    NULL                      AS sent_on, 
                                    NULL                      AS message, 
-                                   NULL                      AS sent_to 
+                                   NULL                      AS sent_to, 
+                                   NULL                      AS chat_id
                             FROM   users 
                             WHERE  uid NOT IN (SELECT user_added 
                                                FROM   blocked_friend 
@@ -379,9 +381,9 @@ class MessageFactory
 
         if ( $searchText !== null )
         {
-            $sql .= " WHERE username LIKE :username3";
-            //$arrParams[':username1'] = '%' . strtolower ($searchText) . '%';
-            //$arrParams[':username2'] = '%' . strtolower ($searchText) . '%';
+            $sql .= " WHERE LOWER(fname) LIKE :username1 OR LOWER(lname) LIKE :username2 OR LOWER(username) LIKE :username3";
+            $arrParams[':username1'] = '%' . strtolower ($searchText) . '%';
+            $arrParams[':username2'] = '%' . strtolower ($searchText) . '%';
             $arrParams[':username3'] = '%' . strtolower ($searchText) . '%';
         }
 
@@ -401,21 +403,27 @@ class MessageFactory
 
         $arrUsers = [];
 
-        foreach ($arrResults as $arrResult) {
+        foreach ($arrResults as $key => $arrResult) {
 
-            $objMessage = new Message();
-            if ( !empty ($arrResult['message']) )
-                $objMessage->setMessage ($arrResult['message']);
-            $objMessage->setAuthor ($arrResult['author']);
-            if ( !empty ($arrResult['sent_to']) )
-                $objMessage->setRecipient ($arrResult['sent_to']);
-            $objMessage->setUsername ($arrResult['username']);
-            if ( !empty ($arrResult['sent_on']) )
-                $objMessage->setDate ($arrResult['sent_on']);
-            $objMessage->setLastLogin ($arrResult['last_login']);
-            $objMessage->setUserId ($arrResult['uid']);
-
-            $arrUsers[] = $objMessage;
+            if ( !empty ($arrResult['chat_id']) )
+            {
+                $objMessage = new Message ($arrResult['chat_id']);
+                if ( !empty ($arrResult['message']) )
+                    $objMessage->setMessage ($arrResult['message']);
+                $objMessage->setAuthor ($arrResult['author']);
+                if ( !empty ($arrResult['sent_to']) )
+                    $objMessage->setRecipient ($arrResult['sent_to']);
+                $objMessage->setUsername ($arrResult['username']);
+                if ( !empty ($arrResult['sent_on']) )
+                    $objMessage->setDate ($arrResult['sent_on']);
+                $objMessage->setLastLogin ($arrResult['last_login']);
+                $objMessage->setUserId ($arrResult['uid']);
+                $arrUsers['messages'][$key] = $objMessage;
+            } else
+            {
+                $objUser = new User ($arrResult['uid']);
+                $arrUsers['users'][$key] = $objUser;
+            }
         }
 
         return $arrUsers;

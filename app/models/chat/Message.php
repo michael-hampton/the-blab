@@ -21,7 +21,7 @@ class Message
      * @var type 
      */
     private $id;
-    
+
     /**
      *
      * @var type 
@@ -87,7 +87,7 @@ class Message
      * @var type 
      */
     private $direction;
-    
+
     /**
      *
      * @var type 
@@ -105,19 +105,16 @@ class Message
      * @param type $id
      * @throws Exception
      */
-    public function __construct ($id = null)
+    public function __construct ($id)
     {
         $this->id = $id;
 
         $this->objDb = new Database();
         $this->objDb->connect ();
 
-        if ( $id !== null )
+        if ( $this->populateObject () === false )
         {
-            if ( $this->populateObject () === false )
-            {
-                throw new Exception ("Failed to populate object");
-            }
+            throw new Exception ("Failed to populate object");
         }
     }
 
@@ -246,7 +243,7 @@ class Message
     {
         $this->author = $author;
     }
-    
+
     /**
      * 
      * @return type
@@ -265,7 +262,6 @@ class Message
         $this->userId = $userId;
     }
 
-    
     /**
      * 
      * @return type
@@ -337,7 +333,7 @@ class Message
     {
         $this->filename = $filename;
     }
-    
+
     /**
      * 
      * @return type
@@ -356,7 +352,6 @@ class Message
         $this->lastLogin = $lastLogin;
     }
 
-    
     /**
      * 
      * @return boolean

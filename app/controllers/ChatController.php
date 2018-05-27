@@ -116,7 +116,7 @@ class ChatController extends ControllerBase
         try {
             $objUser = new User ($_SESSION['user']['user_id']);
             $objMessageFactory = new MessageFactory();
-            $arrChatUsers = $objMessageFactory->getChatUsers (null, $objUser);
+            $arrChatUsers = $objMessageFactory->getChatUsers ($objUser);
             $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory ());
             $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
         } catch (Exception $ex) {
@@ -887,7 +887,6 @@ class ChatController extends ControllerBase
         try {
             $objUser = new User ($_SESSION['user']['user_id']);
             $objMessageFactory = new MessageFactory();
-            $arrUsers = $objMessageFactory->getChatUsers ($_POST['searchText'], $objUser);
             $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory ());
             $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
         } catch (Exception $ex) {
@@ -908,7 +907,9 @@ class ChatController extends ControllerBase
             );
         }
 
-        if ( $arrChatUsers === false )
+        $arrMessages = $objMessageFactory->getChatUsers ($objUser);
+
+        if ( $arrMessages === false )
         {
             return $this->dispatcher->forward (
                             [
@@ -941,29 +942,11 @@ class ChatController extends ControllerBase
             );
         }
 
-
-        $arrAllUsers = $objMessageFactory->getChatUsers (null, $objUser);
-
-        if ( $arrUsers === false || $arrAllUsers === false )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        $this->view->arrUsers = $arrUsers;
-        $this->view->arrAllUsers = $arrAllUsers;
+        $this->view->arrMessages = $arrMessages;
         $this->view->arrPageCategories = $arrPageCategories;
         $this->view->arrPages = $arrPages;
         $this->view->arrChatGroups = $arrChatGroups;
-
-
-        $arrChatGroups = $objMessageFactory->getGroupChats (new User ($_SESSION['user']['user_id']));
-
-        if ( $arrChatGroups === false )
-        {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
-
-        $this->view->arrChatGroups = $arrChatGroups;
+        $this->view->searchText = !empty ($_POST['searchText']) && trim ($_POST['searchText']) !== "" ? $_POST['searchText'] : '';
     }
 
     public function deleteChatMessageAction ()
@@ -1050,14 +1033,15 @@ class ChatController extends ControllerBase
         try {
             $objMessage = new MessageFactory();
             $userId = $_POST['userId'];
+            $objUser = new User ($_SESSION['user']['user_id']);
 
-            $objUser = new User ($_POST['userId']);
+            $objRecipient = new User ($_POST['userId']);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $arrMessages = $objMessage->getMessagesNew (new User ($_SESSION['user']['user_id']), $objUser);
+        $arrMessages = $objMessage->getMessagesNew ($objUser, $objRecipient);
 
         if ( $arrMessages === false )
         {
@@ -1066,9 +1050,9 @@ class ChatController extends ControllerBase
 
         $this->view->arrMessages = $arrMessages;
 
-        $this->view->arrUser = $objUser;
+        $this->view->arrUser = $objRecipient;
         $this->view->userId = $userId;
-        $this->view->objUser = $objUser;
+        $this->view->objUser = $objRecipient;
 
         $this->view->groupId = '';
 
@@ -1169,8 +1153,7 @@ class ChatController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
-
+        
         try {
             $objMessage = new MessageFactory();
             $objRecipient = new User ($userId);
@@ -1320,8 +1303,8 @@ class ChatController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
-        $this->view->partial("chat/discovery", ["arrPages" => $arrPages, "arrPageCategories" => $arrPageCategories]);
+
+        $this->view->partial ("chat/discovery", ["arrPages" => $arrPages, "arrPageCategories" => $arrPageCategories]);
     }
 
 }
