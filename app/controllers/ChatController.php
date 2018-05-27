@@ -116,6 +116,7 @@ class ChatController extends ControllerBase
         try {
             $objUser = new User ($_SESSION['user']['user_id']);
             $objMessageFactory = new MessageFactory();
+            $objGroupMessageFactory = new GroupMessageFactory();
             $arrChatUsers = $objMessageFactory->getChatUsers ($objUser);
             $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory ());
             $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
@@ -124,9 +125,22 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $arrChatGroups = $objMessageFactory->getGroupChats ($objUser);
+        $arrChatGroups = $objGroupMessageFactory->getGroupChats ($objUser);
 
         if ( $arrChatGroups === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get chat groups"]
+                            ]
+            );
+        }
+
+        $arrGroups = $objGroupMessageFactory->getGroups ();
+
+        if ( $arrGroups === false )
         {
             return $this->dispatcher->forward (
                             [
@@ -174,6 +188,7 @@ class ChatController extends ControllerBase
         $this->view->arrPageCategories = $arrPageCategories;
         $this->view->arrPages = $arrPages;
         $this->view->arrChatGroups = $arrChatGroups;
+        $this->view->arrGroups = $arrGroups;
     }
 
     public function uploadFileAction ()
@@ -662,7 +677,7 @@ class ChatController extends ControllerBase
         try {
             $objUser = new User ($_SESSION['user']['user_id']);
 
-            $blResult = (new MessageFactory())->addUserToGroupChat ($objUser, $_POST['group_id'], $_POST['username']);
+            $blResult = (new GroupMessageFactory())->addUserToGroupChat ($objUser, $_POST['group_id'], $_POST['username']);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -689,7 +704,7 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $blResponse = (new ChatUserLog())->createLog (new GroupChat ($_POST['group_id']), $_POST['reportFullname'], $_POST['reportUsername'], $_POST['report_pm_data']);
+        $blResponse = (new ChatUserLog())->createLog (new GroupMessage ($_POST['group_id']), $_POST['reportFullname'], $_POST['reportUsername'], $_POST['report_pm_data']);
 
         if ( $blResponse === false )
         {
@@ -708,7 +723,7 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objGroupChat = new GroupChat ($_POST['group_id']);
+        $objGroupChat = new GroupMessage ($_POST['group_id']);
 
         if ( empty ($arrFiles[0]['name']) )
         {
@@ -795,7 +810,7 @@ class ChatController extends ControllerBase
 
         if ( $_POST['group_type'] == "group" )
         {
-            $blResult = (new GroupChat ($_POST['group_id']))->delete ();
+            $blResult = (new GroupMessage ($_POST['group_id']))->delete ();
 
             if ( $blResult === false )
             {
@@ -822,7 +837,7 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrorMessage);
         }
 
-        $objGroupChat = !empty ($_POST['group_id']) ? new GroupChat ($_POST['group_id']) : null;
+        $objGroupChat = !empty ($_POST['group_id']) ? new GroupMessage ($_POST['group_id']) : null;
 
         $blResult = (new ChatList())->setMessagesToRead (new User ($_SESSION['user']['user_id']), $objGroupChat);
 
@@ -885,6 +900,7 @@ class ChatController extends ControllerBase
         try {
             $objUser = new User ($_SESSION['user']['user_id']);
             $objMessageFactory = new MessageFactory();
+            $objGroupMessageFactory = new GroupMessageFactory();
             $arrPages = (new PageFactory())->getAllPages (new PageReactionFactory ());
             $arrPageCategories = (new PageCategoryFactory())->getAllCategories ();
         } catch (Exception $ex) {
@@ -892,9 +908,22 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $arrChatGroups = $objMessageFactory->getGroupChats ($objUser);
+        $arrChatGroups = $objGroupMessageFactory->getGroupChats ($objUser);
 
         if ( $arrChatGroups === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unbale to get chat groups"]
+                            ]
+            );
+        }
+
+        $arrGroups = $objGroupMessageFactory->getGroups ();
+
+        if ( $arrGroups === false )
         {
             return $this->dispatcher->forward (
                             [
@@ -944,6 +973,7 @@ class ChatController extends ControllerBase
         $this->view->arrPageCategories = $arrPageCategories;
         $this->view->arrPages = $arrPages;
         $this->view->arrChatGroups = $arrChatGroups;
+        $this->view->arrGroups = $arrGroups;
         $this->view->searchText = !empty ($_POST['searchText']) && trim ($_POST['searchText']) !== "" ? $_POST['searchText'] : '';
     }
 
@@ -991,10 +1021,10 @@ class ChatController extends ControllerBase
         $this->view->groupId = $groupId;
 
         try {
-            $objMessage = new MessageFactory();
+            $objMessage = new GroupMessageFactory();
             $userId = $_SESSION['user']['user_id'];
             $arrUser[$userId] = (new User ($userId));
-            $objGroupChat = new GroupChat ($groupId);
+            $objGroupChat = new GroupMessage ($groupId);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -1092,8 +1122,8 @@ class ChatController extends ControllerBase
         }
 
         try {
-            $objMessage = new MessageFactory();
-            $objGroupChat = new GroupChat ($groupId);
+            $objMessage = new GroupMessageFactory();
+            $objGroupChat = new GroupMessage ($groupId);
             $arrMessages = $objMessage->getMessagesForGroup ($objGroupChat);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);

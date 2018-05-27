@@ -100,10 +100,10 @@ class ChatList
     /**
      * 
      * @param User $objUser
-     * @param GroupChat $objGroupChat
+     * @param GroupMessage $objGroupChat
      * @return boolean
      */
-    public function setMessagesToRead (User $objUser, GroupChat $objGroupChat = null)
+    public function setMessagesToRead (User $objUser, GroupMessage $objGroupChat = null)
     {
 
         $sqlWhere = 'sent_to = :userId';
