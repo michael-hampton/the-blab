@@ -824,9 +824,9 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrorMessage);
         }
 
-        $groupId = !empty ($_POST['group_id']) ? $_POST['group_id'] : null;
+        $objGroupChat = !empty ($_POST['group_id']) ? new GroupChat ($_POST['group_id']) : null;
 
-        $blResult = (new ChatList())->setMessagesToRead (new User ($_SESSION['user']['user_id']), $groupId);
+        $blResult = (new ChatList())->setMessagesToRead (new User ($_SESSION['user']['user_id']), $objGroupChat);
 
         if ( $blResult === false )
         {
@@ -996,6 +996,7 @@ class ChatController extends ControllerBase
             $objMessage = new MessageFactory();
             $userId = $_SESSION['user']['user_id'];
             $arrUser[$userId] = (new User ($userId));
+            $objGroupChat = new GroupChat($groupId);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -1006,7 +1007,7 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $arrMessages = $objMessage->getMessagesForGroup ($groupId);
+        $arrMessages = $objMessage->getMessagesForGroup ($objGroupChat);
 
         if ( $arrMessages === false )
         {
@@ -1094,7 +1095,8 @@ class ChatController extends ControllerBase
 
         try {
             $objMessage = new MessageFactory();
-            $arrMessages = $objMessage->getMessagesForGroup ($groupId);
+            $objGroupChat = new GroupChat($groupId);
+            $arrMessages = $objMessage->getMessagesForGroup ($objGroupChat);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);

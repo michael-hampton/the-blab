@@ -135,17 +135,17 @@ class MessageFactory
 
     /**
      * 
-     * @param User $objUser
+     * @param GroupChat $objGroupChat
      * @return \Message|boolean
      */
-    public function getMessagesForGroup ($groupId)
+    public function getMessagesForGroup (GroupChat $objGroupChat)
     {
         $arrResults = $this->db->_query ("SELECT c.*, 
                                                 u.username,
                                                  CONCAT(u.fname, ' ' , u.lname)  AS author
                                         FROM chat c
                                         INNER JOIN users u ON u.uid = c.user_id
-                                        WHERE group_id = :groupId", ['groupId' => $groupId]);
+                                        WHERE group_id = :groupId", ['groupId' => $objGroupChat->getId ()]);
 
         if ( $arrResults === FALSE )
         {

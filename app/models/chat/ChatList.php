@@ -100,10 +100,10 @@ class ChatList
     /**
      * 
      * @param User $objUser
-     * @param type $groupId
+     * @param GroupChat $objGroupChat
      * @return boolean
      */
-    public function setMessagesToRead (User $objUser, $groupId = null)
+    public function setMessagesToRead (User $objUser, GroupChat $objGroupChat = null)
     {
 
         $sqlWhere = 'sent_to = :userId';
@@ -112,7 +112,7 @@ class ChatList
         if ( $groupId !== null )
         {
             $sqlWhere .= ' AND group_id = :groupId';
-            $arrParams[':groupId'] = $groupId;
+            $arrParams[':groupId'] = $objGroupChat->getId ();
         }
 
         $result = $this->db->update ("chat", ["has_read" => 1], $sqlWhere, $arrParams);

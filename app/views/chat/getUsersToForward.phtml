@@ -7,11 +7,18 @@
 
     <ul class="list-group clear-list">
         <?php
-        foreach ($arrFriends as $arrFriend) {
-            echo ' <li class="list-group-item fist-item">
+        if ( !empty ($arrFriends) )
+        {
+            foreach ($arrFriends as $arrFriend) {
+                echo ' <li class="list-group-item fist-item">
                                                 <span class="pull-right"><a userId="' . $arrFriend->getId () . '"href="#" class="btn btn-sm btn-success sendMessageForward"> Send </a></span>
                                                ' . $arrFriend->getFirstname () . ' ' . $arrFriend->getLastname () . ' 
                                             </li>';
+            }
+        }
+        else
+        {
+            echo '<h2>You have no friends to send this to </h2>';
         }
         ?>
 
@@ -36,8 +43,8 @@
             alert ("Invalid user id");
             return false;
         }
-        
-        var element = $(this);
+
+        var element = $ (this);
 
         $.ajax ({
             type: "POST",
@@ -63,7 +70,7 @@
                     {
                         showSuccessMessage ('The message has been forwarded successfully');
                         element.text ("Sent");
-                        
+
                     }
 
                 } catch (error) {
