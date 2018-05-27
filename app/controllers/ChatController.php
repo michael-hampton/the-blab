@@ -662,9 +662,7 @@ class ChatController extends ControllerBase
         try {
             $objUser = new User ($_SESSION['user']['user_id']);
 
-            $newMessage = trim ($_POST['newMessage']) === "yes" ? true : false;
-
-            $blResult = (new MessageFactory())->addUserToGroupChat ($objUser, $_POST['group_id'], $_POST['username'], $newMessage);
+            $blResult = (new MessageFactory())->addUserToGroupChat ($objUser, $_POST['group_id'], $_POST['username']);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -996,7 +994,7 @@ class ChatController extends ControllerBase
             $objMessage = new MessageFactory();
             $userId = $_SESSION['user']['user_id'];
             $arrUser[$userId] = (new User ($userId));
-            $objGroupChat = new GroupChat($groupId);
+            $objGroupChat = new GroupChat ($groupId);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -1095,7 +1093,7 @@ class ChatController extends ControllerBase
 
         try {
             $objMessage = new MessageFactory();
-            $objGroupChat = new GroupChat($groupId);
+            $objGroupChat = new GroupChat ($groupId);
             $arrMessages = $objMessage->getMessagesForGroup ($objGroupChat);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
@@ -1155,7 +1153,7 @@ class ChatController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
+
         try {
             $objMessage = new MessageFactory();
             $objRecipient = new User ($userId);
@@ -1225,12 +1223,11 @@ class ChatController extends ControllerBase
             $objMessageFactory = new MessageFactory();
             $objRecipient = new User ($_POST['userId']);
             $objUser = new User ($_SESSION['user']['user_id']);
+            $blResult = $objMessageFactory->cloneMessage ($objUser, $objMessage, new \JCrowe\BadWordFilter\BadWordFilter (), new EmailNotificationFactory (), $objRecipient, '');
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
-        $blResult = $objMessageFactory->cloneMessage ($objUser, $objMessage, new EmailNotificationFactory (), $objRecipient, '');
 
         if ( $blResult === false )
         {

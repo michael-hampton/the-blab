@@ -258,25 +258,13 @@ class MessageFactory
             return false;
         }
 
-        $notification = "You have received a new chat message on The Blab Philippines:";
-        $body = $objUser->getUsername () . " said - {$message}";
+        $objMessage = new Message ($result);
 
-        try {
-            $dbdate = strtotime ($objRecipient->getLastLogin ());
-            if ( time () - $dbdate > 15 * 60 )
-            {
-                //$objEmail = new EmailNotification ($objRecipient, $notification, $body);
-                $objEmail = $objEmailFactory->createNotification ($objRecipient, $notification, $body);
-                $objEmail->sendEmail ();
-            }
+        $body = $objUser->getUsername () . " said - {$objMessage->getMessage ()}";
 
-            $objMessage = new Message ($result);
+        $this->sendNotification ($objUser, $objMessage, $objRecipient, $objEmailFactory, $body);
 
-            return $objMessage;
-        } catch (Exception $ex) {
-            trigger_error ($ex->getMessage (), E_USER_WARNING);
-            return false;
-        }
+        return $objMessage;
     }
 
     private $validationFailures = [];
@@ -292,26 +280,68 @@ class MessageFactory
 
     /**
      * 
+     * @return \GroupChat|boolean
+     */
+    private function createNewGroupChat ()
+    {
+        $groupId = $this->db->create ("group_chat", ["name" => "test"]);
+
+        if ( $result === false )
+        {
+            trigger_error ("query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return new GroupChat ($groupId);
+    }
+
+    /**
+     * 
+     * @param type $groupId
+     * @return \GroupChat|boolean
+     * @throws Exception
+     */
+    private function checkIfGroupExists ($groupId)
+    {
+        $arrResults = $this->db->_select ("group_chat", "group_id = :groupId", [":groupId" => $groupId]);
+
+        if ( $arrResults === false )
+        {
+            throw new Exception ("Db query failed");
+        }
+
+        return !empty ($arrResults);
+    }
+
+    /**
+     * 
      * @param User $objUser
      * @param type $groupId
      * @param type $username
      * @param type $blNewGroup
      * @return \GroupChat|boolean
      */
-    public function addUserToGroupChat (User $objUser, $groupId, $username, $blNewGroup = false)
+    public function addUserToGroupChat (User $objUser, $groupId, $username)
     {
-        if ( $blNewGroup === true )
+
+        try {
+            $blExists = $this->checkIfGroupExists ($groupId);
+        } catch (Exception $e) {
+            trigger_error ($e->getMessage (), E_USER_WARNING);
+            return false;
+        }
+
+        if ( $blExists === false )
         {
 
-            $result = $this->db->create ("group_chat", ["name" => "test"]);
+            $objGroupChat = $this->createNewGroupChat ();
 
-            if ( $result === false )
+            if ( $objGroupChat === false )
             {
-                trigger_error ("query failed", E_USER_WARNING);
                 return false;
             }
 
-            $groupId = $result;
+            $groupId = $objGroupChat->getId ();
 
             $result3 = $this->db->create ("group_users", ["group_id" => $groupId, "username" => $objUser->getUsername ()]);
 
@@ -433,13 +463,15 @@ class MessageFactory
      * 
      * @param User $objUser
      * @param Message $objMessaage
+     * @param \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter
      * @param EmailNotificationFactory $objEmailFactory
      * @param User $objRecipient
      * @param type $comment
      * @return boolean
      */
-    public function cloneMessage (User $objUser, Message $objMessaage, EmailNotificationFactory $objEmailFactory, User $objRecipient, $comment = '')
+    public function cloneMessage (User $objUser, Message $objMessaage, \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, EmailNotificationFactory $objEmailFactory, User $objRecipient, $comment = '')
     {
+        $comment = $objBadWordFilter->clean ($comment);
         $comment .= $this->encrypt_decrypt ('encrypt', $objMessaage->getMessage ());
 
         $blResult = $this->db->create ("chat", ["user_id" => $objUser->getId (), "message" => $comment, "sent_on" => date ("Y-m-d H:i:s"), "sent_to" => $objRecipient->getId (), "filename" => $objMessaage->getFilename (), "type" => $objMessaage->getType (), "group_id" => $objMessaage->getGroupId ()]);
@@ -450,8 +482,25 @@ class MessageFactory
             return false;
         }
 
+        $body = $objUser->getUsername () . " said - {$objMessage->getMessage ()}";
+
+        $this->sendNotification ($objUser, $objMessaage, $objRecipient, $objEmailFactory, $body);
+
+        return true;
+    }
+
+    /**
+     * 
+     * @param User $objUser
+     * @param Message $objMessage
+     * @param User $objRecipient
+     * @param EmailNotificationFactory $objEmailFactory
+     * @param type $body
+     * @return boolean
+     */
+    private function sendNotification (User $objUser, Message $objMessage, User $objRecipient, EmailNotificationFactory $objEmailFactory, $body)
+    {
         $notification = "You have received a new chat message on The Blab Philippines:";
-        $body = $objUser->getUsername () . " said - {$objMessaage->getMessage ()}";
 
         try {
             $dbdate = strtotime ($objRecipient->getLastLogin ());
