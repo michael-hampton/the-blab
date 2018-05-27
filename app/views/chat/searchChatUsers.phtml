@@ -108,7 +108,7 @@ function getOnlineLabel ($lastLogin)
 
 <div class="usersDiv">
     <?php
-    echo '<h5>Friends</h5>';
+    echo '<h3>Messages</h3>';
 
     foreach ($arrMessages['messages'] as $objMessage):
 
@@ -126,7 +126,7 @@ function getOnlineLabel ($lastLogin)
                     strpos ($objMessage->getAuthor (), $searchText) ||
                     strpos ($objMessage->getUsername (), $searchText) !== false) ? 'block' : 'none';
         }
-        
+
         if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
             ?>
             <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left; display: <?= $displaySearch ?>">
@@ -151,8 +151,12 @@ function getOnlineLabel ($lastLogin)
             <?php
         endif;
     endforeach;
+    
+     echo '<div class="" style="width:100%; margin-top:12px; float:left;">';
 
-    foreach ($arrMessages['users'] as $objMessage):
+    echo '<h3>People</h3>';
+
+    foreach ($arrMessages['users'] as $objMessage){
 
         $image = getImage ($rootPath, $objMessage->getUsername (), $objMessage->getFirstName () . ' ' . $objMessage->getLastName ());
 
@@ -160,14 +164,14 @@ function getOnlineLabel ($lastLogin)
         $activeLabel = getActiveLabel ($objMessage->getLastLogin ());
         $displaySearch = 'block';
 
-        if ( trim($searchText) !== "" )
+        if ( !empty ($searchText) && trim ($searchText) !== "" )
         {
             $displaySearch = !empty ($searchText) && (
                     strpos ($objMessage->getFirstName () . ' ' . $objMessage->getLastName (), $searchText) ||
                     strpos ($objMessage->getUsername (), $searchText) !== false) ? 'block' : 'none';
         }
-        
-        if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
+
+        if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ){
             ?>
             <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left; display: <?= $displaySearch ?>">
                 <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= $objMessage->getFirstName () . '|' . $objMessage->getLastName () ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getId () ?>" href="#"> 
@@ -187,26 +191,49 @@ function getOnlineLabel ($lastLogin)
             </li>
 
             <?php
-        endif;
-    endforeach;
+        }
+    }
+    
+    echo '</div>';
 
     echo '</div>';
 
-    echo '<div class="groupsDiv" style="width:100%;">';
+    echo '<div class="groupsDiv" style="width:100%; margin-top:12px; float:left;">';
 
-    if ( isset ($arrChatGroups) && !empty ($arrChatGroups) ):
+    if ( !empty ($arrChatGroups) )
+    {
 
-        echo '<h5>Groups</h5>';
+        echo '<h3>Groups</h3>';
 
-        foreach ($arrChatGroups as $arrChatGroup):
+        foreach ($arrChatGroups as $objChatGroup) {
+
+            $groupId = $objChatGroup->getGroupId ();
+
+            $groupName = $arrGroups[$groupId]->getGroupName ();
             ?>
-            <li>
-                <a class="show-chat group" groupname="<?= $arrChatGroup['name'] ?>" groupid="<?= $arrChatGroup['group_id'] ?>" username="<?= $arrChatGroup['users'] ?>" fullname="<?= $arrChatGroup['fullname'] ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> 
-                    <i class="fa fa-circle text-danger"></i> <?= $arrChatGroup['name'] ?> </a></li>
+            <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left;">
+                <a class="show-chat group" groupname="<?= $groupName ?>" groupid="<?= $groupId ?>" username="<?= $objChatGroup->getUsername () ?>" fullname="<?= $objChatGroup->getAuthor () ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> 
+                    <?= $groupName ?>  <i class="fa fa-circle text-danger"></i> 
+                    <br>
+                    <div class="col-lg-9" style="padding:0px !important;">
+
+                        <br>
+                        <?= (trim ($objChatGroup->getMessage ()) !== "" ? substr ($objChatGroup->getMessage (), 0, 20) : '') ?>
+                    </div>
+
+                    <div class="col-lg-3" style="padding:0px !important;">
+                        <?= (trim ($objChatGroup->getDate ()) !== "" ? date ("d F", strtotime ($objChatGroup->getDate ())) : '') ?>
+
+                    </div>
+
+                </a>
+            </li>
+
+
 
             <?php
-        endforeach;
-    endif;
+        }
+    }
 
     echo '</div>';
 

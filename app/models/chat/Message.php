@@ -93,6 +93,12 @@ class Message
      * @var type 
      */
     private $lastLogin;
+    
+    /**
+     *
+     * @var type 
+     */
+    private $groupName;
 
     /**
      *
