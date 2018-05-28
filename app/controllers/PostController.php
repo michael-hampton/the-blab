@@ -49,10 +49,19 @@ class PostController extends ControllerBase
         
         switch(true)
         {
-            case ($pos = strpos($field, 'group')) >= 0:
-                echo '_term at position ' . $pos;
+            case ($pos = strpos($field, 'profile')) >= 0:
+                $arrPosts = $objPostFactory->getPostsForUser ($objUser, null, 0, 4);
+            break;
+                
+            case ($pos = strpos($field, 'index/index')) >= 0:
+                $arrPosts = $objPostFactory->getPostsForUser ($objUser, null, 0, 4);
             break;
         }
+        
+        if($arrPosts === false) {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+            
     }
 
     /**
