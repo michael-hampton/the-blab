@@ -182,77 +182,26 @@ class PostController extends ControllerBase
     public function sharePostAction ()
     {
 
-        $this->view->disable ();
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
         if ( empty ($_POST['post_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objMessage = new Post ($_POST['post_id']);
+        try {
+            $objPost = new Post ($_POST['post_id']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
-        echo '<span id="v_share_this_conts">			<br clear="all">
-			<div style="margin:0px !important;max-width:100% !important; width:100% !important; text-align:left;">
-            
-            <input type="hidden" id="v_owner_of_post" value="">            
-			<div class="modal-content vasplus_a" style="border:1px solid #E1E1E1 !important; border-bottom:0px solid !important;box-shadow:none !important;border-radius:0px;max-width:100%; width:100%;padding:0px !important; margin:0px !important; padding:0px !important;">
-			
-			<div class="modal-body vasplus_b">
-			<div class="vpb_wall_adjust_c">
-			<div class="input-group vpb_wall_b_contents">
-			
-			<span class="input-group-addon vpb-wall-user-photo" style="cursor:pointer;">
-			<span class="v_status_pics_michaelhampton"><img src="/blab/public/uploads/profile/' . $objMessage->getUsername () . '.jpg" width="45" height="45" border="0"></span>
-			</span>
-			<div class="vpb_wrap_post_contents">
-			<div>
-			<span class="vpb_wrap_post_contents_a">
-			<span class="vpb_wall_fullname">' . $objMessage->getAuthor () . '</span>
-			<span style="color:#9197a3;">
-					</span>
-			<br clear="all">
-			
-			 <span class="vpb_date_time_posted">8 hours ago 璺� </span>
-			 			 <span style="display:none;" id="vdotted_id_4675"> 璺� </span>			 <div style="display:inline-block;">
-			
-		   <span class="vpb_wall_post_security_setting_disabled">
-			<span title="Shared with: Public" class="vasplus-tooltip-attached"><i class="fa fa-certificate"></i></span>
-			</span>
-		
-			</div>
-			</span>
-			<span class="vpb_wrap_post_contents_b">
-			&nbsp;
-			</span>
-			<div style="clear:both;"></div>
-			</div>
-			<div style="clear:both;"></div>
-			</div>
-			</div><div style="clear:both;"></div>
-			<div class="vpb_wall_post_description">
-						<!-- Added Photo Box -->
-			<div class="vpb_photos_wrapper_large">
-                
-			</div>
-						<div class="vpb_shared_post_desc" style="margin-top:0px !important;">
-			' . $objMessage->getMessage () . '			</div>
-			
-			</div>
-			
-			<div style="clear:both;"></div>
-			
-			</div>
-			</div>
-			</div>
-			
-			</div>
-			
-			</span>';
+        $this->view->objPost = $objPost;
     }
 
     public function tagPeopleInPostAction ()
     {
-        $this->view->disable ();
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
         if ( empty ($_POST['friend']) )
         {
@@ -266,20 +215,7 @@ class PostController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        echo '<div class="dropdown"><ul class="dropdown-menu vpb-hundred-percent" id="tag_people_in_post_suggestion_box" style="top:auto;">';
-
-        foreach ($arrUsers as $arrUser) {
-
-            echo '<li>
-						<a onclick="vpb_tag_this_friend(\'' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '\', \'' . $arrUser->getUsername () . '\', ' . $arrUser->getId () . ');">
-						<span class="vpb_left_tag_box"><img src="/blab/public/uploads/profile/' . $arrUser->getUsername () . '.jpg" width="40" height="40" border="0"></span>
-						<span class="vpb_left_tag_text_box">' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '</span>
-						<div style="clear:both;"></div>
-						</a>
-						</li>';
-        }
-
-        echo '</ul></div>';
+        $this->view->arrUsers = $arrUsers;
     }
 
     public function postCommentAction ()
@@ -299,12 +235,12 @@ class PostController extends ControllerBase
             $objUserSettings = new UserSettings ($objUser);
 
             $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objPost = $objPostFactory->createPost ($_POST['comment'], $objUser, new JCrowe\BadWordFilter\BadWordFilter (), null, $_POST['usersLocation'], 3, $_POST['privacyOption']);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPost = $objPostFactory->createPost ($_POST['comment'], $objUser, new JCrowe\BadWordFilter\BadWordFilter (), null, $_POST['usersLocation'], 3, $_POST['privacyOption']);
 
         if ( $objPost === FALSE )
         {
@@ -377,19 +313,7 @@ class PostController extends ControllerBase
     {
         $this->view->disable ();
 
-//       Array
-//(
-//    [post_id] => 126
-//    [the_posterFullname] => Jhoanna Hampton
-//    [the_posterUsername] => jhoanna.hampton
-//    [the_posterEmail] => uanhampton@yahoo.com
-//    [the_pageUsernamed] => Lexieh
-//    [session_fullname] => Michael hampton
-//    [session_username] => michaelhampton
-//    [session_email] => bluetiger_uan@yahoo.com
-//    [report_post_data] => test etst test
-//    [page] => report-an-update
-//)
+        mail (EMAIL_ADDRESS, "A post {$_POST['post_id']} has been reported by {$_POST['session_fullname']}", $_POST['report_post_data']);
     }
 
     public function updatePostAction ()
@@ -414,7 +338,7 @@ class PostController extends ControllerBase
         if ( $blResult === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }
+        }        
     }
 
 }

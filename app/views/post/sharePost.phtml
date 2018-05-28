@@ -1,0 +1,59 @@
+<?php
+
+echo '<span id="v_share_this_conts">			<br clear="all">
+			<div style="margin:0px !important;max-width:100% !important; width:100% !important; text-align:left;">
+            
+            <input type="hidden" id="v_owner_of_post" value="">            
+			<div class="modal-content vasplus_a" style="border:1px solid #E1E1E1 !important; border-bottom:0px solid !important;box-shadow:none !important;border-radius:0px;max-width:100%; width:100%;padding:0px !important; margin:0px !important; padding:0px !important;">
+			
+			<div class="modal-body vasplus_b">
+			<div class="vpb_wall_adjust_c">
+			<div class="input-group vpb_wall_b_contents">
+			
+			<span class="input-group-addon vpb-wall-user-photo" style="cursor:pointer;">
+			<span class="v_status_pics_michaelhampton"><img src="/blab/public/uploads/profile/' . $objPost->getUsername () . '.jpg" width="45" height="45" border="0"></span>
+			</span>
+			<div class="vpb_wrap_post_contents">
+			<div>
+			<span class="vpb_wrap_post_contents_a">
+			<span class="vpb_wall_fullname">' . $objPost->getAuthor () . '</span>
+			<span style="color:#9197a3;">
+					</span>
+			<br clear="all">
+			
+			 <span class="vpb_date_time_posted">8 hours ago 璺� </span>
+			 			 <span style="display:none;" id="vdotted_id_4675"> 璺� </span>			 <div style="display:inline-block;">
+			
+		   <span class="vpb_wall_post_security_setting_disabled">
+			<span title="Shared with: Public" class="vasplus-tooltip-attached"><i class="fa fa-certificate"></i></span>
+			</span>
+		
+			</div>
+			</span>
+			<span class="vpb_wrap_post_contents_b">
+			&nbsp;
+			</span>
+			<div style="clear:both;"></div>
+			</div>
+			<div style="clear:both;"></div>
+			</div>
+			</div><div style="clear:both;"></div>
+			<div class="vpb_wall_post_description">
+						<!-- Added Photo Box -->
+			<div class="vpb_photos_wrapper_large">
+                
+			</div>
+						<div class="vpb_shared_post_desc" style="margin-top:0px !important;">
+			' . $objPost->getMessage () . '			</div>
+			
+			</div>
+			
+			<div style="clear:both;"></div>
+			
+			</div>
+			</div>
+			</div>
+			
+			</div>
+			
+			</span>';
