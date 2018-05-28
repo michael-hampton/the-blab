@@ -23,5 +23,5 @@ interface PostInterface
      */
     public function createComment ($comment, User $objUser, \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, array $imageIds = null);
     
-    public function getComments(User $objUser);
+    public function getComments(User $objUser, $blUnread = true);
 }
