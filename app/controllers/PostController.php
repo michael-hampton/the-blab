@@ -35,6 +35,11 @@ class PostController extends ControllerBase
 
         $this->ajaxresponse ("success", "SUCCESS");
     }
+    
+    public function getUnreadPostsAction()
+    {
+        $this->view->disable();
+    }
 
     /**
      * 
