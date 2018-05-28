@@ -278,7 +278,7 @@ class UserPost extends BasePostFactory implements PostInterface
      * 
      * @param User $objUser
      */
-    public function getComments (User $objUser)
+    public function getComments (User $objUser, $blUnread = true)
     {
         
     }
