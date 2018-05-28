@@ -73,7 +73,7 @@ class PagePost extends BasePostFactory implements PostInterface
     * @param User $objUser
     * @return type
     */
-    public function getComments (User $objUser)
+    public function getComments (User $objUser, $blUnread = true)
     {
         $arrResults = $this->db->_query ("
                                         SELECT 
