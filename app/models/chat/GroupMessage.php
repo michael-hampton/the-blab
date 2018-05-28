@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Description of GroupMessage
  *
@@ -8,25 +7,37 @@
  */
 class GroupMessage
 {
-    
+
     /**
      *
      * @var type 
      */
     private $id;
-    
+
     /**
      *
      * @var type 
      */
     private $groupName;
-    
+
     /**
      *
      * @var type 
      */
     private $imageUrl;
-    
+
+    /**
+     *
+     * @var type 
+     */
+    private $userList;
+
+    /**
+     *
+     * @var type 
+     */
+    private $nameList;
+
     /**
      *
      * @var type 
@@ -36,14 +47,20 @@ class GroupMessage
     /**
      * 
      * @param type $id
+     * @throws Exception
      */
-    public function __construct($id)
+    public function __construct ($id)
     {
         $this->id = $id;
         $this->db = new Database();
-        $this->db->connect();
+        $this->db->connect ();
+
+        if ( $this->populateObject () === false )
+        {
+            throw new Exception ("Failed to load object");
+        }
     }
-    
+
     /**
      * 
      * @return type
@@ -97,36 +114,132 @@ class GroupMessage
     {
         $this->imageUrl = $imageUrl;
     }
-    
+
     /**
      * 
-     * @return boolean
+     * @return type
      */
-    public function delete()
+    public function getUserList ()
     {
-        $result = $this->db->delete("chat", "group_id = :groupId", [":groupId" => $this->id]);
-        
-        if($result === false) {
-            return false;
-        }
-        
-        return true;
+        return $this->userList;
     }
-    
+
+    /**
+     * 
+     * @return type
+     */
+    public function getNameList ()
+    {
+        return $this->nameList;
+    }
+
+    /**
+     * 
+     * @param type $userList
+     */
+    public function setUserList ($userList)
+    {
+        $this->userList = $userList;
+    }
+
+    /**
+     * 
+     * @param type $nameList
+     */
+    public function setNameList ($nameList)
+    {
+        $this->nameList = $nameList;
+    }
+
     /**
      * 
      * @return boolean
      */
-    public function update()
+    private function populateObject ()
     {
-        $result = $this->db->update("group_chat", ["name" => $this->groupName, "image_url" => $this->imageUrl], "group_id = :groupId", [":groupId" => $this->id]);
-    
-        if($result === false) {
+        $result = $this->db->_select ("group_chat", "group_id = :groupId", [":groupId" => $this->id]);
+
+        if ( empty ($result) )
+        {
+            trigger_error ("Db query failed to load result", E_USER_WARNING);
             return false;
         }
-        
+
+        $this->groupName = $result[0]['name'];
+        $this->imageUrl = $result[0]['image_url'];
+
         return true;
     }
 
+    /**
+     * 
+     * @return boolean
+     */
+    public function delete ()
+    {
+        $result = $this->db->delete ("chat", "group_id = :groupId", [":groupId" => $this->id]);
+
+        if ( $result === false )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * @var type 
+     */
+    private $validationFailures = [];
+
+    /**
+     * 
+     * @return type
+     */
+    public function getValidationFailures ()
+    {
+        return $this->validationFailures;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    private function validate ()
+    {
+        if ( trim ($this->groupName) === "" )
+        {
+            $this->validationFailures[] = "Group name is a mandatory field";
+        }
+
+        if ( count ($this->validationFailures) > 0 )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    public function update ()
+    {
+        if ( $this->validate () === false )
+        {
+            return false;
+        }
+
+        $result = $this->db->update ("group_chat", ["name" => $this->groupName, "image_url" => $this->imageUrl], "group_id = :groupId", [":groupId" => $this->id]);
+
+        if ( $result === false )
+        {
+            return false;
+        }
+
+        return true;
+    }
 
 }

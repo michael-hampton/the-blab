@@ -116,4 +116,75 @@ class FriendRequest
         return true;
     }
 
+    /**
+     * 
+     * @param User $objUser
+     */
+    public function getFriends (User $objUser)
+    {
+        $arrResults = $this->db->_query ("SELECT 0 AS `status`, 
+                                            u.uid AS user_id, 
+                                            username, 
+                                            fname, 
+                                            lname, 
+                                            'add' AS friend_status 
+                                     FROM   users u 
+                                     WHERE  uid NOT IN (SELECT friend_two 
+                                                        FROM   friends 
+                                                        WHERE  friend_one = :id1) 
+                                            AND uid NOT IN (SELECT friend_one 
+                                                            FROM   friends 
+                                                            WHERE  friend_two = :id1) 
+                                     UNION 
+                                     SELECT f.status AS `status`, 
+                                            friend_two  AS user_id, 
+                                            username, 
+                                            fname, 
+                                            lname, 
+                                            'requested' AS friend_status 
+                                     FROM   friends f 
+                                            INNER JOIN users u 
+                                                    ON u.uid = friend_two 
+                                     WHERE  friend_one = :id2 
+                                            AND f.status != '2' 
+                                            AND has_read = 0 
+                                     UNION 
+                                     SELECT f.status   AS `status`, 
+                                            friend_one AS user_id, 
+                                            username, 
+                                            fname, 
+                                            lname, 
+                                            'pending'  AS friend_status 
+                                     FROM   friends f 
+                                            INNER JOIN users u 
+                                                    ON u.uid = friend_one 
+                                     WHERE  friend_two = :id3 
+                                            AND f.status = '1' 
+                                     UNION 
+                                     SELECT f.status   AS `status`, 
+                                            friend_one AS user_id, 
+                                            username, 
+                                            fname, 
+                                            lname, 
+                                            'friend'   AS friend_status 
+                                     FROM   friends f 
+                                            INNER JOIN users u 
+                                                    ON u.uid = friend_one 
+                                     WHERE  friend_two = :id4 
+                                            AND f.status = '2' ", [':id1' => $objUser->getId (), ':id2' => $objUser->getId (), ':id3' => $objUser->getId (), ':id4' => $objUser->getId ()]);
+
+        if ( $arrResults === FALSE )
+        {
+            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
+            return FALSE;
+        }
+
+        if ( empty ($arrResults[0]) )
+        {
+            return [];
+        }
+
+        return $arrResults;
+    }
+
 }

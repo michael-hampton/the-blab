@@ -288,6 +288,12 @@ class PostAction
     {
         $result = $this->db->_select ("comments", "com_id = :commentId", [':commentId' => $objComment->getId ()]);
 
+        if ( $result === false || !isset ($result[0]['like_count']) )
+        {
+            trigger_error ("Db query failed to get like count", E_USER_WARNING);
+            return false;
+        }
+
         $count = $result[0]['like_count'];
 
 

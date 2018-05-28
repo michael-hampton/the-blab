@@ -79,28 +79,42 @@ class GroupMessageFactory
      */
     public function getGroups ()
     {
-        $arrResults = $this->db->_select ("group_chat");
+        $arrResults = $this->db->_query ("SELECT gc.`group_id`, 
+                                                gc.`name`, 
+                                                gc.`image_url`, 
+                                                Group_concat(u.username SEPARATOR '|')                    AS users, 
+                                                Group_concat(Concat(u.fname, ' ', u.lname) SEPARATOR '|') AS fullname 
+                                         FROM   `group_chat` gc 
+                                                INNER JOIN group_users gu 
+                                                        ON gu.group_id = gc.group_id 
+                                                INNER JOIN users u 
+                                                        ON u.username = gu.username 
+                                         GROUP  BY gc.group_id 
+                                         ORDER  BY gc.name ASC ");
 
         if ( $arrResults === false )
         {
             trigger_error ("Db query failed", E_USER_WARNING);
             return false;
         }
-        
-        if(empty($arrResults)) {
+
+        if ( empty ($arrResults) )
+        {
             return [];
         }
-        
+
         $arrGroups = [];
-        
+
         foreach ($arrResults as $arrResult) {
-            $objGroup = new GroupMessage($arrResult['group_id']);
-            $objGroup->setGroupName($arrResult['name']);
-            $objGroup->setImageUrl($arrResult['image_url']);
-            
+            $objGroup = new GroupMessage ($arrResult['group_id']);
+            $objGroup->setGroupName ($arrResult['name']);
+            $objGroup->setImageUrl ($arrResult['image_url']);
+            $objGroup->setNameList ($arrResult['fullname']);
+            $objGroup->setUserList ($arrResult['users']);
+
             $arrGroups[$arrResult['group_id']] = $objGroup;
         }
-        
+
         return $arrGroups;
     }
 
@@ -115,21 +129,18 @@ class GroupMessageFactory
                                                 c.message, 
                                                 c.sent_on, 
                                                 c.group_id, 
-                                                gc.name, 
-                                                Group_concat(u.username SEPARATOR '|')                    AS users, 
-                                                Group_concat(Concat(u.fname, ' ', u.lname) SEPARATOR '|') AS fullname 
+                                                u.username, 
+                                                Concat(u.fname, ' ', u.lname) AS author 
                                          FROM   group_chat gc 
-                                                INNER JOIN group_users gu 
-                                                        ON gu.group_id = gc.group_id 
-                                                INNER JOIN users u 
-                                                        ON u.username = gu.username 
                                                 LEFT JOIN chat c 
                                                        ON c.group_id = gc.group_id 
+                                                LEFT JOIN users u 
+                                                       ON u.uid = c.user_id 
                                          WHERE  :username IN (SELECT username 
                                                                       FROM   group_users 
                                                                       WHERE  group_id = c.group_id) 
                                          GROUP  BY gc.group_id 
-                                         ORDER  BY c.chat_id DESC ", [":username" => $objUser->getUsername ()]);
+                                         ORDER  BY c.chat_id DESC  ", [":username" => $objUser->getUsername ()]);
 
         if ( $arrResults === false )
         {
@@ -145,15 +156,15 @@ class GroupMessageFactory
 
         foreach ($arrResults as $arrResult) {
             $objMessage = new Message ($arrResult['chat_id']);
-            $objMessage->setAuthor ($arrResult['fullname']);
+            $objMessage->setAuthor ($arrResult['author']);
             $objMessage->setDate ($arrResult['sent_on']);
             $objMessage->setMessage ($arrResult['message']);
             $objMessage->setGroupId ($arrResult['group_id']);
-            $objMessage->setUsername ($arrResult['users']);
+            $objMessage->setUsername ($arrResult['username']);
 
             $arrMessages[] = $objMessage;
         }
-        
+
         return $arrMessages;
     }
 
@@ -163,7 +174,7 @@ class GroupMessageFactory
      */
     private function createNewGroupChat ()
     {
-        $groupId = $this->db->create ("group_chat", ["name" => "test"]);
+        $groupId = $this->db->create ("group_chat", ["name" => "[default]"]);
 
         if ( $groupId === false )
         {

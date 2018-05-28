@@ -1025,12 +1025,18 @@ class ChatController extends ControllerBase
             $userId = $_SESSION['user']['user_id'];
             $arrUser[$userId] = (new User ($userId));
             $objGroupChat = new GroupMessage ($groupId);
+            $arrChatUsers = (new UserFactory())->getGroupChatUsers ($objGroupChat);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
         if ( $arrUser === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrChatUsers === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
@@ -1042,7 +1048,7 @@ class ChatController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $this->view->partial ("chat/chat", ["arrMessages" => $arrMessages, "arrUser" => $arrUser, "userId" => $userId, "objUser" => null]);
+        $this->view->partial ("chat/chat", ["arrMessages" => $arrMessages, "arrUser" => $arrUser, "userId" => $userId, "objUser" => null, "arrGroupUsers" => $arrChatUsers]);
     }
 
     public function chatAction ()
