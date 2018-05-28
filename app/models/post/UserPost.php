@@ -63,7 +63,7 @@ class UserPost extends BasePostFactory implements PostInterface
      * @param type $intNoPerPage
      * @return type
      */
-    public function getPostsForUser (User $objUser, $sortBy = null, $intPageNo = null, $intNoPerPage = null, $blShowUsersPosts = true)
+    public function getPostsForUser (User $objUser, $sortBy = null, $intPageNo = null, $intNoPerPage = null, $blShowUsersPosts = true, $blUnread = true)
     {
 
         $sql = "
@@ -161,6 +161,11 @@ class UserPost extends BasePostFactory implements PostInterface
 
         return $result;
     }
+    
+    private function getUnreadPostsForUser(User $objUser, $blFeed = true)
+    {
+        
+    }
 
     /**
      * Builds posts array for the news feed which is a combination of the users posts, posts from events they are subscribed to, pages they are followers of and groups they are members of
@@ -173,7 +178,7 @@ class UserPost extends BasePostFactory implements PostInterface
      * @param type $intNoPerPage
      * @return boolean
      */
-    public function getPostsForNewsFeed (array $arrPages, array $arrGroups, array $arrEvents, $objUser, $blShowGroups = true, $sortBy = null, $intPageNo = null, $intNoPerPage = null, UserSettings $objUserSettings)
+    public function getPostsForNewsFeed (array $arrPages, array $arrGroups, array $arrEvents, $objUser, $blShowGroups = true, $sortBy = null, $intPageNo = null, $intNoPerPage = null, UserSettings $objUserSettings, $blUnread = true )
     {
         $arrPagePosts = [];
         $arrGroupPosts = [];
@@ -249,7 +254,7 @@ class UserPost extends BasePostFactory implements PostInterface
 
             //$arrAllPosts = array_merge ($arrEventPosts, $arrAllPosts);
 
-            $arrUserPosts = $this->getPostsForUser ($objUser, $sortBy, $intPageNo, $intNoPerPage, false);
+            $arrUserPosts = $this->getPostsForUser ($objUser, $sortBy, $intPageNo, $intNoPerPage, false, $blUnread);
 
             if ( $arrUserPosts === false )
             {
