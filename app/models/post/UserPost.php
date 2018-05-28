@@ -65,6 +65,8 @@ class UserPost extends BasePostFactory implements PostInterface
      */
     public function getPostsForUser (User $objUser, $sortBy = null, $intPageNo = null, $intNoPerPage = null, $blShowUsersPosts = true, $blUnread = true)
     {
+        
+        $unreadSql = $blUnread === false ? ' AND has_read = 0 ' : '';
 
         $sql = "
                                         SELECT 
