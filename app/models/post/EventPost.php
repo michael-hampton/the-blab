@@ -72,7 +72,7 @@ class EventPost extends BasePostFactory implements PostInterface
      * @param User $objUser
      * @return type
      */
-    public function getComments (User $objUser)
+    public function getComments (User $objUser, $blUnread = true)
     {
         $arrResults = $this->db->_query ("SELECT  CONCAT(u.fname, ' ' , u.lname) AS author,
                                             CONCAT(u2.fname, ' ' , u2.lname)  AS original_poster,
