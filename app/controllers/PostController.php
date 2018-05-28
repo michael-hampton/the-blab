@@ -54,7 +54,7 @@ class PostController extends ControllerBase
             break;
                 
             case ($pos = strpos($field, 'index/index')) >= 0:
-                $arrPosts = $objPostFactory->getPostsForUser ($objUser, null, 0, 4);
+                $arrPosts = $objPostFactory->getPostsForNewsFeed ($arrUserPages, $arrGroups, $arrEvents, $objUser, true, null, null, null, $arrUserSettings);
             break;
         }
         
