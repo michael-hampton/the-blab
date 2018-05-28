@@ -39,6 +39,20 @@ class PostController extends ControllerBase
     public function getUnreadPostsAction()
     {
         $this->view->disable();
+        
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+        
+        $objUser = new User ($_SESSION['user']['user_id']);
+        
+        switch(true)
+        {
+            case ($pos = strpos($field, 'group')) >= 0:
+                echo '_term at position ' . $pos;
+            break;
+        }
     }
 
     /**
