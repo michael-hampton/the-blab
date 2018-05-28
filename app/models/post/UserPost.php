@@ -164,6 +164,11 @@ class UserPost extends BasePostFactory implements PostInterface
     
     private function getUnreadPostsForUser(User $objUser, $blFeed = true)
     {
+        if($blFeed === true) {
+            
+        } else {
+            
+        }
         
     }
 
