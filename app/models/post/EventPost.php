@@ -30,14 +30,14 @@ class EventPost extends BasePostFactory implements PostInterface
         parent::__construct ($objPostActionFactory, $objUploadFactory, $objCommentFactory, $objReviewFactory, $objTagUserFactory, $objCommentReplyFactory);
     }
 
-   /**
-    * 
-    * @param type $comment
-    * @param User $objUser
-    * @param \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter
-    * @param array $imageIds
-    * @return boolean
-    */
+    /**
+     * 
+     * @param type $comment
+     * @param User $objUser
+     * @param \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter
+     * @param array $imageIds
+     * @return boolean
+     */
     public function createComment ($comment, User $objUser, \JCrowe\BadWordFilter\BadWordFilter $objBadWordFilter, array $imageIds = null)
     {
         if ( trim ($comment) === "" || !is_string ($comment) )
@@ -72,8 +72,11 @@ class EventPost extends BasePostFactory implements PostInterface
      * @param User $objUser
      * @return type
      */
-    public function getComments (User $objUser, $blUnread = true)
+    public function getComments (User $objUser, $blRead = true)
     {
+#
+        $unreadSql = $blRead === false ? ' AND msg_id NOT IN (SELECT message_id FROM messages_read WHERE user_id = :userId) ' : '';
+
         $arrResults = $this->db->_query ("SELECT  CONCAT(u.fname, ' ' , u.lname) AS author,
                                             CONCAT(u2.fname, ' ' , u2.lname)  AS original_poster,
                                             u.username,
@@ -103,10 +106,15 @@ class EventPost extends BasePostFactory implements PostInterface
                                             WHERE msg_id NOT IN (SELECT post_id FROM ignored_posts WHERE user_id = :userId)
                                         AND message_type = 6
                                          AND m.uid_fk NOT IN (SELECT user_added FROM blocked_friend WHERE blocked_user = :userAdded)
+                                         {$unreadSql}
                                         ORDER BY created DESC", [":userId" => $objUser->getId (), ":eventId" => $this->objEvent->getId (), ':userAdded' => $objUser->getId ()]);
 
         $arrPosts = $this->buildPostsObject ($arrResults, false, $objUser);
 
+        if ( $arrPosts !== false )
+        {
+            $this->markPostsAsRead (6, $objUser);
+        }
 
         return $arrPosts;
     }

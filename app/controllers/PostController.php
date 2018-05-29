@@ -35,33 +35,87 @@ class PostController extends ControllerBase
 
         $this->ajaxresponse ("success", "SUCCESS");
     }
-    
-    public function getUnreadPostsAction()
+
+    public function getUnreadPostsAction ()
     {
-        $this->view->disable();
-        
+        $this->view->disable ();
+
         if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
-        $objUser = new User ($_SESSION['user']['user_id']);
-        
-        switch(true)
+
+        if ( empty ($_POST['url']) )
         {
-            case ($pos = strpos($field, 'profile')) >= 0:
-                $arrPosts = $objPostFactory->getPostsForUser ($objUser, null, 0, 4, false);
-            break;
-                
-            case ($pos = strpos($field, 'index/index')) >= 0:
-                $arrPosts = $objPostFactory->getPostsForNewsFeed ($arrUserPages, $arrGroups, $arrEvents, $objUser, true, null, null, null, $arrUserSettings, false);
-            break;
-        }
-        
-        if($arrPosts === false) {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-            
+
+        try {
+            $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
+            $objUserFactory = new UserFactory();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $arrUserSettings = (new UserSettings ($objUser));
+            $objEventFactory = new EventFactory();
+            $objGroupFactory = new GroupFactory();
+            $objPageFactory = new PageFactory();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrUserPages = $objPageFactory->getPagesMemberOf ($objUser);
+
+        if ( $arrUserPages === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrGroups = $objGroupFactory->getGroupsForProfile ($objUser);
+
+        if ( $arrGroups === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrEvents = $objEventFactory->getEventsForProfile ($objUser);
+
+        if ( $arrEvents === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $field = $_POST['url'];
+
+        switch (true) {
+            case (strpos ($field, 'profile') !== false):
+                $arrPosts = $objPostFactory->getPostsForUser ($objUser, null, 0, 4, true, false);
+                break;
+
+            case (strpos ($field, 'index/index') !== false):
+                $arrPosts = $objPostFactory->getPostsForNewsFeed ($arrUserPages, $arrGroups, $arrEvents, $objUser, true, null, null, null, $arrUserSettings);
+                break;
+            default:
+                $arrPosts = $objPostFactory->getPostsForNewsFeed ($arrUserPages, $arrGroups, $arrEvents, $objUser, true, null, null, null, $arrUserSettings, false);
+                break;
+        }
+
+        if ( $arrPosts === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $content = '';
+
+        if ( count ($arrPosts) > 0 )
+        {
+            $content = $this->view->getPartial (
+                    "templates/posts", [
+                "arrPosts" => $arrPosts,
+                    ]
+            );
+        }
+
+        $this->ajaxresponse ("success", "success", ["count" => count ($arrPosts), "content" => $content]);
     }
 
     /**
@@ -366,7 +420,7 @@ class PostController extends ControllerBase
         if ( $blResult === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-        }        
+        }
     }
 
 }

@@ -162,7 +162,7 @@ class BasePostFactory
             return false;
         }
 
-        if ( empty ($arrResults[0]) )
+        if ( empty ($arrResults) )
         {
             return [];
         }
@@ -243,6 +243,66 @@ class BasePostFactory
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             return false;
         }
+    }
+
+    /**
+     * 
+     * @param type $type
+     * @param User $objUser
+     * @return boolean
+     */
+    protected function markPostsAsRead ($type, User $objUser)
+    {
+        $arrParams = [];
+        
+        $sql = "SELECT * FROM messages WHERE 1=1 ";
+
+        if ( (int) $type === 3 )
+        {
+            $sql .= " AND (
+                (uid_fk = :userId) 
+                OR (
+                    uid_fk IN ( 
+                        SELECT friend_one FROM friends WHERE friend_two = :userId AND status = '2'
+                    )
+                ) 
+                OR uid_fk IN (
+                    SELECT friend_two FROM friends WHERE friend_one = :userId AND status = '2'
+                )
+            )";
+            
+            $arrParams[':userId'] = $objUser->getId();
+        }
+        
+        $sql .= " AND message_type = :messageType";
+        
+        $arrParams[':messageType'] = $type;
+
+        $results = $this->db->_query ($sql, $arrParams);
+
+        if ( $results === false )
+        {
+            trigger_error ("db query failed", E_USER_WARNING);
+            return false;
+        }
+        
+
+        if ( empty ($results) )
+        {
+            return [];
+        }
+
+        foreach ($results as $result) {
+            $result = $this->db->create ("messages_read", ["user_id" => $objUser->getId (), "message_id" => $result['msg_id'], "message_type" => $result['message_type']]);
+
+            if ( $result === false )
+            {
+                trigger_error ("Db query failed", E_USER_WARNING);
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

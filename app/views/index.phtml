@@ -8,6 +8,26 @@
         font-size: 20px !important;
         cursor: pointer;
     }
+
+    .scrollToTop{
+        width:200px; 
+        border: 1px dotted #CCC;
+        border-radius: 8px;
+        padding:14px; 
+        text-align:center; 
+        background: whiteSmoke;
+        font-weight: bold;
+        color: #444;
+        text-decoration: none;
+        position:fixed;
+        top:75px;
+        right:40px;
+        display:none;
+        background: #EEE;
+    }
+    .scrollToTop:hover{
+        text-decoration:none;
+    }
 </style>
 
 
@@ -221,16 +241,17 @@
         </div>
 
         <div class="wrapper wrapper-content">
-             <div id="google_translate_element"></div><script type="text/javascript">
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
-}
-</script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+            <div id="google_translate_element"></div><script type="text/javascript">
+                function googleTranslateElementInit ()
+                {
+                    new google.translate.TranslateElement ({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+                }
+            </script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
         </div>
 
-            <?php echo $this->getContent () ?>
+        <?php echo $this->getContent () ?>
 
-           
+
 
     </div>
 </div>
@@ -262,7 +283,7 @@ function googleTranslateElementInit() {
                 <h4 class="modal-title" id="vlikegdata"><span id="vpb_system_like_title">Forward Message</span></h4>
             </div>
             <div class="modal-body">
-                 </div>
+            </div>
 
             <div class="modal-footer" style="padding-top:10px; padding-bottom:10px;">
                 <span class="btn btn-default" style="float:right;" data-dismiss="modal">Close</span><div style="clear:both;"></div>
@@ -271,29 +292,29 @@ function googleTranslateElementInit() {
     </div>
 </div>
 
- <div class="modal inmodal" id="sendPageMessage" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content animated bounceInRight">
-                    <div class="modal-header" style="text-align: center;">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <i class="fa fa-laptop modal-icon"></i>
-                        <h4 class="modal-title" style="text-align: center !important;">Send Message</h4>
-                    </div>
-                    <div class="modal-body">
+<div class="modal inmodal" id="sendPageMessage" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-header" style="text-align: center;">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-laptop modal-icon"></i>
+                <h4 class="modal-title" style="text-align: center !important;">Send Message</h4>
+            </div>
+            <div class="modal-body">
 
-                        <div class="form-group">
-                            <textarea id="pageMessage" name="pageMessage" placeholder="Enter your Message" class="form-control"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary SendPageMessage">Send Message</button>
-                    </div>
+                <div class="form-group">
+                    <textarea id="pageMessage" name="pageMessage" placeholder="Enter your Message" class="form-control"></textarea>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary SendPageMessage">Send Message</button>
+            </div>
         </div>
-
     </div>
+</div>
+
+</div>
 </div>
 
 <div class="modal inmodal fade in" id="view-FriendRequests" tabindex="-1" role="dialog" aria-hidden="true">
@@ -1760,6 +1781,8 @@ function googleTranslateElementInit() {
     </div>
 </div>
 
+<a href="#" class="scrollToTop">You have new stories</a>
+
 
 <input type='hidden' id='v_loading_btn' value='<div title="Loading..." class="btn_loading">Loading<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>'>
 <input type="hidden" id="vpb_start" value="<?= $startPage ?>">
@@ -1776,6 +1799,13 @@ function googleTranslateElementInit() {
         $ ('#uploadComment').mentionsInput ({
             source: '/blab/index/autoSuggest',
             showAtCaret: true
+        });
+
+        //Click event to scroll to top
+        $ ('.scrollToTop').click (function ()
+        {
+            $ ('html, body').animate ({scrollTop: 0}, 800);
+            return false;
         });
 
     });

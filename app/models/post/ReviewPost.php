@@ -73,7 +73,7 @@ class ReviewPost extends BasePostFactory implements PostInterface
      * @param User $objUser
      * @return type
      */
-    public function getComments (User $objUser, $blUnread = true)
+    public function getComments (User $objUser)
     {
         $arrResults = $this->db->_query ("
                                         SELECT 
