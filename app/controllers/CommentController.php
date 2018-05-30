@@ -144,28 +144,30 @@ class CommentController extends ControllerBase
 
         $id = $_POST['id'];
 
-        $objUser = new User ($_SESSION['user']['user_id']);
-        $objPost = new Post ($id);
-
-
-        $objComment = (new CommentFactory())->createComment ($_POST['comment'], $objPost, $objUser);
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objPost = new Post ($id);
+            $objComment = (new CommentFactory())->createComment ($_POST['comment'], $objPost, $objUser);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $objComment === FALSE )
         {
             $this->ajaxresponse ("error", "Unable to save");
         }
 
-        require_once $this->rootPath. "/blab/app/views/templates/templateFunctions.php";
+        require_once $this->rootPath . "/blab/app/views/templates/templateFunctions.php";
         $content = buildComments ($objComment, $objPost, 0, 1, false);
-        
+
         $comment = array(
             "id" => $_POST['id'],
             "comment_id" => $objComment->getId (),
             "content" => $content
         );
 
-        echo json_encode ($comment);
-        die;
+        $this->ajaxresponse ("success", "success", $comment);
     }
 
     public function updateCommentAction ()

@@ -162,7 +162,7 @@ class BasePostFactory
             return false;
         }
 
-        if ( empty ($arrResults[0]) )
+        if ( empty ($arrResults) )
         {
             return [];
         }
@@ -243,6 +243,46 @@ class BasePostFactory
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             return false;
         }
+    }
+
+    /**
+     * 
+     * @param type $type
+     * @param User $objUser
+     * @return boolean
+     */
+    protected function markPostsAsRead ($type, User $objUser)
+    {
+        $sql = "INSERT INTO messages_read (user_id, message_id, message_type)";
+
+        $sql .= "SELECT :userId AS user_id, msg_id AS message_id, message_type FROM messages WHERE 1=1 ";
+
+        if ( (int) $type === 3 )
+        {
+            $sql .= " AND (
+                (uid_fk = :userId) 
+                OR (
+                    uid_fk IN ( 
+                        SELECT friend_one FROM friends WHERE friend_two = :userId AND status = '2'
+                    )
+                ) 
+                OR uid_fk IN (
+                    SELECT friend_two FROM friends WHERE friend_one = :userId AND status = '2'
+                )
+            )";
+        }
+
+        $sql .= " AND message_type = :messageType AND msg_id NOT IN (SELECT message_id FROM messages_read WHERE user_id = :userId)";
+
+        $result = $this->db->_query ($sql, [":userId" => $objUser->getId (), ":messageType" => $type]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return true;
     }
 
 }

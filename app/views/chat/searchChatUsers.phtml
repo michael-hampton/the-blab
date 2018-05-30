@@ -1,12 +1,86 @@
 <?php
 
-function getOnlineStatusLabel (User $objUser)
+/**
+ * 
+ * @param type $rootPath
+ * @param type $username
+ * @param type $author
+ * @return string
+ */
+function getImage ($rootPath, $username, $author)
+{
+    if ( file_exists ($rootPath . '/blab/public/uploads/profile/' . $username . '.jpg') )
+    {
+        $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $author . '" alt="image" class="img-circle img-responsive" src="/blab/public/uploads/profile/' . $username . '.jpg">';
+    }
+    else
+    {
+        $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+    }
+
+    return $image;
+}
+
+/**
+ * 
+ * @param Message $objMessage
+ * @return string
+ */
+function getFrom (Message $objMessage)
+{
+    if ( trim ($objMessage->getRecipient ()) !== "" )
+    {
+        $from = (int) $objMessage->getRecipient () === (int) $_SESSION['user']['user_id'] ? $objMessage->getAuthor () : 'You';
+    }
+    else
+    {
+        $from = '';
+    }
+
+    return $from;
+}
+
+/**
+ * 
+ * @param type $lastLogin
+ * @return string
+ */
+function getActiveLabel ($lastLogin)
+{
+    $activeLabel = 'chat-not-active-user';
+
+    if ( trim ($lastLogin) !== "" )
+    {
+        $dbdate = strtotime ($lastLogin);
+        if ( time () - $dbdate <= 15 * 60 )
+        {
+            $activeLabel = 'chat-active-user';
+        }
+        else
+        {
+            $activeLabel = 'chat-not-active-user';
+        }
+    }
+    else
+    {
+        $activeLabel = 'chat-not-active-user';
+    }
+
+    return $activeLabel;
+}
+
+/**
+ * 
+ * @param type $lastLogin
+ * @return string
+ */
+function getOnlineLabel ($lastLogin)
 {
     $onlineLabel = 'text-danger';
 
-    if ( trim ($objUser->getLastLogin ()) !== "" )
+    if ( trim ($lastLogin) !== "" )
     {
-        $dbdate = strtotime ($objUser->getLastLogin ());
+        $dbdate = strtotime ($lastLogin);
         if ( time () - $dbdate <= 15 * 60 )
         {
             $onlineLabel = 'text-navy';
@@ -23,30 +97,161 @@ function getOnlineStatusLabel (User $objUser)
 
     return $onlineLabel;
 }
-
-echo '<h5>Friends</h5>';
-
-foreach ($arrUsers as $arrUser):
-
-    $onlineLabel = getOnlineStatusLabel ($arrUser);
-
-    if ( $arrUser->getId () !== $_SESSION['user']['user_id'] ):
-        ?>
-        <li><a class="show-chat single" groupname="" groupid="" username="<?= $arrUser->getUsername () ?>" fullname="<?= $arrUser->getFirstName () . '|' . $arrUser->getLastName () ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $arrUser->getId () ?>" href="#"> <i class="fa fa-circle <?= $onlineLabel ?>"></i> <?= $arrUser->getFirstName () . ' ' . $arrUser->getLastName () ?> </a></li>
-
-        <?php
-    endif;
-endforeach;
-
-if ( isset ($arrChatGroups) && !empty ($arrChatGroups) ):
-
-    echo '<h5>Groups</h5>';
-
-    foreach ($arrChatGroups as $arrChatGroup):
-        ?>
-        <li><a class="show-chat group" groupname="<?= $arrChatGroup['name'] ?>" groupid="<?= $arrChatGroup['group_id'] ?>" username="<?= $arrChatGroup['users'] ?>" fullname="<?= $arrChatGroup['fullname'] ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> <i class="fa fa-circle text-danger"></i> <?= $arrChatGroup['name'] ?> </a></li>
-
-        <?php
-    endforeach;
-endif;
 ?>
+
+<div class="col-lg-12" style="width:100%; font-size: 14px; margin-bottom: 12px;">
+    <a href="#" class="showActiveUsers btn btn-success">Active</a>
+    <a href="#" class="showGroups btn btn-warning">Groups</a>
+    <a href="#" class="showDiscover btn btn-danger">Discover</a>
+    <a href="#" class="showAllChat btn btn-primary">All</a>
+</div>
+
+<div class="usersDiv">
+    <?php
+    echo '<h3>Messages</h3>';
+
+    foreach ($arrMessages['messages'] as $objMessage):
+
+        $from = getFrom ($objMessage);
+
+        $image = getImage ($rootPath, $objMessage->getUsername (), $objMessage->getAuthor ());
+
+        $onlineLabel = getOnlineLabel ($objMessage->getLastLogin ());
+        $activeLabel = getActiveLabel ($objMessage->getLastLogin ());
+        $displaySearch = 'block';
+
+        if ( !empty ($searchText) )
+        {
+            $displaySearch = trim ($searchText) !== "" && (
+                    strpos ($objMessage->getAuthor (), $searchText) ||
+                    strpos ($objMessage->getUsername (), $searchText) !== false) ? 'block' : 'none';
+        }
+
+        if ( $objMessage->getUsername () !== $_SESSION['user']['username'] ):
+            ?>
+            <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left; display: <?= $displaySearch ?>">
+                <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= str_replace (" ", "|", $objMessage->getAuthor ()) ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getUserId () ?>" href="#"> 
+
+                    <div class="col-lg-9">
+                        <?= $image ?>
+
+                        <?= $objMessage->getAuthor () ?> <i class="fa fa-circle <?= $onlineLabel ?>"></i> 
+
+                        <br>
+                        <?= $from . ' ' . substr ($objMessage->getMessage (), 0, 20) ?>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <?= date ("d F", strtotime ($objMessage->getDate ())) ?>
+
+                    </div>
+                </a>
+            </li>
+
+            <?php
+        endif;
+    endforeach;
+
+    echo '<div class="" style="width:100%; margin-top:12px; float:left;">';
+
+    echo '<h3>People</h3>';
+
+    foreach ($arrMessages['users'] as $objMessage) {
+
+        $image = getImage ($rootPath, $objMessage->getUsername (), $objMessage->getFirstName () . ' ' . $objMessage->getLastName ());
+
+        $onlineLabel = getOnlineLabel ($objMessage->getLastLogin ());
+        $activeLabel = getActiveLabel ($objMessage->getLastLogin ());
+        $displaySearch = 'block';
+
+        if ( !empty ($searchText) && trim ($searchText) !== "" )
+        {
+            $displaySearch = !empty ($searchText) && (
+                    strpos ($objMessage->getFirstName () . ' ' . $objMessage->getLastName (), $searchText) ||
+                    strpos ($objMessage->getUsername (), $searchText) !== false) ? 'block' : 'none';
+        }
+
+        if ( $objMessage->getUsername () !== $_SESSION['user']['username'] )
+        {
+            ?>
+            <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left; display: <?= $displaySearch ?>">
+                <a class="show-chat single <?= $activeLabel ?>" groupname="" groupid="" username="<?= $objMessage->getUsername () ?>" fullname="<?= $objMessage->getFirstName () . '|' . $objMessage->getLastName () ?>" session-user="<?= $_SESSION['user']['username'] ?>" user-id="<?= $objMessage->getId () ?>" href="#"> 
+
+                    <div class="col-lg-9">
+                        <?= $image ?>
+
+                        <?= $objMessage->getFirstName () . ' ' . $objMessage->getLastName () ?> <i class="fa fa-circle <?= $onlineLabel ?>"></i>  <br>
+
+                    </div>
+
+                    <div class="col-lg-3">
+
+
+                    </div>
+                </a>
+            </li>
+
+            <?php
+        }
+    }
+
+    echo '</div>';
+
+    echo '</div>';
+
+    echo '<div class="groupsDiv" style="width:100%; margin-top:12px; float:left;">';
+
+    if ( !empty ($arrChatGroups) )
+    {
+
+        echo '<h3>Groups</h3>';
+
+        foreach ($arrChatGroups as $objChatGroup) {
+
+            $groupId = $objChatGroup->getGroupId ();
+
+            if ( empty ($arrGroups[$groupId]) )
+            {
+                continue;
+            }
+
+            $groupName = trim ($arrGroups[$groupId]->getGroupName ()) === '[default]' ? substr ($arrGroups[$groupId]->getNameList (), 0, 40) : $arrGroups[$groupId]->getGroupName ();
+
+            $image = trim ($arrGroups[$groupId]->getImageUrl ()) !== "" && file_exists ($rootPath . $arrGroups[$groupId]->getImageUrl ()) ? $arrGroups[$groupId]->getImageUrl () : '/blab/public/img/avatar.gif';
+            ?>
+            <li style="width:100%; border-bottom: 1px dotted #CCC; min-height: 32px; float: left;">
+                <a class="show-chat group" groupname="<?= $groupName ?>" groupid="<?= $groupId ?>" username="<?= $arrGroups[$groupId]->getUserList () ?>" fullname="<?= $arrGroups[$groupId]->getNameList () ?>" session-user="<?= $_SESSION['user']['username'] ?>" href="#"> 
+
+                    <br>
+                    <div class="col-lg-9" style="padding:0px !important;">
+                        <img style="width:25px; margin-right: 8px; float:left;" title="<?= $groupName ?>" alt="image" class="img-circle img-responsive" src="<?= $image ?>">
+                        <?= $groupName ?>  <i class="fa fa-circle text-danger"></i> 
+                        <br>
+                        <?php
+                        $from = trim ($objChatGroup->getUsername ()) === ($_SESSION['user']['username']) ? 'You:' : $objChatGroup->getAuthor ();
+                        echo $from . ' ' . (trim ($objChatGroup->getMessage ()) !== "" ? substr ($objChatGroup->getMessage (), 0, 20) : '')
+                        ?>
+                    </div>
+
+                    <div class="col-lg-3" style="padding:0px !important;">
+                        <?= (trim ($objChatGroup->getDate ()) !== "" ? date ("d F", strtotime ($objChatGroup->getDate ())) : '') ?>
+
+                    </div>
+
+                </a>
+            </li>
+
+
+
+            <?php
+        }
+    }
+
+    echo '</div>';
+
+    echo '<div class="discover" style="width:100%; display:none;">';
+    $this->partial ("chat/discovery", ["arrPages" => $arrPages, "arrPageCategories" => $arrPageCategories]);
+
+
+    echo '</div>';
+    ?>

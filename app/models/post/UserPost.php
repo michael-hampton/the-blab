@@ -63,8 +63,10 @@ class UserPost extends BasePostFactory implements PostInterface
      * @param type $intNoPerPage
      * @return type
      */
-    public function getPostsForUser (User $objUser, $sortBy = null, $intPageNo = null, $intNoPerPage = null, $blShowUsersPosts = true)
+    public function getPostsForUser (User $objUser, $sortBy = null, $intPageNo = null, $intNoPerPage = null, $blShowUsersPosts = true, $blRead = true)
     {
+
+        $unreadSql = $blRead === false ? ' AND msg_id NOT IN (SELECT message_id FROM messages_read WHERE user_id = :userId) ' : '';
 
         $sql = "
                                         SELECT 
@@ -108,7 +110,8 @@ class UserPost extends BasePostFactory implements PostInterface
                                             )
                                             AND msg_id NOT IN (SELECT post_id FROM ignored_posts WHERE user_id = :userId)
                                              AND m.uid_fk NOT IN (SELECT user_added FROM blocked_friend WHERE blocked_user = :userAdded)
-                                        AND message_type = 3";
+                                        AND message_type = 3
+                                        {$unreadSql}";
 
         if ( $blShowUsersPosts === false )
         {
@@ -127,9 +130,12 @@ class UserPost extends BasePostFactory implements PostInterface
 
         $arrResults = $this->db->_query ($sql, [':userId' => $objUser->getId (), ':userAdded' => $objUser->getId ()]);
 
-
-
         $arrPosts = $this->buildPostsObject ($arrResults, false, $objUser);
+
+        if ( $arrPosts !== false )
+        {
+            $this->markPostsAsRead (3, $objUser);
+        }
 
         return $arrPosts;
     }
@@ -173,7 +179,7 @@ class UserPost extends BasePostFactory implements PostInterface
      * @param type $intNoPerPage
      * @return boolean
      */
-    public function getPostsForNewsFeed (array $arrPages, array $arrGroups, array $arrEvents, $objUser, $blShowGroups = true, $sortBy = null, $intPageNo = null, $intNoPerPage = null, UserSettings $objUserSettings)
+    public function getPostsForNewsFeed (array $arrPages, array $arrGroups, array $arrEvents, $objUser, $blShowGroups = true, $sortBy = null, $intPageNo = null, $intNoPerPage = null, UserSettings $objUserSettings, $blRead = true)
     {
         $arrPagePosts = [];
         $arrGroupPosts = [];
@@ -186,7 +192,7 @@ class UserPost extends BasePostFactory implements PostInterface
                 foreach ($arrPages as $objPage) {
                     $objPagePost = (new PagePost ($objPage, $this->objLikes, $this->objUploadFactory, $this->objCommentFactory, $this->objReviewFactory, $this->objTagUserFactory, $this->objCommentReplyFactory));
 
-                    $pagePost = $objPagePost->getComments ($objUser);
+                    $pagePost = $objPagePost->getComments ($objUser, $blRead);
 
                     if ( $pagePost === false )
                     {
@@ -210,7 +216,7 @@ class UserPost extends BasePostFactory implements PostInterface
 
                     $objGroupPost = new GroupPost ($objGroup, $this->objLikes, $this->objUploadFactory, $this->objCommentFactory, $this->objReviewFactory, $this->objTagUserFactory, $this->objCommentReplyFactory);
 
-                    $groupPost = $objGroupPost->getComments ($objUser);
+                    $groupPost = $objGroupPost->getComments ($objUser, $blRead);
 
                     if ( $groupPost === false )
                     {
@@ -230,7 +236,7 @@ class UserPost extends BasePostFactory implements PostInterface
 
                     $objEventPost = new EventPost ($objEvent, $this->objLikes, $this->objUploadFactory, $this->objCommentFactory, $this->objReviewFactory, $this->objTagUserFactory, $this->objCommentReplyFactory);
 
-                    $eventPost = $objEventPost->getComments ($objUser);
+                    $eventPost = $objEventPost->getComments ($objUser, $blRead);
 
                     if ( $eventPost === false )
                     {
@@ -249,7 +255,7 @@ class UserPost extends BasePostFactory implements PostInterface
 
             //$arrAllPosts = array_merge ($arrEventPosts, $arrAllPosts);
 
-            $arrUserPosts = $this->getPostsForUser ($objUser, $sortBy, $intPageNo, $intNoPerPage, false);
+            $arrUserPosts = $this->getPostsForUser ($objUser, $sortBy, $intPageNo, $intNoPerPage, false, $blRead);
 
             if ( $arrUserPosts === false )
             {

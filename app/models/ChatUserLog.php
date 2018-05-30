@@ -28,13 +28,13 @@ class ChatUserLog
 
     /**
      * 
-     * @param GroupChat $objGroup
+     * @param GroupMessage $objGroup
      * @param type $fullname
      * @param type $username
      * @param type $data
      * @return boolean
      */
-    public function createLog (GroupChat $objGroup, $fullname, $username, $data)
+    public function createLog (GroupMessage $objGroup, $fullname, $username, $data)
     {
         $result = $this->objDb->create ("reported_chat_user", [
             "reported_username" => $username,

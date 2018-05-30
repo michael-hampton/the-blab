@@ -288,12 +288,16 @@ class PostAction
     {
         $result = $this->db->_select ("comments", "com_id = :commentId", [':commentId' => $objComment->getId ()]);
 
-        if ( empty ($result[0]['like_count']) )
+        if ( $result === false || !isset ($result[0]['like_count']) )
         {
-            return [];
+            trigger_error ("Db query failed to get like count", E_USER_WARNING);
+            return false;
         }
 
-        return $result[0]['like_count'];
+        $count = $result[0]['like_count'];
+
+
+        return (int) $count;
     }
 
     /**
@@ -537,19 +541,19 @@ class PostAction
         {
             return false;
         }
-        
+
         $objAudit->createAudit ($objUser, "Reply likes {$objCommentReply->getId ()} deleted", "DELETED", "comment_reply_like", $objCommentReply->getId ());
 
         return true;
     }
 
-   /**
-    * 
-    * @param AuditFactory $objAudit
-    * @param User $objUser
-    * @param Post $objPost
-    * @return boolean
-    */
+    /**
+     * 
+     * @param AuditFactory $objAudit
+     * @param User $objUser
+     * @param Post $objPost
+     * @return boolean
+     */
     public function deletePostLikes (AuditFactory $objAudit, User $objUser, Post $objPost)
     {
         $result = $this->db->delete ("message_like", "msg_id_fk = :postId", [":postId" => $objPost->getId ()]);
@@ -558,7 +562,7 @@ class PostAction
         {
             return false;
         }
-        
+
         $objAudit->createAudit ($objUser, "Post likes {$objPost->getId ()} deleted", "DELETED", "post_like", $objPost->getId ());
 
         return true;
@@ -579,7 +583,7 @@ class PostAction
         {
             return false;
         }
-        
+
         $objAudit->createAudit ($objUser, "Comment likes {$objComment->getId ()} deleted", "DELETED", "comment_like", $objComment->getId ());
 
         return true;

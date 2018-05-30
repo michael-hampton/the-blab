@@ -13,7 +13,7 @@
  */
 class Message
 {
-    
+
     use MessageEncrypt;
 
     /**
@@ -21,6 +21,12 @@ class Message
      * @var type 
      */
     private $id;
+
+    /**
+     *
+     * @var type 
+     */
+    private $userId;
 
     /**
      *
@@ -75,7 +81,7 @@ class Message
      * @var type 
      */
     private $filename;
-    
+
     /**
      *
      * @var type 
@@ -86,13 +92,20 @@ class Message
      *
      * @var type 
      */
+    private $lastLogin;
+    
+
+    /**
+     *
+     * @var type 
+     */
     private $objDb;
 
-   /**
-    * 
-    * @param type $id
-    * @throws Exception
-    */
+    /**
+     * 
+     * @param type $id
+     * @throws Exception
+     */
     public function __construct ($id)
     {
         $this->id = $id;
@@ -132,7 +145,7 @@ class Message
     {
         return $this->sender;
     }
-    
+
     /**
      * 
      * @return type
@@ -166,7 +179,7 @@ class Message
      */
     public function getMessage ()
     {
-        return $this->encrypt_decrypt("decrypt", $this->message);
+        return $this->encrypt_decrypt ("decrypt", $this->message);
     }
 
     /**
@@ -230,6 +243,24 @@ class Message
     public function setAuthor ($author)
     {
         $this->author = $author;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getUserId ()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * 
+     * @param type $userId
+     */
+    public function setUserId ($userId)
+    {
+        $this->userId = $userId;
     }
 
     /**
@@ -302,6 +333,24 @@ class Message
     public function setFilename ($filename)
     {
         $this->filename = $filename;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getLastLogin ()
+    {
+        return $this->lastLogin;
+    }
+
+    /**
+     * 
+     * @param type $lastLogin
+     */
+    public function setLastLogin ($lastLogin)
+    {
+        $this->lastLogin = $lastLogin;
     }
 
     /**

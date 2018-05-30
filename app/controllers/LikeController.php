@@ -98,7 +98,7 @@ class LikeController extends ControllerBase
             $likes = $objPostAction->getLikesForPost ($objPost);
         }
 
-        if ( $blResponse === FALSE )
+        if ( $blResponse === false )
         {
             $this->ajaxresponse ("error", "Unable to save");
         }

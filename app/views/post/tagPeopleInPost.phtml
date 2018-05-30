@@ -1,0 +1,23 @@
+<?php
+
+echo '<div class="dropdown"><ul class="dropdown-menu vpb-hundred-percent" id="tag_people_in_post_suggestion_box" style="top:auto;">';
+
+if ( !empty ($arrUsers) )
+{
+    foreach ($arrUsers as $arrUser) {
+
+        echo '<li>
+						<a onclick="vpb_tag_this_friend(\'' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '\', \'' . $arrUser->getUsername () . '\', ' . $arrUser->getId () . ');">
+						<span class="vpb_left_tag_box"><img src="/blab/public/uploads/profile/' . $arrUser->getUsername () . '.jpg" width="40" height="40" border="0"></span>
+						<span class="vpb_left_tag_text_box">' . $arrUser->getFirstName () . ' ' . $arrUser->getLastName () . '</span>
+						<div style="clear:both;"></div>
+						</a>
+						</li>';
+    }
+}
+else
+{
+    echo 'You have not added any friends yet!';
+}
+
+echo '</ul></div>';

@@ -27,7 +27,7 @@ class PagePost extends BasePostFactory implements PostInterface
     public function __construct (Page $objPage, PostActionFactory $objPostActionFactory, UploadFactory $objUploadFactory, CommentFactory $objCommentFactory, ReviewFactory $objReviewFactory, TagUserFactory $objTagUserFactory, CommentReplyFactory $objCommentReplyFactory)
     {
         $this->objPage = $objPage;
-       parent::__construct ($objPostActionFactory, $objUploadFactory, $objCommentFactory, $objReviewFactory, $objTagUserFactory, $objCommentReplyFactory);
+        parent::__construct ($objPostActionFactory, $objUploadFactory, $objCommentFactory, $objReviewFactory, $objTagUserFactory, $objCommentReplyFactory);
     }
 
     /**
@@ -68,13 +68,15 @@ class PagePost extends BasePostFactory implements PostInterface
         return $objPost;
     }
 
-   /**
-    * 
-    * @param User $objUser
-    * @return type
-    */
-    public function getComments (User $objUser)
+    /**
+     * 
+     * @param User $objUser
+     * @return type
+     */
+    public function getComments (User $objUser, $blRead = true)
     {
+        $unreadSql = $blRead === false ? ' AND msg_id NOT IN (SELECT message_id FROM messages_read WHERE user_id = :userId) ' : '';
+
         $arrResults = $this->db->_query ("
                                         SELECT 
                                             pg.page_name AS author,
@@ -106,10 +108,16 @@ class PagePost extends BasePostFactory implements PostInterface
                                         WHERE msg_id NOT IN (SELECT post_id FROM ignored_posts WHERE user_id = :userId)
                                         AND message_type = 2
                                         AND m.uid_fk NOT IN (SELECT user_added FROM blocked_friend WHERE blocked_user = :userAdded)
+                                        {$unreadSql}
                                         ORDER BY created DESC"
                 , [':userId' => $objUser->getId (), ":pageId" => $this->objPage->getId (), ':userAdded' => $objUser->getId ()]);
 
         $arrPosts = $this->buildPostsObject ($arrResults, false, $objUser);
+
+        if ( $arrPosts !== false )
+        {
+            $this->markPostsAsRead (2, $objUser);
+        }
 
         return $arrPosts;
     }

@@ -20,7 +20,6 @@ class GroupPost extends BasePostFactory implements PostInterface
      */
     private $objGroup;
 
-
     /**
      * 
      * @param Group $objGroup
@@ -77,10 +76,13 @@ class GroupPost extends BasePostFactory implements PostInterface
     /**
      * 
      * @param User $objUser
+     * @param type $blRead
      * @return type
      */
-    public function getComments (User $objUser)
+    public function getComments (User $objUser, $blRead = true)
     {
+        $unreadSql = $blRead === false ? ' AND msg_id NOT IN (SELECT message_id FROM messages_read WHERE user_id = :userId) ' : '';
+
         $arrResults = $this->db->_query ("
                                         SELECT 
                                             CONCAT(CONCAT(u.fname, ' ' , u.lname), ' posted in ', gp.name) AS author,
@@ -112,10 +114,16 @@ class GroupPost extends BasePostFactory implements PostInterface
                                         WHERE msg_id NOT IN (SELECT post_id FROM ignored_posts WHERE user_id = :userId)
                                         AND message_type = 1
                                         AND m.uid_fk NOT IN (SELECT user_added FROM blocked_friend WHERE blocked_user = :userAdded)
+                                        {$unreadSql}
                                         ORDER BY created DESC"
                 , [':userId' => $objUser->getId (), ":groupId" => $this->objGroup->getId (), ':userAdded' => $objUser->getId ()]);
 
         $arrPosts = $this->buildPostsObject ($arrResults, false, $objUser);
+
+        if ( $arrPosts !== false )
+        {
+            $this->markPostsAsRead (1, $objUser);
+        }
 
         return $arrPosts;
     }

@@ -1,0 +1,81 @@
+<?php
+
+/**
+ * build html ordered by page category
+ * @return string
+ */
+function getPageHtml ($arrPages, $rootPath)
+{
+    if ( !empty ($arrPages) )
+    {
+
+        $arrPageData = [];
+
+        foreach ($arrPages as $key => $objPage) {
+
+            if ( !isset ($arrPageData[$objPage->getCategories ()]) )
+            {
+                $arrPageData[$objPage->getCategories ()][$key] = array();
+            }
+
+
+            if ( file_exists ($rootPath . $objPage->getFileLocation ()) )
+            {
+                $image = '<img style="width:25px; margin-right: 8px; float:left;" title="' . $objPage->getName () . '" alt="image" class="img-circle img-responsive" src="' . $objPage->getFileLocation () . '">';
+            }
+            else
+            {
+                $image = '<img style="width:25px; margin-right: 8px; float:left;" alt="image" class="img-circle img-responsive" src="/blab/public/img/avatar.gif">';
+            }
+
+            $html = '<li>
+                                    <a class="show-chat page" groupname="' . $objPage->getName () . '" groupid="' . $objPage->getUrl () . '" href="#"> 
+                                        ' . $image . '
+                                        <i class="fa fa-circle text-danger"></i> ' . $objPage->getName () . ' 
+                                    </a>
+                                </li>';
+
+            $arrPageData[$objPage->getCategories ()][$key] = $html;
+        }
+    }
+
+    return $arrPageData;
+}
+
+echo '<div style="width:100%; border-bottom: 1px dotted #CCC">';
+
+echo '<h2>Pages</h2>';
+
+$arrPageData = getPageHtml ($arrPages, $rootPath);
+
+// pages here
+if ( !empty ($arrPageData) )
+{
+    foreach ($arrPageData as $categoryId => $pageCategory) {
+        echo '<h3>' . $arrPageCategories[$categoryId]->getName () . '</h3>';
+
+        foreach ($pageCategory as $pageHtml) {
+            echo $pageHtml;
+        }
+    }
+}
+
+echo '</div>';
+
+
+
+echo '<div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
+
+                                        <h2>Page Categories</h2>
+
+                                        <ul class="list-group clear-list">';
+
+foreach ($arrPageCategories as $arrPageCategory) {
+
+    echo '<li class="list-group-item fist-item filterPageCategory" style="border-bottom:1px dotted #CCC;" id="' . $arrPageCategory->getId () . '">
+                                               ' . $arrPageCategory->getName () . '
+                                            </li>';
+}
+echo '</ul>
+
+                            </div>';

@@ -83,7 +83,7 @@ class FriendController extends ControllerBase
     {
         $this->view->disable ();
 
-        if ( empty ($_POST['friendId']) || empty($_SESSION['user']['user_id']) )
+        if ( empty ($_POST['friendId']) || empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
@@ -96,8 +96,8 @@ class FriendController extends ControllerBase
 
             $blResponse = (new FriendRequest())->acceptRequest ($objUser, $objFriend);
         } catch (Exception $ex) {
-            trigger_error($ex->getMessage(), E_USER_WARNING);
-            $this->ajaxresponse("error", $this->defaultErrrorMessage);
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
         if ( $blResponse === FALSE )
@@ -283,7 +283,12 @@ class FriendController extends ControllerBase
 
         $userId = $_SESSION['user']['user_id'];
 
-        $arrAllUsers = (new UserFactory())->getFriends (new User ($userId));
+        try {
+            $arrAllUsers = (new FriendRequest())->getFriends (new User ($userId));
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         if ( $arrAllUsers === false )
         {

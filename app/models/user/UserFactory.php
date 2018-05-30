@@ -181,73 +181,19 @@ class UserFactory
 
     /**
      * 
-     * @param User $objUser
+     * @param GroupMessage $objGroupMessage
+     * @return type
      */
-    public function getFriends (User $objUser)
+    public function getGroupChatUsers(GroupMessage $objGroupMessage)
     {
-        $arrResults = $this->db->_query ("SELECT 0 AS `status`, 
-                                            u.uid AS user_id, 
-                                            username, 
-                                            fname, 
-                                            lname, 
-                                            'add' AS friend_status 
-                                     FROM   users u 
-                                     WHERE  uid NOT IN (SELECT friend_two 
-                                                        FROM   friends 
-                                                        WHERE  friend_one = :id1) 
-                                            AND uid NOT IN (SELECT friend_one 
-                                                            FROM   friends 
-                                                            WHERE  friend_two = :id1) 
-                                     UNION 
-                                     SELECT f.status AS `status`, 
-                                            friend_two  AS user_id, 
-                                            username, 
-                                            fname, 
-                                            lname, 
-                                            'requested' AS friend_status 
-                                     FROM   friends f 
-                                            INNER JOIN users u 
-                                                    ON u.uid = friend_two 
-                                     WHERE  friend_one = :id2 
-                                            AND f.status != '2' 
-                                            AND has_read = 0 
-                                     UNION 
-                                     SELECT f.status   AS `status`, 
-                                            friend_one AS user_id, 
-                                            username, 
-                                            fname, 
-                                            lname, 
-                                            'pending'  AS friend_status 
-                                     FROM   friends f 
-                                            INNER JOIN users u 
-                                                    ON u.uid = friend_one 
-                                     WHERE  friend_two = :id3 
-                                            AND f.status = '1' 
-                                     UNION 
-                                     SELECT f.status   AS `status`, 
-                                            friend_one AS user_id, 
-                                            username, 
-                                            fname, 
-                                            lname, 
-                                            'friend'   AS friend_status 
-                                     FROM   friends f 
-                                            INNER JOIN users u 
-                                                    ON u.uid = friend_one 
-                                     WHERE  friend_two = :id4 
-                                            AND f.status = '2' ", [':id1' => $objUser->getId (), ':id2' => $objUser->getId (), ':id3' => $objUser->getId (), ':id4' => $objUser->getId ()]);
-
-        if ( $arrResults === FALSE )
-        {
-            trigger_error ("DATABASE QUERY FAILED", E_USER_WARNING);
-            return FALSE;
-        }
-
-        if ( empty ($arrResults[0]) )
-        {
-            return [];
-        }
-
-        return $arrResults;
+        $arrResults = $this->db->_query("SELECT u.* 
+                                        FROM   `group_users` gu 
+                                               INNER JOIN users u 
+                                                       ON u.username = gu.username 
+                                        WHERE  group_id = :groupId 
+                                        ORDER  BY u.username ASC ", [":groupId" => $objGroupMessage->getId ()]);
+        
+        return $this->loadObject($arrResults);
     }
 
     public function getFriendRequests (User $objUser, $page = null, $limit = 1, $searchText = null)
@@ -479,81 +425,6 @@ class UserFactory
 
         foreach ($arrResults as $arrResult) {
             $arrUsers[] = new User ($arrResult['blocked_user']);
-        }
-
-        return $arrUsers;
-    }
-
-    /**
-     * 
-     * @param type $searchText
-     * @param User $objUser
-     * @return \User|boolean
-     */
-    public function getChatUsers ($searchText = null, User $objUser)
-    {
-        $arrParams = [];
-
-        $sql = "SELECT * 
-                FROM   (SELECT u.uid, 
-                               u.username, 
-                               u.fname, 
-                               u.lname, 
-                               sent_on 
-                        FROM   chat c 
-                               INNER JOIN users u 
-                                       ON u.uid = c.sent_to 
-                        WHERE  uid NOT IN (SELECT user_added 
-                                           FROM   blocked_friend 
-                                           WHERE  blocked_user = :userId) 
-                        GROUP  BY u.uid 
-                        UNION 
-                        SELECT uid, 
-                               username, 
-                               fname, 
-                               lname, 
-                               NULL AS sent_on 
-                        FROM   users 
-                        WHERE  uid NOT IN (SELECT user_added 
-                                           FROM   blocked_friend 
-                                           WHERE  blocked_user = :userId)) AS u";
-
-        $arrParams[':userId'] = $objUser->getId ();
-
-        if ( $searchText !== null )
-        {
-            $sql .= " WHERE LOWER(fname) LIKE :username1 OR LOWER(lname) LIKE :username2 OR LOWER(username) LIKE :username3";
-            $arrParams[':username1'] = '%' . strtolower ($searchText) . '%';
-            $arrParams[':username2'] = '%' . strtolower ($searchText) . '%';
-            $arrParams[':username3'] = '%' . strtolower ($searchText) . '%';
-        }
-
-        $sql .= " GROUP BY u.uid
-                                            ORDER BY u.sent_on DESC";
-
-        $arrResults = $this->db->_query ($sql, $arrParams);
-
-        if ( $arrResults === false )
-        {
-            return false;
-        }
-
-        if ( empty ($arrResults[0]) )
-        {
-            return [];
-        }
-
-        $arrUsers = [];
-
-        foreach ($arrResults as $arrResult) {
-            $objUser = new User ($arrResult['uid']);
-            $objUser->setUsername ($arrResult['username']);
-            $objUser->setFirstName ($arrResult['fname']);
-            $objUser->setLastName ($arrResult['lname']);
-            $objUser->setDateCreated ($arrResult['sent_on']);
-            $objUser->setId ($arrResult['uid']);
-
-            $arrUsers[] = $objUser;
         }
 
         return $arrUsers;

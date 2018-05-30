@@ -1,8 +1,77 @@
 <link rel="stylesheet" type="text/css" href="/blab/public/css/pms.css">    
 <link rel="stylesheet" href="/blab/public/css/colorPicker.css">
 
+<?php
+
+function getOnlineStatusLabel (User $objUser)
+{
+    $onlineLabel = '<span class="label label-danger">Offline</span>';
+
+    if ( trim ($objUser->getLastLogin ()) !== "" )
+    {
+        $dbdate = strtotime ($objUser->getLastLogin ());
+        if ( time () - $dbdate <= 15 * 60 )
+        {
+
+            $onlineLabel = '<span class="label label-navy">Online</span>';
+        }
+        else
+        {
+            $onlineLabel = '<span class="label label-danger">Offline</span>';
+        }
+    }
+    else
+    {
+        $onlineLabel = '<span class="label label-danger">Offline</span>';
+    }
+
+    return $onlineLabel;
+}
+
+function time_elapsed_string ($datetime, $full = false)
+{
+    if ( trim ($datetime) === "" )
+    {
+        return "";
+    }
+
+    $now = new DateTime;
+    $ago = new DateTime ($datetime);
+    $diff = $now->diff ($ago);
+
+    $diff->w = floor ($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        //'i' => 'minute',
+        //'s' => 'second',
+    );
+    foreach ($string as $k => &$v) {
+        if ( $diff->$k )
+        {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        }
+        else
+        {
+            unset ($string[$k]);
+        }
+    }
+
+    if ( !$full )
+        $string = array_slice ($string, 0, 1);
+    return $string ? implode (', ', $string) . ' ago' : 'just now';
+}
+?>
+
 
 <div class="panel panel-chat" id="<?= $groupId ?>">
+
+    <a href="#" class="chatGoBack">Back</a>
 
 
     <div style="display: none;position: absolute;">
@@ -36,7 +105,47 @@
             <div id="vpb_default_message">
                 <div class="pms_right_view_inner_left">
 
-                    <div style="display:table-cell;vertical-align:middle; padding-right:10px;" id="vpb-current-group-name" onmouseover="vpb_get_user_onmouseover_data ('', '', '', '', 'group');" onmouseout="vpb_get_user_mouseout_data ('', '', '', '', 'group');"><span class="vpb_added_users_names">Vasplus</span>, <span class="vpb_added_users_names">Williams</span>, <span class="vpb_added_users_names">Patricia</span> and 3 <span class="vpb_added_users_names">others</span></div>
+                    <div style="display:table-cell;vertical-align:middle; padding-right:10px;" id="vpb-current-group-name" onmouseover="vpb_get_user_onmouseover_data ('', '', '', '', 'group');" onmouseout="vpb_get_user_mouseout_data ('', '', '', '', 'group');">
+                        <?php
+                        if ( !empty ($arrGroupUsers) )
+                        {
+                            $firstThreeUsers = array_slice ($arrGroupUsers, 0, 3);
+                            $moreCount = count ($arrGroupUsers) - 3;
+                            $userHtml = '';
+
+                            foreach ($firstThreeUsers as $key => $firstThreeUser) {
+
+                                if ( $key > 0 )
+                                {
+                                    $userHtml .= ", ";
+                                }
+
+                                $userHtml .= '<span class="vpb_added_users_names">' . $firstThreeUser->getFirstName () . ' </span>';
+                            }
+
+                            if ( $moreCount > 0 )
+                            {
+                                
+                                $userHtml .= " and {$moreCount} others ";
+                            }
+                            
+                            echo $userHtml;
+                        }
+                        elseif ( $objUser !== null )
+                        {
+                            echo '<span class="vpb_added_users_names">' . $objUser->getFirstName () . ' ' . $objUser->getLastName () . ' </span>';
+                            ?>
+                            <div style="text-align:center">
+                                <small>
+                                    Last Active:<?= time_elapsed_string ($objUser->getLastLogin (), true) ?>
+                                    <?= getOnlineStatusLabel ($objUser) ?>
+
+                                </small>
+                            </div>
+                            <?php
+                        }
+                        ?>
+                    </div>
 
                     <div id="vpb_add_more_people_button" style="display:table-cell;" class="vasplus_tooltip_icons"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Leave conversation"><div style="display:inline-block;padding-left:0px; vertical-align:middle;"><i class="fa fa-times add_more_people_hover" onclick="vpb_confirm_remove_self_from_group ('grace');"></i></div></div>
 
@@ -96,6 +205,8 @@
             </div>
         </div>
 
+
+
         <div id="v_added_u_sers" class="v_added_u_sers" style="background-color: #FFF; display: none;">
             <div class="input-group">
 
@@ -114,7 +225,33 @@
             <div style="display: none; background-color:#FFF !important; z-index: 9999999 !important;" class="dropdown open v_load_user_detail v_load_user_detail_inner_a" onmouseover="vpb_get_user_onmouseover_datas ();" onmouseout="vpb_get_user_mouseout_datas ();"> 
                 <ul class="dropdown-menu pull_pms v_load_user_detail_inner_b" style="background-color: #FFF; max-width:280px !important; min-width:280px !important; width:280px !important; margin:0px;">
                     <div class="dropdown-header v_load_user_detail_inner_c" style="background-color: #FFF; padding:0px !important;padding-top:0px !important;padding-bottom:0px !important;">
-                        <div id="vpb_display_all_users_in_group"></div>
+                        <div id="vpb_display_all_users_in_group">
+
+                            <?php
+                            if ( !empty ($arrGroupUsers) )
+                            {                                
+                                foreach ($arrGroupUsers as $arrGroupUser) {
+                                    echo '<div style="clear:both;"></div>';
+
+                                    echo '<div style="width:100%;">';
+                                        echo '<div class="vpb_msg_wraper">	
+                                              <div class="vpb_msg_wraper_photo">	
+                                               <img src="/blab/public/uploads/profile/' . $arrGroupUser->getUsername () . '.jpg" border="0">
+                                                    </div>
+                                                      <div class="vpb_msg_wraper_name">
+                                        <span class="vpb_msg_wraper_name_left">
+                                         <span>' . $arrGroupUser->getFirstName () . ' ' . $arrGroupUser->getLastName () . '</span>
+                                        </span>
+                                         <div style="clear:both;"></div>
+                                        </div>
+
+                                        ';
+                                    echo '</div>';    
+                                }
+                            }
+                            ?>
+
+                        </div>
                         <div style="clear:both;"></div>
                     </div>
                     <div style="clear:both;"></div>
@@ -224,7 +361,21 @@
     <div class="v_chat_bx_inner" id="vpb_chat_bx_inner_<?= $groupId ?>">
         <div class="panel-body">
             <div class="over-body" style="height:200px !important; overflow:auto;">
-                <?php $this->partial ("chat/viewMessage", ["arrMessages" => $arrMessages]); ?>
+
+                <?php
+                $arrParams["arrMessages"] = $arrMessages;
+
+                if ( !empty ($objPage) )
+                {
+                    $arrParams["objPage"] = $objPage;
+                }
+                elseif ( !empty ($objUser) )
+                {
+                    $arrParams["objUser"] = $objUser;
+                }
+
+                $this->partial ("chat/viewMessage", $arrParams);
+                ?>
             </div>
             <div class="clearFix"></div>
         </div>
