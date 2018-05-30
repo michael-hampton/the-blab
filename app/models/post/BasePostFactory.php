@@ -253,9 +253,9 @@ class BasePostFactory
      */
     protected function markPostsAsRead ($type, User $objUser)
     {
-        $arrParams = [];
-        
-        $sql = "SELECT * FROM messages WHERE 1=1 ";
+        $sql = "INSERT INTO messages_read (user_id, message_id, message_type)";
+
+        $sql .= "SELECT :userId AS user_id, msg_id AS message_id, message_type FROM messages WHERE 1=1 ";
 
         if ( (int) $type === 3 )
         {
@@ -270,36 +270,16 @@ class BasePostFactory
                     SELECT friend_two FROM friends WHERE friend_one = :userId AND status = '2'
                 )
             )";
-            
-            $arrParams[':userId'] = $objUser->getId();
         }
-        
-        $sql .= " AND message_type = :messageType";
-        
-        $arrParams[':messageType'] = $type;
 
-        $results = $this->db->_query ($sql, $arrParams);
+        $sql .= " AND message_type = :messageType AND msg_id NOT IN (SELECT message_id FROM messages_read WHERE user_id = :userId)";
 
-        if ( $results === false )
+        $result = $this->db->_query ($sql, [":userId" => $objUser->getId (), ":messageType" => $type]);
+
+        if ( $result === false )
         {
-            trigger_error ("db query failed", E_USER_WARNING);
+            trigger_error ("Db query failed", E_USER_WARNING);
             return false;
-        }
-        
-
-        if ( empty ($results) )
-        {
-            return [];
-        }
-
-        foreach ($results as $result) {
-            $result = $this->db->create ("messages_read", ["user_id" => $objUser->getId (), "message_id" => $result['msg_id'], "message_type" => $result['message_type']]);
-
-            if ( $result === false )
-            {
-                trigger_error ("Db query failed", E_USER_WARNING);
-                return false;
-            }
         }
 
         return true;
