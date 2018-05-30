@@ -52,7 +52,6 @@ class PostController extends ControllerBase
 
         try {
             $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-            $objUserFactory = new UserFactory();
             $objUser = new User ($_SESSION['user']['user_id']);
             $arrUserSettings = (new UserSettings ($objUser));
             $objEventFactory = new EventFactory();
