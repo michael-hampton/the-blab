@@ -269,6 +269,8 @@ class BasePostFactory
                 OR uid_fk IN (
                     SELECT friend_two FROM friends WHERE friend_one = :userId AND status = '2'
                 )
+                
+                OR post_security = 'public' 
             )";
         }
 
