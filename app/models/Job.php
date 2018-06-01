@@ -66,6 +66,30 @@ class Job
      *
      * @var type 
      */
+    private $responsibilities;
+
+    /**
+     *
+     * @var type 
+     */
+    private $perks;
+
+    /**
+     *
+     * @var type 
+     */
+    private $duration;
+
+    /**
+     *
+     * @var type 
+     */
+    private $expires;
+
+    /**
+     *
+     * @var type 
+     */
     private $validationFailures = [];
 
     /**
@@ -237,24 +261,215 @@ class Job
         $this->skills = $skills;
     }
 
+    /**
+     * 
+     * @return type
+     */
+    public function getResponsibilities ()
+    {
+        return $this->responsibilities;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getPerks ()
+    {
+        return $this->perks;
+    }
+
+    /**
+     * 
+     * @param type $responsibilities
+     */
+    public function setResponsibilities ($responsibilities)
+    {
+        $this->responsibilities = $responsibilities;
+    }
+
+    /**
+     * 
+     * @param type $perks
+     */
+    public function setPerks ($perks)
+    {
+        $this->perks = $perks;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getDuration ()
+    {
+        return $this->duration;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getExpires ()
+    {
+        return $this->expires;
+    }
+
+    /**
+     * 
+     * @param type $duration
+     */
+    public function setDuration ($duration)
+    {
+        $this->duration = $duration;
+    }
+
+    /**
+     * 
+     * @param type $expires
+     */
+    public function setExpires ($expires)
+    {
+        $this->expires = $expires;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
     private function populateObject ()
     {
-        
+        $result = $this->db->_query ("SELECT * FROM jobs WHERE job_id = :jobId", [":jobId" => $this->id]);
+
+        if ( $result === false || empty ($result) )
+        {
+            trigger_error ("Unable to populate object", E_USER_WARNING);
+            return false;
+        }
+
+        $this->title = $result[0]['title'];
+        $this->description = $result[0]['description'];
+        $this->minSalary = $result[0]['salary_min'];
+        $this->maxSalary = $result[0]['salary_max'];
+        $this->location = $result[0]['location'];
+        $this->responsibilities = $result[0]['responsibilities'];
+        $this->perks = $result[0]['perks'];
+        $this->userId = $result[0]['user_id'];
+        $this->duration = $result[0]['duration'];
+        $this->expires = $result[0]['expires'];
+        $this->pageId = $result[0]['page_id'];
+        $this->skills = $result[0]['skills'];
+
+        return true;
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     private function validate ()
     {
-        
+        if ( trim ($this->title) === "" || !is_string ($this->title) )
+        {
+            $this->validationFailures[] = "Title is a mandatory field";
+        }
+
+        if ( trim ($this->description) === "" || !is_string ($this->description) )
+        {
+            $this->validationFailures[] = "Description is a mandatory field";
+        }
+
+        if ( trim ($this->minSalary) === "" || !is_string ($this->minSalary) )
+        {
+            $this->validationFailures[] = "Minimum salary is a mandatory field";
+        }
+
+        if ( trim ($this->maxSalary) === "" || !is_string ($this->maxSalary) )
+        {
+            $this->validationFailures[] = "Maximum salary is a mandatory field";
+        }
+
+        if ( trim ($this->location) === "" || !is_string ($this->location) )
+        {
+            $this->validationFailures[] = "Location is a mandatory field";
+        }
+
+//        if ( trim ($this->responsibilities) === "" || !is_string ($this->responsibilities) )
+//        {
+//            $this->validationFailures[] = "Responsibilities is a mandatory field";
+//        }
+//        if ( trim ($this->perks) === "" || !is_string ($this->perks) )
+//        {
+//            $this->validationFailures[] = "Perks is a mandatory field";
+//        }
+
+        if ( trim ($this->duration) === "" || !is_string ($this->duration) )
+        {
+            $this->validationFailures[] = "Duration is a mandatory field";
+        }
+
+        if ( trim ($this->expires) === "" || !is_string ($this->expires) )
+        {
+            $this->validationFailures[] = "Expires is a mandatory field";
+        }
+
+        if ( count ($this->validationFailures) > 0 )
+        {
+            return false;
+        }
+
+        return true;
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     public function save ()
     {
-        
+        if ( $this->validate () === false )
+        {
+            return false;
+        }
+
+        $result = $this->db->update ("jobs", [
+            "title" => $this->title,
+            "description" => $this->description,
+            "salary_min" => $this->minSalary,
+            "salary_max" => $this->maxSalary,
+            "location" => $this->location,
+            "responsibilities" => $this->responsibilities,
+            "perks" => $this->perks,
+            "duration" => $this->duration,
+            "expires" => $this->expires,
+            "skills" => $this->skills
+                ], "job_id = :jobId", [":jobId" => $this->id]
+        );
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return true;
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     public function delete ()
     {
-        
+        $result = $this->db->delete ("jobs", "job_id = :jobId", [":jobId" => $this->id]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return true;
     }
 
 }

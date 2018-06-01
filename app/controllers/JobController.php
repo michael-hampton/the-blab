@@ -9,7 +9,7 @@ use Phalcon\Mvc\View;
 
 class JobController extends ControllerBase
 {
-    
+
     //https://github.com/sangramjagtap/job_board/tree/master/application/views
 
     public function indexAction ()
@@ -42,6 +42,17 @@ class JobController extends ControllerBase
         $maxSalary = trim ($_POST['salary_max']) !== "" ? $_POST['salary_max'] : null;
         $location = trim ($_POST['city']) !== "" ? $_POST['city'] : null;
 
+        try {
+            $arrJobs = (new JobFactory())->getJobs ($location, $minSalary, $maxSalary);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrJobs === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
 
         //$res = $this->job_model->filter_result ($data);
         //echo json_encode ($res);
@@ -90,40 +101,118 @@ class JobController extends ControllerBase
 
     public function deleteAction ()
     {
-//        $id = $_POST['id'];
-//        if ( $this->job_model->delete ($id) )
-//            $r = true;
-//        else
-//            $r = false;
-//        echo json_encode ($r);
+        if ( empty ($_POST['id']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objJob = new Job ($_POST['id']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $blResponse = $objJob->delete ();
+        ;
+
+        if ( $blResponse === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
     }
-    
-    public function addJobAction()
+
+    public function addJobAction ()
     {
         $this->view->addType = "add";
     }
-    
-    public function saveJobAction()
+
+    public function saveUpdateAction ()
     {
-        $this->view->disable();
-        
-//        [title] => test new job
-//    [company] => test
-//    [location] => 
-//    [description] => test description
-//    [responsibilities] => <ul class='bullets'><li><ul class='bullets'><li><ul class='bullets'><li><ul class='bullets'><li>responsibilities</li></ul></li></ul></li></ul></li></ul>
-//    [skills] => <ul class='bullets'><li><ul class='bullets'><li><ul class='bullets'><li><ul class='bullets'><li>skills</li></ul></li></ul></li></ul></li></ul>
-//    [perks] => <ul class='bullets'><li><ul class='bullets'><li><ul class='bullets'><li><ul class='bullets'><li>benefits</li></ul></li></ul></li></ul></li></ul>
-//    [salary_min] => 500
-//    [salary_max] => 2000
-//    [duration] => Full time
-//    [expires] => 06/28/2018
-//    [form_type] => submit
-//    [form] => 1
-        
-        echo '<pre>';
-        print_r($_POST);
-        die;
+        $this->view->disable ();
+
+        if ( !isset ($_POST['title']) ||
+                !isset ($_POST['page_id']) ||
+                !isset ($_POST['location']) ||
+                !isset ($_POST['description']) ||
+                !isset ($_POST['responsibilities']) ||
+                !isset ($_POST['skills']) ||
+                !isset ($_POST['perks']) ||
+                !isset ($_POST['salary_min']) ||
+                !isset ($_POST['salary_max']) ||
+                !isset ($_POST['duration']) ||
+                !isset ($_POST['expires']) ||
+                !isset ($_POST['id'])
+        )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objJob = new Job ($_POST['id']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $objJob->setDescription ($_POST['description']);
+        $objJob->setDuration ($_POST['duration']);
+        $objJob->setExpires ($_POST['expires']);
+        $objJob->setLocation ($_POST['location']);
+        $objJob->setMaxSalary ($_POST['salary_max']);
+        $objJob->setMinSalary ($_POST['salary_min']);
+        $objJob->setResponsibilities ($_POST['responsibilities']);
+        $objJob->setSkills ($_POST['skills']);
+        $objJob->setPerks ($_POST['perks']);
+        $objJob->setTitle ($_POST['title']);
+
+        $blResponse = $objJob->save ();
+
+        if ( $blResponse === false )
+        {
+            $this->ajaxresponse ("error", implode ("<br/>", $objJob->getValidationFailures ()));
+        }
+
+        $this->ajaxresponse ("success", "success");
+    }
+
+    public function saveJobAction ()
+    {
+        $this->view->disable ();
+
+        if ( !isset ($_POST['title']) ||
+                !isset ($_POST['page_id']) ||
+                !isset ($_POST['location']) ||
+                !isset ($_POST['description']) ||
+                !isset ($_POST['responsibilities']) ||
+                !isset ($_POST['skills']) ||
+                !isset ($_POST['perks']) ||
+                !isset ($_POST['salary_min']) ||
+                !isset ($_POST['salary_max']) ||
+                !isset ($_POST['duration']) ||
+                !isset ($_POST['expires'])
+        )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $blResponse = (new JobFactory())->createJob (
+                    $objUser, new Page ($_POST['page_id']), $_POST['title'], $_POST['description'], $_POST['salary_min'], $_POST['salary_max'], $_POST['location'], $_POST['responsibilities'], $_POST['perks'], $_POST['duration'], $_POST['expires'], $_POST['skills']
+            );
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $blResponse === false )
+        {
+            $this->ajaxresponse ("error", implode ("<br/>", $objJob->getValidationFailures ()));
+        }
+
+        $this->ajaxresponse ("success", "success");
     }
 
 }
