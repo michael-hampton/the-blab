@@ -41,18 +41,31 @@
                             <div class='filter-title'>Refine Results</div>
 
                             <div class='single-fliter'>
+                                <div class='filter-title'>Duration</div>
+                                <div class='item-group'>
+                                    <div class='single-item'>
+                                        <select id="duration" name="duration">
+                                            <option value="">Select Duration</option>
+                                            <option value="Full time">Full Time</option>
+                                            <option value="Part time">Part Time</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='single-fliter'>
                                 <div class='filter-title'>Location<i  id='clear_location' style='float: right;margin: 1px 2px;font-size: 80%;text-decoration: underline;cursor:pointer;'>Clear</i></div>
                                 <div class='item-group'>
 
-
                                     <?php
-                                    foreach ($location as $key => $val) {
+                                    foreach ($arrLocations as $key => $arrLocation) {
                                         ?>
                                         <div class='single-item'>
-                                            <input type='checkbox' name='city[]' class='location_check' id='city-<?= $key ?>' value='<?= $val ?>' <?php if ( isset ($_GET['city']) && in_array ($val, $_GET['city']) )
+                                            <input type='checkbox' name='city[]' class='location_check' id='city-<?= $key ?>' value='<?= $arrLocation['location'] ?>' <?php
+                                    if ( isset ($_GET['city']) && in_array ($arrLocations, $_GET['city']) )
                                     {
                                             ?> checked <?php } ?>>
-                                            <label for='city-<?= $key ?>'><?= $val ?></label>
+                                            <label for='city-<?= $key ?>'><?= $arrLocation['location'] ?></label>
                                         </div>
 
                                     <?php }
@@ -65,17 +78,17 @@
                                     <div class='single-item'>			
                                         <div class='sliderange'></div>
                                         <input type="hidden" name='salary_min' id="salary_min" value='<?php
-                                        if ( isset ($_GET['salary_min']) )
-                                        {
-                                            $salary_min = $_GET['salary_min'];
-                                        } echo $salary_min;
-                                        ?>' readonly>
+                                    if ( isset ($_GET['salary_min']) )
+                                    {
+                                        $salary_min = $_GET['salary_min'];
+                                    } echo $salary_min;
+                                    ?>' readonly>
                                         <input type="hidden" name='salary_max' id="salary_max" value='<?php
                                         if ( isset ($_GET['salary_max']) )
                                         {
                                             $salary_max = $_GET['salary_max'];
                                         } echo $salary_max;
-                                        ?>' readonly>
+                                    ?>' readonly>
 
                                         <div id="slider-range"></div>							 
                                     </div>
@@ -109,57 +122,27 @@
         ajax_call = $.ajax ({
             url: '/blab/job/searchJobs',
             method: 'post',
-            dataType: 'json',
             data: str,
-            success: function (res)
+            success: function (response)
             {
-                if (res.length == 0)
-                {
-                    $ ('.results').html ('No match found');
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 0)
+                    {
+
+                        showErrorMessage (objResponse.message);
+
+                    }
+
+                } catch (error) {
+                    $ (".results").html (response);
                 }
-                else
-                {
-                    //			alert(res.length);
-                    $ ('.results').html ('');
-                    if (res.length == 1)
-                    {
-                        $ ('.results').append ('<div class="row">1 result found</div>');
-                    }
-                    else
-                    {
-                        $ ('.results').append ('<div class="row">' + res.length + ' results found</div>');
-                    }
-                    for (var i = 0; i < res.length; i++)
-                    {
-                        if (res[i].description.length > 190)
-                        {
-                            res[i].description = res[i].description.slice (0, 190) + "..";
-                        }
-                        $ ('.results').append (
-                                "<div class='row single-res'>" +
-                                "	<div class='p0 col-sm-12 col-md-12'>" +
-                                "		<div class='p0 col-sm-2 col-lg-1'>" +
-                                "			<div class='job-icon'>" + res[i].title[0] + "</div></div>" +
-                                "		<div class='col-sm-10 col-lg-11'>" +
-                                "			<div>" +
-                                "				<div class='job-title '><a href='" + base_url + "jobs/view/" + res[i].job_id + "'>" + res[i].title + "</a></div>" +
-                                "				<div class='job-company'><i class='fa1 fa fa-briefcase'></i>" + res[i].company + "</div>" +
-                                "				<div class='job-description'>" + res[i].description + "</div>" +
-                                "				<div class='p0 col-sm-12 col-md-12'>" +
-                                "					<div class='p0 job-location col-xs-12 col-sm-6 col-md-3 col-lg-2'><i class='fa1 fa fa-map-marker fa-2'></i>&nbsp;" + res[i].location + "</div>" +
-                                "					<div class='p0 job-salary col-xs-12 col-sm-6 col-md-4 col-lg-3'><i class='fa1 fa fa-inr'></i>" + res[i].salary_min + " - " + res[i].salary_max + "</div>" +
-                                "					<div class='p0 job-expires col-xs-12 col-sm-6 col-md-3 col-lg-2'><i class='fa1 fa fa-clock-o'></i>" + res[i].duration + "</div>" +
-                                "					<div class='p0 job-duration col-xs-12 col-sm-6 col-md-4 col-lg-2'><i class='fa1 fa fa-hourglass-half '></i>" + res[i].expires + "</div>" +
-                                "				</div>" +
-                                "			</div>" +
-                                "		</div>" +
-                                "		</div>" +
-                                "</div>"
-                                );
-                        $ ('.results').append ("<div class='divider1'></div>");
-                    }
-                }
-            },
+            }
+            , error: function (request, status, error)
+            {
+                showErrorMessage ('Ajax request failed unexpectedly');
+            }
         });
     }
 
@@ -174,7 +157,7 @@
                 min: <?= $salary_min ?>,
                 max: <?= $salary_max ?>,
                 values: [<?= $salary_min ?>, <?= $salary_max ?>],
-                slide: function (event, ui)
+                stop: function (event, ui)
                 {
                     $ ("#salary_min").val (ui.values[ 0 ]);
                     $ ("#salary_max").val (ui.values[ 1 ]);

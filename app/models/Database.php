@@ -187,6 +187,11 @@ class Database
 
         try {
             $result = $this->run ($sql, $bind);
+            
+            if($result === false) {
+                return false;
+            }
+            
             return $result->rowCount ();
         } catch (PDOException $ex) {
             $this->log->emergency ($ex->getMessage ());

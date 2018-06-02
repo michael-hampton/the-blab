@@ -1,3 +1,5 @@
+<script src="/blab/public/js/jquery.validate.min.js"></script>
+
 <script>
     document.title = 'Post New Job';
     $ ('body').removeClass ('body-bg');
@@ -102,12 +104,60 @@
         $ ('#post_job').submit (function ()
         {
             if (!$ ('#post_job').valid ())
+            {
                 return false;
+            }
+
+            if ($.trim ($ ("#form_type").val ()) === "edit")
+            {
+                var strUrl = '/blab/job/saveUpdate';
+            }
+            else
+            {
+                var strUrl = '/blab/job/saveJob';
+            }
+
+            var formData = $ ("#post_job").serialize ();
+
+            $.post (strUrl, formData, function (response)
+            {
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 1)
+                    {
+                        alert ('The job has been created successfully');
+                        return false;
+                    }
+                    else
+                    {
+                        $ ("#v-wall-message").html ('Something went wrong whilst trying to save the job');
+                        $ ("#v-wall-alert-box").click ();
+                        return false;
+                    }
+                } catch (error) {
+                    $ ("#v-wall-message").html ('Something went wrong whilst trying to save the job');
+                    $ ("#v-wall-alert-box").click ();
+                    return false;
+                }
+            }).fail (function (xhr, ajaxOptions, theError)
+            {
+                $ ("#vpb_loading_status_updates").html (''); //Hide loading image
+                $ ("#v-wall-message").html ($ ("#general_system_error").val ());
+                $ ("#v-wall-alert-box").click ();
+                vpb_running_process = false;
+                //return false;
+            });
+
+            return false;
         });
+
         $ ('#submit_job').click (function ()
         {
             if (!$ ('#post_job').valid ())
+            {
                 return false;
+            }
         });
         $ ('#salary_min,#salary_max').keyup (function ()
         {
@@ -140,111 +190,142 @@
         <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
             <div class="form">
                 <p style=" text-align: center; color: #5182a7; font-size: 120%;" class="row"><?php
-if ( $addType == 'edit' )
-{
-    echo "Edit Job";
-}
-else
-{
-    echo "Post New Job";
-}
-?></p>
+                    if ( $addType == 'edit' )
+                    {
+                        echo "Edit Job";
+                    }
+                    else
+                    {
+                        echo "Post New Job";
+                    }
+                    ?></p>
                 <form class="post_job" name="post_job" id="post_job" method='post' action='/blab/job/saveJob'>
+
+                    <input type="hidden" id="pageId" name="pageId" value="test_tamara">
+
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Job Title:</p>
-                        <input type="text" name='title' id='title' class='form-control' placeholder="Job Title"  value="<?php if ( $addType == 'edit' )
-                    {
-   ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $edit->title)); ?><?php } ?>"/>
+                        <input type="text" name='title' id='title' class='form-control' placeholder="Job Title"  value="<?php
+                               if ( $addType == 'edit' )
+                               {
+                                   echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $objJob->getTitle ()));
+                                   ?><?php }
+                               ?>"/>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Company Name:</p>
-                        <input type="text" name='company' id='company' class='form-control' placeholder="Company Name"  value="<?php if ( $addType == 'edit' )
-                           {
-                               ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $edit->company)); ?><?php } ?>"/>
+                        <input type="text" name='company' id='company' class='form-control' placeholder="Company Name"  value="<?php
+                               if ( $addType == 'edit' )
+                               {
+                                   echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $objJob->getPageName ()));
+                               }
+                               ?>"/>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Location:</p>
-                        <select name='location' id='location' class='form-control'>
-                            <option value=''>Select Location</option>
-                                    <?php foreach ($location as $key => $val) { ?>
-                                <option value='<?= $val ?>' <?php if ( $addType == 'edit' && $location == $val )
-                                    {
-                                        ?> selected<?php } ?> ><?= $val ?></option>
-<?php } ?>
-                        </select>
+                        <input type="text" name='location' id='location' class='form-control' value = "<?php
+                               if ( $addType == 'edit' )
+                               {
+                                   echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $objJob->getLocation ()));
+                               }
+                               ?>"/>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Job Description:</p>
-                        <textarea rows='3' name='description' id='description' class='form-control' placeholder="add new description on new line" ><?php if ( $addType == 'edit' )
-{
-    ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>", "\n"), array("", "", "", "", "\n"), $edit->description)); ?><?php } ?></textarea>
+                        <textarea rows='3' name='description' id='description' class='form-control' placeholder="add new description on new line" ><?php
+                            if ( $addType == 'edit' )
+                            {
+                                echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>", "\n"), array("", "", "", "", "\n"), $objJob->getDescription ()));
+                            }
+                            ?></textarea>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Responsibilities:</p>
-                        <textarea rows='3' name='responsibilities' id='responsibilities' class='form-control' placeholder="add new responsibilities on new line"><?php if ( $addType == 'edit' )
-{
-    ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>", "\n"), array("", "", "", "", "\n"), $edit->responsibilities)); ?><?php } ?></textarea>
+                        <textarea rows='3' name='responsibilities' id='responsibilities' class='form-control' placeholder="add new responsibilities on new line"><?php
+                            if ( $addType == 'edit' )
+                            {
+                                echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>", "\n"), array("", "", "", "", "\n"), $objJob->getResponsibilities ()));
+                            }
+                            ?></textarea>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Skills Required:</p>
-                        <textarea rows='3' name='skills' id='skills' class='form-control'  placeholder="add new skill on new line"><?php if ( $addType == 'edit' )
-{
-    ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>", "\n"), array("", "", "", "", "\n"), $edit->skills)); ?><?php } ?></textarea>
+                        <textarea rows='3' name='skills' id='skills' class='form-control'  placeholder="add new skill on new line"><?php
+                            if ( $addType == 'edit' )
+                            {
+                                echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>", "\n"), array("", "", "", "", "\n"), $objJob->getSkills ()));
+                            }
+                            ?></textarea>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Perks & Benefits:</p>
-                        <textarea rows='3' name='perks' id='perks' class='form-control'  placeholder="add new benefit on new line"><?php if ( $addType == 'edit' )
+                        <textarea rows='3' name='perks' id='perks' class='form-control'  placeholder="add new benefit on new line"><?php
+                            if ( $addType == 'edit' )
                             {
-    ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>", "\n"), array("", "", "", "", "\n"), $edit->perks)); ?><?php } ?></textarea>
+                                echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>", "\n"), array("", "", "", "", "\n"), $objJob->getPerks ()));
+                            }
+                            ?></textarea>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Compensation per annum(in rupees):</p>
-                        <div class='col-sm-6' style='padding: 0;padding-right: 10px'><input type="number" name='salary_min' id='salary_min' class='form-control' placeholder="min" value="<?php if ( $addType == 'edit' )
-                                                                                        {
-                                                                                            ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $edit->salary_min)); ?><?php } ?>"/></div>
-                        <div class='col-sm-6' style='padding: 0;padding-left: 10px'><input type="number" name='salary_max' id='salary_max' class='form-control' placeholder="max"  value="<?php if ( $addType == 'edit' )
-                                                                                        {
-                                                                                            ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $edit->salary_max)); ?><?php } ?>"/></div>
+                        <div class='col-sm-6' style='padding: 0;padding-right: 10px'><input type="number" name='salary_min' id='salary_min' class='form-control' placeholder="min" value="<?php
+                            if ( $addType == 'edit' )
+                            {
+                                echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $objJob->getMinSalary ()));
+                            }
+                            ?>"/></div>
+                        <div class='col-sm-6' style='padding: 0;padding-left: 10px'><input type="number" name='salary_max' id='salary_max' class='form-control' placeholder="max"  value="<?php
+                            if ( $addType == 'edit' )
+                            {
+                                echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $objJob->getMaxSalary ()));
+                            }
+                            ?>"/></div>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Job Duration:</p>
                         <select  name='duration' id='duration' class='form-control' >
-                            <option value='Full time' <?php if ( $addType == 'edit' && $edit->duration == 'Full time' )
-                                    {
-    ?> selected<?php } ?>>Full time</option>
-                            <option value='Part time'<?php if ( $addType == 'edit' && $edit->duration == 'Part time' )
-                           {
-    ?> selected<?php } ?>>Part time</option>
+                            <option value='Full time' <?php
+                    if ( $addType == 'edit' && trim ($objJob->getDuration ()) == 'Full time' )
+                    {
+                        ?> selected<?php } ?>>Full time</option>
+                            <option value='Part time'<?php
+                    if ( $addType == 'edit' && trim ($objJob->getDuration ()) == 'Part time' )
+                    {
+                        ?> selected<?php } ?>>Part time</option>
                         </select>
                     </div>
 
                     <div class="form-group row">
                         <p style='text-align:left;color: #e78217;font-size: 16px;'>Expiry Date</p>
-                        <input type="text" name='expires' id='expires' class='datepicker form-control' placeholder="Expiry Date"  value="<?php if ( $addType == 'edit' )
+                        <input type="text" name='expires' id='expires' class='datepicker form-control' placeholder="Expiry Date"  value="<?php
+                    if ( $addType == 'edit' )
                     {
-                        ?><?php echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $edit->expires)); ?><?php } ?>"/> 
+                        echo strip_tags (str_replace (array("<ul class='bullets'>", "</ul>", "<li>", "</li>"), array("", "", "", ""), $objJob->getExpires ()));
+                    }
+                    ?>"/> 
                     </div>
 
-<?php if ( $addType == 'edit' )
+<?php
+if ( $addType == 'edit' )
 {
     ?> 
-                        <input type='hidden' name='form_type' value='edit'> 
-                        <input type="hidden" name="job_id" value="<?= $jobId ?>">
+                        <input type='hidden' id="form_type" name='form_type' value='edit'> 
+                        <input type="hidden" name="job_id" value="<?= $objJob->getId () ?>">
                         <button id='register'>SAVE CHANGES</button>
-<?php
+    <?php
 }
 else
 {
     ?> 
-                        <input type='hidden' name='form_type' value='submit'> 
+                        <input type='hidden' id="form_type" name='form_type' value='submit'> 
                         <button type='submit' id='submit_job'>SUBMIT</button>
 <?php } ?>
                     <input type='hidden' name='form' value='1'>

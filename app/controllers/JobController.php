@@ -22,28 +22,48 @@ class JobController extends ControllerBase
         $this->view->data = $data;
     }
 
+    /**
+     * list all jobs
+     */
     public function getJobsAction ()
     {
-        $this->view->location = array('Mumbai', 'Chennai', 'Bangalore', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad', 'New Delhi', 'Chandigarh', 'Jaipur', 'Surat', 'Gurgaon', 'Noida');
-        $this->view->salary_min = 50;
-        $this->view->salary_max = 500;
+        $objJobFactory = new JobFactory();
+
+        $arrSalaryRange = $objJobFactory->getSalaryRange ();
+
+        if ( !empty ($arrSalaryRange) )
+        {
+            $this->view->salary_min = $arrSalaryRange[0]['min'];
+            $this->view->salary_max = $arrSalaryRange[0]['max'];
+        }
+
+        $arrLocations = $objJobFactory->getLocations ();
+
+        $this->view->arrLocations = $arrLocations;
     }
 
     /* Search & filter */
 
     public function searchJobsAction ()
     {
-        if ( empty ($_POST['city']) || empty ($_POST['salary_min']) || empty ($_POST['salary_max']) )
+        $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
+
+        if ( !isset ($_POST['salary_min']) || !isset ($_POST['salary_max']) || !isset ($_POST['duration']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
         $minSalary = trim ($_POST['salary_min']) !== "" ? $_POST['salary_min'] : null;
         $maxSalary = trim ($_POST['salary_max']) !== "" ? $_POST['salary_max'] : null;
-        $location = trim ($_POST['city']) !== "" ? $_POST['city'] : null;
+        $location = isset ($_POST['city']) && trim ($_POST['city']) !== "" ? $_POST['city'] : null;
+        $duration = isset ($_POST['duration']) && trim ($_POST['duration']) !== "" ? $_POST['duration'] : null;
 
         try {
-            $arrJobs = (new JobFactory())->getJobs ($location, $minSalary, $maxSalary);
+
+            $objPage = isset ($_POST['pageId']) && trim ($_POST['pageId']) !== "" ? new Page ($_POST['pageId']) : null;
+
+            //(Page $objPage = null, $locations = null, $salaryMin = null, $salaryMax = null, $duration = null)
+            $arrJobs = (new JobFactory())->getJobs ($objPage, $location, $minSalary, $maxSalary, $duration);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -54,25 +74,24 @@ class JobController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        //$res = $this->job_model->filter_result ($data);
-        //echo json_encode ($res);
+        $this->view->arrJobs = $arrJobs;
     }
 
-    /* View single job- full screen */
-
-    public function viewAction ()
+    /**
+     *  View single job- full screen
+     * @param type $id
+     */
+    public function viewAction ($id)
     {
-//		if($this->uri->segment(3))
-//		{			
-//			$job_id = $this->uri->segment(3);	
-//			$data = $this->job_model->get_job($job_id);
-//			$data = (array) $data;
-//			$data['tab'] = 'SINGLE JOB';
-//			$this->load->view('header',$data);
-//			$this->load->view('single_job',$data);
-//		}
-//		else
-//			redirect('jobs');
+
+        try {
+            $objJob = new Job ($id);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->objJob = $objJob;
     }
 
     public function homeAction ()
@@ -80,21 +99,20 @@ class JobController extends ControllerBase
         
     }
 
-    /* Open job form in edit mode */
-
-    public function editAction ()
+    /**
+     * Open job form in edit mode
+     * @param type $id
+     */
+    public function editAction ($id)
     {
-//        $data['tab'] = 'EDIT';
-//        if ( $this->session->userdata ('user') && $this->uri->segment (3) && $this->job_model->validate_author ($this->uri->segment (3)) )
-//        {
-//            $data['edit'] = $this->job_model->get_job ($this->uri->segment (3));
-//            $data['location'] = array('Mumbai', 'Chennai', 'Bangalore', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad', 'New Delhi', 'Chandigarh', 'Jaipur', 'Surat', 'Gurgaon', 'Noida');
-//            sort ($data['location']);
-//            $this->load->view ('header', $data);
-//            $this->load->view ('post_job', $data);
-//        }
-//        else
-//            redirect (base_url ());
+        try {
+            $objJob = new Job ($id);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->partial ("job/addJob", ["objJob" => $objJob, "addType" => "edit"]);
     }
 
     /* Delete job */
@@ -114,7 +132,6 @@ class JobController extends ControllerBase
         }
 
         $blResponse = $objJob->delete ();
-        ;
 
         if ( $blResponse === false )
         {
@@ -134,7 +151,7 @@ class JobController extends ControllerBase
         $this->view->disable ();
 
         if ( !isset ($_POST['title']) ||
-                !isset ($_POST['page_id']) ||
+                !isset ($_POST['pageId']) ||
                 !isset ($_POST['location']) ||
                 !isset ($_POST['description']) ||
                 !isset ($_POST['responsibilities']) ||
@@ -144,14 +161,14 @@ class JobController extends ControllerBase
                 !isset ($_POST['salary_max']) ||
                 !isset ($_POST['duration']) ||
                 !isset ($_POST['expires']) ||
-                !isset ($_POST['id'])
+                !isset ($_POST['job_id'])
         )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
+        
         try {
-            $objJob = new Job ($_POST['id']);
+            $objJob = new Job ($_POST['job_id']);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -183,7 +200,7 @@ class JobController extends ControllerBase
         $this->view->disable ();
 
         if ( !isset ($_POST['title']) ||
-                !isset ($_POST['page_id']) ||
+                !isset ($_POST['pageId']) ||
                 !isset ($_POST['location']) ||
                 !isset ($_POST['description']) ||
                 !isset ($_POST['responsibilities']) ||
@@ -198,18 +215,24 @@ class JobController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
         try {
-            $blResponse = (new JobFactory())->createJob (
-                    $objUser, new Page ($_POST['page_id']), $_POST['title'], $_POST['description'], $_POST['salary_min'], $_POST['salary_max'], $_POST['location'], $_POST['responsibilities'], $_POST['perks'], $_POST['duration'], $_POST['expires'], $_POST['skills']
+            $objJobFactory = new JobFactory();
+            $objJob = $objJobFactory->createJob (
+                    new User ($_SESSION['user']['user_id']), new Page ('test_tamara'), $_POST['title'], $_POST['description'], $_POST['salary_min'], $_POST['salary_max'], $_POST['location'], $_POST['responsibilities'], $_POST['perks'], $_POST['duration'], $_POST['expires'], $_POST['skills']
             );
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( $blResponse === false )
+        if ( $objJob === false )
         {
-            $this->ajaxresponse ("error", implode ("<br/>", $objJob->getValidationFailures ()));
+            $this->ajaxresponse ("error", implode ("<br/>", $objJobFactory->getValidationFailures ()));
         }
 
         $this->ajaxresponse ("success", "success");

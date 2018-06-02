@@ -119,7 +119,8 @@ class JobFactory
      * @param type $perks
      * @param type $duration
      * @param type $expires
-     * @return boolean
+     * @param type $skills
+     * @return \Job|boolean
      */
     public function createJob (User $objUser, Page $objPage, $title, $description, $salaryMin, $salaryMax, $location, $responsibilities, $perks, $duration, $expires, $skills)
     {
@@ -139,7 +140,7 @@ class JobFactory
             "responsibilities" => $responsibilities,
             "perks" => $perks,
             "duration" => $duration,
-            "expires" => $expires,
+            "expires" => date ("Y-m-d", strtotime ($expires)),
             "skills" => $skills
                 ]
         );
@@ -150,7 +151,7 @@ class JobFactory
             return false;
         }
 
-        return true;
+        return new Job ($result);
     }
 
     /**
@@ -160,21 +161,61 @@ class JobFactory
      * @param type $salaryMax
      * @return boolean|array
      */
-    public function getJobs ($location = null, $salaryMin = null, $salaryMax = null)
+    public function getJobs (Page $objPage = null, $locations = null, $salaryMin = null, $salaryMax = null, $duration = null)
     {
+        $arrParams = [];
 
-        if ( $location !== null )
+        $sql = "SELECT j.*, p.page_name FROM jobs j
+                INNER JOIN page p ON p.id = j.page_id
+                WHERE is_active = 1";
+
+        if ( $objPage !== null )
         {
-            
+            $sql .= " AND page_id = :pageId";
+            $arrParams[":pageId"] = $objPage->getId ();
+        }
+
+        if ( $locations !== null )
+        {
+            $sql .= " AND LOCATION IN(";
+
+            foreach ($locations as $key => $location) {
+                $sql .= ":location" . $key . ",";
+                $arrParams[":location" . $key] = $location;
+            }
+
+            $sql = rtrim ($sql, ",");
+
+            $sql .= ")";
         }
 
         if ( $salaryMin !== null && $salaryMax !== null )
         {
-            
+            $sql .= " AND salary_min >= :minSalary AND salary_max <= :maxSalary";
+            $arrParams[":minSalary"] = $salaryMin;
+            $arrParams[":maxSalary"] = $salaryMax;
         }
 
-        $arrResults = "";
+        if ( $duration !== null )
+        {
+            $sql .= " AND duration = :duration";
+            $arrParams[":duration"] = $duration;
+        }
 
+        $sql .= " ORDER BY title ASC";
+
+        $arrResults = $this->db->_query ($sql, $arrParams);
+
+        return $this->loadObject ($arrResults);
+    }
+
+    /**
+     * 
+     * @param type $arrResults
+     * @return \Job|boolean
+     */
+    private function loadObject ($arrResults)
+    {
         if ( $arrResults === false )
         {
             trigger_error ("Db query failed", E_USER_WARNING);
@@ -189,20 +230,59 @@ class JobFactory
         $arrJobs = [];
 
         foreach ($arrResults as $arrResult) {
-            
+            $objJob = new Job ($arrResult['id']);
+            $objJob->setDescription ($arrResult['description']);
+            $objJob->setDuration ($arrResult['duration']);
+            $objJob->setExpires ($arrResult['expires']);
+            $objJob->setLocation ($arrResult['location']);
+            $objJob->setMaxSalary ($arrResult['salary_max']);
+            $objJob->setMinSalary ($arrResult['salary_min']);
+            $objJob->setPerks ($arrResult['perks']);
+            $objJob->setResponsibilities ($arrResult['responsibilities']);
+            $objJob->setSkills ($arrResult['skills']);
+            $objJob->setTitle ($arrResult['title']);
+            $objJob->setUserId ($arrResult['user_id']);
+            $objJob->setPageId ($arrResult['page_id']);
+            $objJob->setPageName ($arrResult['page_name']);
+
+            $arrJobs[] = $objJob;
         }
 
         return $arrJobs;
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     public function getSalaryRange ()
     {
-        
+        $arrResult = $this->db->_query ("SELECT MIN(salary_min) AS min, MAX(salary_max) AS max FROM jobs");
+
+        if ( $arrResult === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return $arrResult;
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     public function getLocations ()
     {
-        
+        $arrResult = $this->db->_query ("SELECT location FROM jobs");
+
+        if ( $arrResult === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return $arrResult;
     }
 
 }

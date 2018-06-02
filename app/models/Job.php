@@ -90,6 +90,18 @@ class Job
      *
      * @var type 
      */
+    private $pageId;
+
+    /**
+     *
+     * @var type 
+     */
+    private $pageName;
+
+    /**
+     *
+     * @var type 
+     */
     private $validationFailures = [];
 
     /**
@@ -335,11 +347,49 @@ class Job
 
     /**
      * 
+     * @return type
+     */
+    public function getPageId ()
+    {
+        return $this->pageId;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getPageName ()
+    {
+        return $this->pageName;
+    }
+
+    /**
+     * 
+     * @param type $pageId
+     */
+    public function setPageId ($pageId)
+    {
+        $this->pageId = $pageId;
+    }
+
+    /**
+     * 
+     * @param type $pageName
+     */
+    public function setPageName ($pageName)
+    {
+        $this->pageName = $pageName;
+    }
+
+    /**
+     * 
      * @return boolean
      */
     private function populateObject ()
     {
-        $result = $this->db->_query ("SELECT * FROM jobs WHERE job_id = :jobId", [":jobId" => $this->id]);
+        $result = $this->db->_query ("SELECT j.*, p.page_name FROM jobs j
+                                    INNER JOIN page p ON p.id = j.page_id
+                                    WHERE j.id = :jobId", [":jobId" => $this->id]);
 
         if ( $result === false || empty ($result) )
         {
@@ -359,6 +409,8 @@ class Job
         $this->expires = $result[0]['expires'];
         $this->pageId = $result[0]['page_id'];
         $this->skills = $result[0]['skills'];
+        $this->pageId = $result[0]['page_id'];
+        $this->pageName = $result[0]['page_name'];
 
         return true;
     }
@@ -443,7 +495,7 @@ class Job
             "duration" => $this->duration,
             "expires" => $this->expires,
             "skills" => $this->skills
-                ], "job_id = :jobId", [":jobId" => $this->id]
+                ], "id = :jobId", [":jobId" => $this->id]
         );
 
         if ( $result === false )
@@ -461,7 +513,7 @@ class Job
      */
     public function delete ()
     {
-        $result = $this->db->delete ("jobs", "job_id = :jobId", [":jobId" => $this->id]);
+        $result = $this->db->update ("jobs", ["is_active" => 0], "id = :jobId", [":jobId" => $this->id]);
 
         if ( $result === false )
         {
