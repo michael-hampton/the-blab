@@ -1,33 +1,89 @@
 <script>
-    document.title = '<?= $title ?> - Job Board';
+    //document.title = '<?= $title ?> - Job Board';
     $ ('body').removeClass ('body-bg');
     $ ('body').addClass ('body-bc');
     $ ('header').removeClass ('shadow');
     $ (document).ready (function ()
     {
+        $ (".ApplyForJob").on ("click", function ()
+        {
+            $ ("#jobApplicationModal").modal ("show");
+        });
+
+        $ ("#saveApplication").on ("click", function ()
+        {
+            var applicationText = $ ("#applicationText").val ();
+
+            if (!applicationText)
+            {
+                alert ("You must enter some text");
+                return false;
+            }
+
+            var applicationId = $ ("#applicationId").val ();
+
+            if (!applicationId)
+            {
+                alert ("Invalid application id");
+                return false;
+            }
+
+            $.post ('/blab/job/saveApplication', {"applicationText": applicationText, "applicationId": applicationId}, function (response)
+            {
+
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 0)
+                    {
+                        $ ("#v-wall-message").html (objResponse.message);
+                        $ ("#v-wall-alert-box").click ();
+                        return false;
+                    }
+                    else
+                    {
+                        alert ("The application has been sent successfully");
+                    }
+                } catch (error) {
+                    $ ("#v-wall-message").html ('The ajax request ended unexpectedly');
+                    $ ("#v-wall-alert-box").click ();
+                }
+            });
+        });
+
         /*Edit job*/
         $ ('.edit-job').click (function ()
         {
-            window.location = base_url + 'jobs/edit/' +<?= $job_id ?>;
+            window.location = '/blab/job/edit/' +<?= $objJob->getId () ?>;
         });
+
         /*Delete job on confirm*/
         $ ('.delete-job').click (function ()
         {
-            var r = confirm ("Are you sure you want delete this job?");
-            if (r == true)
+            swal ({
+                title: "Are you sure?",
+                text: "You will not be able to recover this job!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            }, function ()
             {
                 $.ajax ({
                     url: '/blab/job/delete',
                     type: 'post',
                     dataType: 'json',
-                    data: {id: '<?= $job_id ?>'},
+                    data: {id: '<?= $objJob->getId () ?>'},
                     success: function (res)
                     {
-                        alert ('This job hase been deleted successfully.');
-                        window.location = base_url;
-                    },
+                        swal ("Deleted!", "The job has been deleted.", "success");
+                    }, error: function (request, status, error)
+                    {
+                        showErrorMessage ('Ajax request failed unexpectedly');
+                    }
                 });
-            }
+            });
         });
     });
 </script>
@@ -61,37 +117,39 @@
             <div class='  col-sm-1 col-md-1 col-lg-1'></div>
             <div class='job-section  col-sm-10 col-md-10 col-lg-10'>
                 <?php
-                if ( isset ($title) )
+                if ( !empty ($objJob) )
                 {
-                    if ( isset ($created_by) && isset ($_SESSION['user']['user_id']) )
+                    if ( trim ($objJob->getUserId ()) !== "" && isset ($_SESSION['user']['user_id']) )
                     {
-                        if ( $created_by == $this->session->userdata ('user')->user_id )
+                        if ( (int) $objJob->getUserId () === (int) $_SESSION['user']['user_id'] )
                         {
                             ?>		
                             <div style='margin: -5vh;float: right;position: relative;'>
                                 <i class='fa1 fa fa-pencil actions edit-job' title='Edit this job'></i>
                                 <i class='fa1 fa fa-trash actions delete-job'  title='Delete this job'></i>
                             </div>
-        <?php }
-    } ?>
+                            <?php
+                        }
+                    }
+                    ?>
                     <div class='row'>
                         <div class='p0 col-sm-12 col-md-12'>
                             <div class='p0 col-sm-2 col-lg-1'>
-                                <div class='job-icon'><?php echo ucfirst ($title[0]); ?></div></div>
+                                <div class='job-icon'><?php echo ucfirst ($objJob->getTitle ()); ?></div></div>
                             <div class='col-sm-10 col-lg-11'>
                                 <div>
-                                    <div class='job-title '><?= $title ?></div>
-                                    <div class='job-company'><i class='fa1 fa fa-briefcase'></i><?= $company ?></div>
+                                    <div class='job-title '><?= $objJob->getTitle () ?></div>
+                                    <div class='job-company'><i class='fa1 fa fa-briefcase'></i><?= $objJob->getPageName () ?></div>
                                     <div class='p0 col-sm-12 col-md-12'>
-                                        <div class='p0 job-location col-sm-5 col-md-2 col-lg-2'><i class='fa1 fa fa-map-marker fa-2'></i>&nbsp;<?= $location ?></div>
-                                        <div class='p0 job-salary col-sm-5 col-md-9 col-lg-10'><i class='fa1 fa fa-inr'></i><?= $salary_min ?> - <?= $salary_max ?></div>
+                                        <div class='p0 job-location col-sm-5 col-md-2 col-lg-2'><i class='fa1 fa fa-map-marker fa-2'></i>&nbsp;<?= $objJob->getLocation () ?></div>
+                                        <div class='p0 job-salary col-sm-5 col-md-9 col-lg-10'><i class='fa1 fa fa-inr'></i><?= $objJob->getMinSalary () ?> - <?= $objJob->getMaxSalary () ?></div>
 
                                     </div>
                                     <div class='p0 col-sm-12 col-md-12'>
-                                        <div class='p0 job-expires col-sm-5 col-md-2 col-lg-2'><i class='fa1 fa fa-clock-o'></i><?= $duration ?></div>
-                                        <div class='p0 job-duration col-sm-5 col-md-9 col-lg-10'><i class='fa1 fa fa-hourglass-half '></i><?= $expires ?></div>
+                                        <div class='p0 job-expires col-sm-5 col-md-2 col-lg-2'><i class='fa1 fa fa-clock-o'></i><?= $objJob->getDuration () ?></div>
+                                        <div class='p0 job-duration col-sm-5 col-md-9 col-lg-10'><i class='fa1 fa fa-hourglass-half '></i><?= $objJob->getExpires () ?></div>
                                     </div>
-                                    <div class='p0 job-created_by col-sm-12 col-md-12'><i class='fa1 fa fa-user'></i><?= $name ?></div>		
+                                    <div class='p0 job-created_by col-sm-12 col-md-12'><i class='fa1 fa fa-user'></i><?= $objJob->getPageName () ?></div>		
                                 </div>
                             </div>
                         </div>
@@ -102,22 +160,53 @@
                         <div class='p0 col-sm-1 col-lg-1'></div>
                         <div class='col-sm-11 col-lg-11'>
                             <div class='new-point'>Job Description:</div>
-                            <div class='job-description'><?= $description ?></div>
+                            <div class='job-description'><?= $objJob->getDescription () ?></div>
                             <div class='new-point'>Job Responsibilities:</div>
-                            <div class='pre-wrap job-responsibilities'><?= $responsibilities ?></div>
+                            <div class='pre-wrap job-responsibilities'><?= $objJob->getResponsibilities () ?></div>
                             <div class='new-point'>Skills & Expertise :</div>
-                            <div class='pre-wrap job-skills'><?= $skills ?></div>
+                            <div class='pre-wrap job-skills'><?= $objJob->getSkills () ?></div>
                             <div class='new-point'>Perks & Benefits:</div>
-                            <div class='pre-wrap job-perks'><?= $perks ?></div>
+                            <div class='pre-wrap job-perks'><?= $objJob->getPerks () ?></div>
                         </div>
                     </div>
-<?php }
-else
-{
-    echo "<div style='text-align: center;font-size: 120%;color: #585755;'>No data found</div>";
-} ?>
+
+                    <button type="button" class="btn btn-primary btn-sm ApplyForJob">Apply</button>
+                    <?php
+                }
+                else
+                {
+                    echo "<div style='text-align: center;font-size: 120%;color: #585755;'>No data found</div>";
+                }
+                ?>
             </div>
             <div class=' col-sm-1 col-md-1 col-lg-1'></div>
         </div>
     </div>
 </section>
+
+<div class="modal inmodal" id="jobApplicationModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <i class="fa fa-laptop modal-icon"></i>
+                <h4 class="modal-title">Apply for job</h4>
+<!--                <small class="font-bold">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</small>-->
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="applicationId" name="applicationId" value="<?= $objJob->getId () ?>">
+<!--                <p><strong>Lorem Ipsum is simply dummy</strong> text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
+                    printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
+                    remaining essentially unchanged.</p>-->
+                <div class="form-group">
+                    <label>Why are you applying for this job?</label> 
+                    <textarea id="applicationText" name="applicationText" placeholder="What can you bring to this job" class="form-control"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                <button type="button" id="saveApplication" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+

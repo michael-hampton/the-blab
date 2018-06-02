@@ -59,6 +59,7 @@
 
                                 <span class="group_menu_wrapper" onclick="vpb_load_page_photos ('<?= $objPage->getName () ?>');">Photos</span>
                                 <span class="group_menu_wrapper" onclick="vpb_load_page_reviews ('<?= $objPage->getUrl () ?>');">Reviews</span>
+                                <span class="group_menu_wrapper" onclick="vpb_load_jobs ('<?= $objPage->getUrl () ?>');">Jobs</span>
 
                                 <span id="g_videos" class="group_menu_wrapper" onclick="vpb_show_page_videos ();">Videos</span>
 
@@ -111,30 +112,31 @@
 
 
                                 <?php
-           if ( (int) $objPage->getUserId () === (int) $_SESSION['user']['user_id'] ) {
-          echo '<a class="btn btn-success" href="/blab/inbox/inbox/' . $objPage->getUrl () .'">Inbox</a>';
-
-          
-
-          } else { ?>
-               <div style="width:100%; margin-top: 12px;">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sendPageMessage">
-                                        Send Message
-                                    </button>
-
-                                    <?php
-                                    if ( trim ($objPage->getTelephoneNo ()) !== "" )
-                                    {
-                                        echo '<a class="btn btn-success" href="tel:' . trim ($objPage->getTelephoneNo ()) . '">Call</a>';
-                                    }
+                                if ( (int) $objPage->getUserId () === (int) $_SESSION['user']['user_id'] )
+                                {
+                                    echo '<a class="btn btn-success" href="/blab/inbox/inbox/' . $objPage->getUrl () . '">Inbox</a>';
+                                }
+                                else
+                                {
                                     ?>
-                                </div>
-           <?php
-           }
-          ?>
+                                    <div style="width:100%; margin-top: 12px;">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sendPageMessage">
+                                            Send Message
+                                        </button>
 
-                               
-                        
+                                        <?php
+                                        if ( trim ($objPage->getTelephoneNo ()) !== "" )
+                                        {
+                                            echo '<a class="btn btn-success" href="tel:' . trim ($objPage->getTelephoneNo ()) . '">Call</a>';
+                                        }
+                                        ?>
+                                    </div>
+                                    <?php
+                                }
+                                ?>
+
+
+
 
 
                             </div>
@@ -189,7 +191,7 @@
                 ?>
 
                 <div class="row">
-                    <?php //$this->partial ("templates/sortingBox");       ?>
+<?php //$this->partial ("templates/sortingBox");        ?>
                 </div>
 
 
@@ -224,6 +226,21 @@
             </div>
             <!-- Display this Page Group Videos Ends -->
 
+            <!-- Display this Page Jobs Starts -->
+            <div class="vmiddle_other" id="vasplus_group_page_jobs">
+                <div class="vmiddle_other_title vprofile_o_title">
+                    <div style="float:left;">Jobs · <span class="vtotals"></span></div>
+                    <div style="float:right; font-weight:normal !important; font-size:13px !important;">
+                        <button type="button" class="close vasplus_tooltip_photo_e" style="margin:0px !important;" title="Close" onClick="vpb_show_status_updates ();">×</button>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+                
+                <div id="vpb_get_all_the_groups_jobs" style="padding:10px;">
+                    
+                </div>
+            </div>
+
             <!-- Display this Page Group Reviews Starts -->
             <div class="vmiddle_other" id="vasplus_group_page_reviews">
                 <div class="vmiddle_other_title vprofile_o_title">
@@ -235,7 +252,7 @@
                 </div>
 
 
-                <div id="vpb_get_all_the_groups_videos" style="padding:10px;">
+                <div id="vpb_get_all_the_groups_reviews" style="padding:10px;">
                     <h3>Add Review</h3>
 
                     <div class='movie_choice'>
@@ -328,16 +345,16 @@
 
         </div>
 
-       
 
 
-<script src="/blab/public/js/geocomplete.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1COtE7cJxfGxNWiTjEgtSNhbvDBCiiqQ&libraries=places"></script>
-<script src="/blab/public/js/geocomplete.js"></script>
-<script src="/blab/public/js/newsFeed.js"></script>
-<script src="/blab/public/js/page.js"></script>
 
-<script>
+        <script src="/blab/public/js/geocomplete.js"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA1COtE7cJxfGxNWiTjEgtSNhbvDBCiiqQ&libraries=places"></script>
+        <script src="/blab/public/js/geocomplete.js"></script>
+        <script src="/blab/public/js/newsFeed.js"></script>
+        <script src="/blab/public/js/page.js"></script>
+
+        <script>
 
                             var lat = '<?= $lat ?>';
                             var lng = '<?= $lng ?>';
@@ -350,13 +367,13 @@
                             var selectedImageId = groupId;
 
 
-try {
-success (lat, lng);
-} catch(error) {
-//alert(error);
-}
+                            try {
+                                success (lat, lng);
+                            } catch (error) {
+                                //alert(error);
+                            }
 
-                            
+
 
                             function success (lat, lng)
                             {
@@ -429,45 +446,45 @@ success (lat, lng);
                             $ (document).ready (function ()
                             {
 
-                                $(document).off('click', '.SendPageMessage');
-                                $(document).on('click', '.SendPageMessage', function()
-                                //$ (".SendPageMessage").on ("click", function ()
-                                {
-
-alert(6);
-
-                                    var message = $ ("#pageMessage").val ();
-
-                                    if ($.trim (message) === "")
-                                    {
-                                        showErrorMessage ('Message cannot be empty');
-                                        return false;
-                                    }
-
-                                    if (!groupId)
-                                    {
-                                        showErrorMessage ('Invalid page id');
-                                        return false;
-                                    }
-
-                                    $.ajax ({
-                                        type: "POST",
-                                        url: "/blab/inbox/sendMessage",
-                                        data: {"pageId": groupId, "message": message},
-                                        success: function (response)
+                                $ (document).off ('click', '.SendPageMessage');
+                                $ (document).on ('click', '.SendPageMessage', function ()
+                                        //$ (".SendPageMessage").on ("click", function ()
                                         {
-                                            alert(response);
 
-                                            formatResponse (response, 'The message was sent successfully.');
-                                            return false;
-                                        },
-                                        error: function (e)
-                                        {
-                                            showErrorMessage('Ajax requested could not complete successfully');
+                                            alert (6);
 
-                                        }
-                                    });
-                                });
+                                            var message = $ ("#pageMessage").val ();
+
+                                            if ($.trim (message) === "")
+                                            {
+                                                showErrorMessage ('Message cannot be empty');
+                                                return false;
+                                            }
+
+                                            if (!groupId)
+                                            {
+                                                showErrorMessage ('Invalid page id');
+                                                return false;
+                                            }
+
+                                            $.ajax ({
+                                                type: "POST",
+                                                url: "/blab/inbox/sendMessage",
+                                                data: {"pageId": groupId, "message": message},
+                                                success: function (response)
+                                                {
+                                                    alert (response);
+
+                                                    formatResponse (response, 'The message was sent successfully.');
+                                                    return false;
+                                                },
+                                                error: function (e)
+                                                {
+                                                    showErrorMessage ('Ajax requested could not complete successfully');
+
+                                                }
+                                            });
+                                        });
 
                                 //        $ ("#check").click (function ()
                                 //        {
@@ -523,7 +540,7 @@ alert(6);
                                         },
                                         error: function (e)
                                         {
-                                            showErrorMessage('Ajax requested could not complete successfully');
+                                            showErrorMessage ('Ajax requested could not complete successfully');
 
                                         }
                                     });
@@ -662,4 +679,4 @@ alert(6);
 
 
 
-</script>
+        </script>

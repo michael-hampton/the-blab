@@ -55,12 +55,13 @@ class PageFactory
                 LEFT JOIN page_follower pf ON pf.page_id = p.id
                 LEFT JOIN page_like pl ON pl.page_id = p.id
                 WHERE 1=1";
-        
-        if($objUser !== null) {
+
+        if ( $objUser !== null )
+        {
             $sql .= " AND p.user_id != :userId";
             $arrWhere[':userId'] = $objUser->getId ();
         }
-        
+
 
         if ( $searchText !== null )
         {
@@ -274,6 +275,24 @@ class PageFactory
 
 
         return new Page ($url);
+    }
+
+    /**
+     * 
+     * @param type $pageId
+     * @return boolean|\Page
+     */
+    public function getPageById ($pageId)
+    {
+        $arrResult = $this->db->_select ("page", "id = :pageId", [":pageId" => $pageId]);
+
+        if ( $arrResult === false || empty($arrResult) )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+        
+        return new Page($arrResult[0]['url']);
     }
 
     /**
