@@ -132,6 +132,7 @@ class JobFactory
         $result = $this->db->create ("jobs", [
             "user_id" => $objUser->getId (),
             "page_id" => $objPage->getId (),
+            "is_acvtive" => 1,
             "title" => $title,
             "description" => $description,
             "salary_min" => $salaryMin,
@@ -253,11 +254,22 @@ class JobFactory
 
     /**
      * 
+     * @param Page $objPage
      * @return boolean
      */
-    public function getSalaryRange ()
+    public function getSalaryRange (Page $objPage = null)
     {
-        $arrResult = $this->db->_query ("SELECT MIN(salary_min) AS min, MAX(salary_max) AS max FROM jobs");
+        $arrParams = [];
+
+        $sql = "SELECT MIN(salary_min) AS min, MAX(salary_max) AS max FROM jobs";
+
+        if ( $objPage !== null )
+        {
+            $sql .= " WHERE page_id = :pageId";
+            $arrParams[":pageId"] = $objPage->getId ();
+        }
+
+        $arrResult = $this->db->_query ($sql, $arrParams);
 
         if ( $arrResult === false )
         {
@@ -270,11 +282,22 @@ class JobFactory
 
     /**
      * 
+     * @param Page $objPage
      * @return boolean
      */
-    public function getLocations ()
+    public function getLocations (Page $objPage = null)
     {
-        $arrResult = $this->db->_query ("SELECT location FROM jobs");
+        $arrParams = [];
+
+        $sql = "SELECT location FROM jobs";
+
+        if ( $objPage !== null )
+        {
+            $sql .= " WHERE page_id = :pageId";
+            $arrParams[":pageId"] = $objPage->getId ();
+        }
+
+        $arrResult = $this->db->_query ($sql, $arrParams);
 
         if ( $arrResult === false )
         {

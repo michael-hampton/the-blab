@@ -29,7 +29,9 @@ class JobController extends ControllerBase
     {
         $objJobFactory = new JobFactory();
 
-        $arrSalaryRange = $objJobFactory->getSalaryRange ();
+        $objPage = isset ($_GET['pageId']) ? new Page ($_GET['pageId']) : null;
+
+        $arrSalaryRange = $objJobFactory->getSalaryRange ($objPage);
 
         if ( !empty ($arrSalaryRange) )
         {
@@ -37,9 +39,10 @@ class JobController extends ControllerBase
             $this->view->salary_max = $arrSalaryRange[0]['max'];
         }
 
-        $arrLocations = $objJobFactory->getLocations ();
+        $arrLocations = $objJobFactory->getLocations ($objPage);
 
         $this->view->arrLocations = $arrLocations;
+        $this->view->objPage = $objPage;
     }
 
     /* Search & filter */
@@ -48,7 +51,7 @@ class JobController extends ControllerBase
     {
         $this->view->setRenderLevel (View::LEVEL_ACTION_VIEW);
 
-        if ( !isset ($_POST['salary_min']) || !isset ($_POST['salary_max']) || !isset ($_POST['duration']) )
+        if ( !isset ($_POST['salary_min']) || !isset ($_POST['salary_max']) || !isset ($_POST['duration']) || !isset ($_POST['pageId']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
@@ -112,7 +115,7 @@ class JobController extends ControllerBase
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $this->view->partial ("job/addJob", ["objJob" => $objJob, "addType" => "edit"]);
+        $this->view->partial ("job/addJob", ["objJob" => $objJob, "addType" => "edit", "pageId" => $objJob->getPageId ()]);
     }
 
     /* Delete job */
@@ -141,9 +144,20 @@ class JobController extends ControllerBase
         $this->ajaxresponse ("success", "success");
     }
 
-    public function addJobAction ()
+    /**
+     * 
+     * @param type $pageId
+     */
+    public function addJobAction ($pageId)
     {
         $this->view->addType = "add";
+
+        if ( trim ($pageId) === "" )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->view->pageId = $pageId;
     }
 
     public function saveUpdateAction ()
@@ -166,7 +180,7 @@ class JobController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
+
         try {
             $objJob = new Job ($_POST['job_id']);
         } catch (Exception $ex) {
@@ -236,6 +250,47 @@ class JobController extends ControllerBase
         }
 
         $this->ajaxresponse ("success", "success");
+    }
+
+    public function saveApplicationAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
+        if ( empty ($_POST['applicationText']) || empty ($_POST['applicationId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objJob = new Job ($_POST['applicationId']);
+            $objJobApplication = new JobApplicationFactory();
+            $objPage = (new PageFactory())->getPageById ($objJob->getPageId());
+            $objOwner = new User($objPage->getUserId());
+            $objEmailNotification = new EmailNotification($objOwner, "Someone just responded to your job post {$objJob->getTitle()}", "{$objUser->getUsername()} just applied for your job post");
+            $objNotificationFactory = new NotificationFactory();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $blResponse = $objJobApplication->sendJobApplication ($objJob, $objUser, $_POST['applicationText']);
+
+        if ( $blResponse === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+        
+        $objEmailNotification->sendEmail();
+        
+        $objNotificationFactory->createNotification($objOwner, "{$objUser->getUsername()} just applied for your job {$objJob->getTitle()}");
+        
+        $this->ajaxresponse("success", "success");
     }
 
 }
