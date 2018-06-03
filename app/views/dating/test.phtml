@@ -1,0 +1,133 @@
+<link rel="stylesheet" type="text/css" href="/blab/public/css/jTinder.css">
+
+
+<div class="row">
+    <div class="col-lg-12" style="height:800px;">
+        <!-- start padding container -->
+        <div class="wrap">
+
+            <!-- jTinder trigger by buttons  -->
+            <div class="actions">
+                <a href="#" class="dislike"><i></i></a>
+                <a href="#" class="like"><i></i></a>
+            </div>
+
+            <!-- start jtinder container -->
+            <div id="tinderslide">
+                <ul>
+                    <?php
+                    if ( !empty ($arrProfiles) )
+                    {
+                        $count = 1;
+                        foreach ($arrProfiles as $key => $objProfile) {
+
+                            $objUser = $objProfile->getUser ();
+                            echo '<li class="pane' . $count . '"  userid=\'' . $objUser->getId () . '\'>
+                        <div class="img" style=" background: url(\'' . str_replace ($rootPath, "", $objProfile->getImageLocation ()) . '\') no-repeat scroll center center; background-size: cover; "></div>
+                        <div><a href="/blab/dating/viewProfile/' . $objProfile->getNickname () . '">' . $objProfile->getNickname () . '</a></div>
+                        <div class="like"></div>
+                        <div class="dislike"></div>
+                    </li>';
+
+                            $count++;
+                        }
+                    }
+                    else
+                    {
+                        echo '<h2>No matches could be found!</h2>';
+                    }
+                    ?>
+
+
+                    <!--                    <li class="pane1"  userid='1'>
+                                            <div class="img" style=" background: url('/blab/public/img/dating/pane1.jpg') no-repeat scroll center center; background-size: cover; "></div>
+                                            <div>Miami Beach</div>
+                                            <div class="like"></div>
+                                            <div class="dislike"></div>
+                                        </li>
+                                        <li class="pane2" userid='2'>
+                                            <div class="img" style=" background: url('/blab/public/img/dating/pane2.jpg') no-repeat scroll center center; background-size: cover; "></div>
+                                            <div>San Francisco</div>
+                                            <div class="like"></div>
+                                            <div class="dislike"></div>
+                                        </li>
+                                        <li class="pane3" userid='3' style=" background: url('/blab/public/img/dating/pane3.jpg') no-repeat scroll center center; background-size: cover; ">
+                                            <div class="img"></div>
+                                            <div>Chicago</div>
+                                            <div class="like"></div>
+                                            <div class="dislike"></div>
+                                        </li>
+                                        <li class="pane4" userid='5' style=" background: url('/blab/public/img/dating/pane4.jpg') no-repeat scroll center center; background-size: cover; ">
+                                            <div class="img"></div>
+                                            <div>New York</div>
+                                            <div class="like"></div>
+                                            <div class="dislike"></div>
+                                        </li>
+                                        <li class="pane5" userid='6' style=" background: url('/blab/public/img/dating/pane5.jpg') no-repeat scroll center center; background-size: cover; transform: translate(0px, 0px) rotate(0rad);">
+                                            <div class="img"></div>
+                                            <div>Beach</div>
+                                            <div class="like" style="opacity: 0;"></div>
+                                            <div class="dislike" style="opacity: 0;"></div>
+                                        </li>-->
+                </ul>
+            </div>
+            <!-- end jtinder container -->
+        </div>
+        <!-- end padding container -->
+
+
+
+        <!-- jTinder status text  -->
+        <div id="status"></div>
+    </div>
+</div>
+
+
+
+
+<!-- transform2d lib -->
+<script type="text/javascript" src="/blab/public/js/jquery.transform2d.js"></script>
+<!-- jTinder lib -->
+<script type="text/javascript" src="/blab/public/js/jquery.jTinder.js"></script>
+
+<script>
+    /**
+     * jTinder initialization
+     */
+    $ ("#tinderslide").jTinder ({
+        // dislike callback
+        onDislike: function (item)
+        {
+            console.log (item);
+
+            alert (item.attr ("userid"));
+
+            // set the status text
+            $ ('#status').html ('Dislike image ' + (item.index () + 1));
+
+            alert ("DISLIKED");
+        },
+        // like callback
+        onLike: function (item)
+        {
+            // set the status text
+            $ ('#status').html ('Like image ' + (item.index () + 1));
+
+            alert ("LIKED");
+        },
+        animationRevertSpeed: 200,
+        animationSpeed: 400,
+        threshold: 1,
+        likeSelector: '.like',
+        dislikeSelector: '.dislike'
+    });
+
+    /**
+     * Set button action to trigger jTinder like & dislike.
+     */
+    $ ('.actions .like, .actions .dislike').click (function (e)
+    {
+        e.preventDefault ();
+        $ ("#tinderslide").jTinder ($ (this).attr ('class'));
+    });
+</script>

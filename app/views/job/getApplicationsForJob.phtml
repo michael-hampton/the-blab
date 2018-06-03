@@ -1,0 +1,171 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>Job Applications</h2>
+
+    </div>
+    <div class="col-lg-2">
+
+    </div>
+</div>
+
+<div class="wrapper wrapper-content  animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <span class="text-muted small pull-right">Last modification: <i class="fa fa-clock-o"></i> 2:10 pm - 12.06.2014</span>
+                    <h2>Job Applications</h2>
+
+                    <p>
+                        All clients need to be verified before you can send email and set a project.
+                    </p>
+
+                    <!--                    <div class="input-group">
+                                            <input type="text" placeholder="Search client " class="input form-control">
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn btn-primary"> <i class="fa fa-search"></i> Search</button>
+                                            </span>
+                                        </div>-->
+
+                    <div class="clients-list">
+
+                        <div class="tab-content">
+
+                            <?php
+                            if ( !empty ($arrApplications) )
+                            {
+                                echo ' <div class = "table-responsive">
+                                        <table class = "table table-striped table-hover">
+                                            <tbody>';
+                                foreach ($arrApplications as $objApplication) {
+                                    $objUser = $objApplication->getUser ();
+                                    ?>
+
+                                    <tr>
+                                        <td class="client-avatar"><img alt="<?= $objUser->getUsername () ?>" src="/blab/public/uploads/profile/<?= $objUser->getUsername () ?>.jpg"> </td>
+                                        <td><a data-toggle="tab" href="/blab/index/profile/<?= $objUser->getUsername () ?>" class="client-link"><?= $objUser->getFirstName () . ' ' . $objUser->getLastName () ?></a></td>
+                                        <td><?= $objApplication->getDateSent () ?></td>
+                                        <td class = "contact-type"><i class = "fa fa-envelope"> </i></td>
+                                        <td><a href="/blab/chat/messenger?username=<?= $objUser->getUsername () ?>">Send Message</a></td>
+
+                                        <?php
+                                        if ( (int) $objApplication->getStatus () === 0 )
+                                        {
+                                            ?>
+                                            <td class="client-status"><span applicationid="<?= $objApplication->getId () ?>" jobid="<?= $objApplication->getJobId () ?>" statusType="accept" class="label label-primary acceptApplication">Accept</span></td>
+                                            <td class="client-status"><span applicationid="<?= $objApplication->getId () ?>" jobid="<?= $objApplication->getJobId () ?>" statusType="reject" class="label label-danger rejectApplication">Reject</span></td>
+                                            <?php
+                                        }
+                                        else
+                                        {
+                                            ?>
+                                            <td><?= ((int) $objApplication->getStatus () === 1 ? 'Accepted' : 'Rejected') ?></td>
+                                            <td></td>
+                                            <?php
+                                        }
+                                        ?>
+
+
+
+                                    </tr>
+
+
+                                    <?php
+                                }
+
+                                echo ' </tbody>
+                                        </table>
+                                    </div>';
+                            }
+                            else
+                            {
+                                echo '<h2>There are no applications for this job yet!';
+                            }
+                            ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    /**
+     * 
+     * @param {type} status
+     * @param {type} jobId
+     * @param {type} applicationId
+     * @returns {Boolean}
+     */
+    function updateApplicationStatus (status, jobId, applicationId)
+    {
+        if (!status)
+        {
+            alert ("Invalid status");
+            return false;
+        }
+
+        if (!jobId)
+        {
+            alert ("Invalid job id");
+            return false;
+        }
+
+        if (!applicationId)
+        {
+            alert ("Invalid application id");
+            return false;
+        }
+
+        var dataString = {"jobId": jobId, "status": status, "applicationId": applicationId};
+
+        $.post ('/blab/job/updateApplicationStatus', dataString, function (response)
+        {
+            try {
+                var objResponse = $.parseJSON (response);
+
+                if (objResponse.sucess == 1)
+                {
+                    alert ("Job application status has been updated successfully");
+                }
+                else
+                {
+                    $ ("#v-wall-message").html ($ ("#general_system_error").val ());
+                    $ ("#v-wall-alert-box").click ();
+                    return false;
+                }
+            } catch (error) {
+                $ ("#v-wall-message").html ('Ajax request ended unexpectedly');
+                $ ("#v-wall-alert-box").click ();
+            }
+
+        }).fail (function (error_response)
+        {
+            setTimeout ("vpb_send_request_to_join_group('" + parseInt (group_id) + "', '" + group_manager + "', '" + username + "', '" + action + "');", 10000);
+        });
+    }
+
+    $ (document).ready (function ()
+    {
+        $ (".acceptApplication").on ("click", function ()
+        {
+            var statusType = $ (this).attr ("statusType");
+            var jobId = $ (this).attr ("jobid");
+            var applicationId = $ (this).attr ("applicationid");
+            updateApplicationStatus (statusType, jobId, applicationId);
+        });
+
+        $ (".rejectApplication").on ("click", function ()
+        {
+            var statusType = $ (this).attr ("statusType");
+            var jobId = $ (this).attr ("jobid");
+            var applicationId = $ (this).attr ("applicationid");
+            updateApplicationStatus (statusType, jobId, applicationId);
+        });
+    });
+</script>
+
+

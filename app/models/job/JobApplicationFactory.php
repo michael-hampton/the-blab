@@ -45,28 +45,54 @@ class JobApplicationFactory
 
     /**
      * 
-     * @return boolean
+     * @param Job $objJob
+     * @return type
      */
-    public function getJobApplications ()
+    public function getJobApplications (Job $objJob)
     {
-        $arrResults = [];
+        $arrResults = $this->db->_select ("job_application", "job_id = :jobId", [":jobId" => $objJob->getId ()]);
+        
+        return $this->loadObject($arrResults);
+    }
+
+    /**
+     * 
+     * @param type $arrResults
+     * @return boolean|\JobApplication
+     */
+    private function loadObject ($arrResults)
+    {
 
         if ( $arrResults === false )
         {
             trigger_error ("Db query failed", E_USER_WARNING);
             return false;
         }
-        
-        if(empty($arrResults)) {
+
+        if ( empty ($arrResults) )
+        {
             return [];
         }
-        
+
         $arrApplications = [];
-        
-        foreach ($arrResults as $arrResult) {
-            
+
+        try {
+            foreach ($arrResults as $arrResult) {
+                $objJobApplication = new JobApplication ($arrResult['id']);
+                $objUser = new User($arrResult['user_id']);
+                $objJobApplication->setUser($objUser);
+                $objJobApplication->setStatus($arrResult['application_status']);
+                $objJobApplication->setDateSent($arrResult['date_sent']);
+                $objJobApplication->setApplicationText($arrResult['application_text']);
+                $objJobApplication->setJobId($arrResult['job_id']);
+
+                $arrApplications[] = $objJobApplication;
+            }
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            return false;
         }
-        
+
         return $arrApplications;
     }
 

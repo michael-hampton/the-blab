@@ -1,0 +1,57 @@
+<div class="wrapper wrapper-content">
+    <div class="row animated fadeInRight">
+        <div class="col-md-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Profile Detail</h5>
+                </div>
+                <div>
+                    <div class="ibox-content no-padding border-left-right">
+                        <img alt="image" class="img-responsive" src="<?= str_replace ($rootPath, "", $objProfile->getImageLocation ()) ?>">
+                    </div>
+                    <div class="ibox-content profile-content">
+                        <h4><strong><?= $objProfile->getNickname () ?></strong></h4>
+                        <h5>
+                            About me
+                        </h5>
+                        <p>
+                            <?= $objProfile->getAbout () ?>
+                        </p>
+
+                        <h5>
+                            Interested In
+                        </h5>
+                        <p>
+                            <?= $objProfile->getInterests () ?>
+                        </p>
+
+                        <div class="row m-t-lg">
+                            <div class="col-md-4">
+                                <h5><strong>Interested In</strong> <?= $objProfile->getGender () ?></h5>
+                            </div>
+                            <div class="col-md-4">
+                                <h5><strong>Location</strong> <?= $objProfile->getLocation () ?></h5>
+                            </div>
+                            <div class="col-md-4">
+                                <h5><strong>Looking for people aged between</strong> <?= $objProfile->getAge () ?></h5>
+                            </div>
+                        </div>
+                        <div class="user-button">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-primary btn-sm btn-block"><i class="fa fa-envelope"></i> Send Message</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-success btn-sm btn-block"><i class="fa fa-coffee"></i> Interested</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+</div>

@@ -7,42 +7,43 @@
  */
 class JobApplication
 {
+
     /**
      *
      * @var type 
      */
     private $db;
-    
+
     /**
      *
      * @var type 
      */
     private $id;
-    
+
     /**
      *
      * @var type 
      */
-    private $userId;
-    
+    private $user;
+
     /**
      *
      * @var type 
      */
     private $jobId;
-    
+
     /**
      *
      * @var type 
      */
     private $applicationText;
-    
+
     /**
      *
      * @var type 
      */
     private $status;
-    
+
     /**
      *
      * @var type 
@@ -56,10 +57,10 @@ class JobApplication
     public function __construct ($id)
     {
         $this->db = new Database();
-        $this->db->connect();
+        $this->db->connect ();
         $this->id = $id;
     }
-    
+
     /**
      * 
      * @return type
@@ -67,15 +68,6 @@ class JobApplication
     public function getId ()
     {
         return $this->id;
-    }
-
-    /**
-     * 
-     * @return type
-     */
-    public function getUserId ()
-    {
-        return $this->userId;
     }
 
     /**
@@ -125,20 +117,29 @@ class JobApplication
 
     /**
      * 
-     * @param type $userId
-     */
-    public function setUserId ($userId)
-    {
-        $this->userId = $userId;
-    }
-
-    /**
-     * 
      * @param type $jobId
      */
     public function setJobId ($jobId)
     {
         $this->jobId = $jobId;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function getUser ()
+    {
+        return $this->user;
+    }
+
+    /**
+     * 
+     * @param User $user
+     */
+    public function setUser (User $user)
+    {
+        $this->user = $user;
     }
 
     /**
@@ -167,4 +168,22 @@ class JobApplication
     {
         $this->dateSent = $dateSent;
     }
+
+    /**
+     * 
+     * @return boolean
+     */
+    public function updateJobApplicationStatus ()
+    {
+        $result = $this->db->update ("job_application", ["application_status" => $this->status], "id = :id", [":id" => $this->id]);
+
+        if ( $result === false )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        return true;
+    }
+
 }

@@ -74,7 +74,13 @@ class JobController extends ControllerBase
 
         if ( $arrJobs === false )
         {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unable to get jobs"]
+                            ]
+            );
         }
 
         $this->view->arrJobs = $arrJobs;
@@ -91,7 +97,13 @@ class JobController extends ControllerBase
             $objJob = new Job ($id);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => $ex->getMessage ()]
+                            ]
+            );
         }
 
         $this->view->objJob = $objJob;
@@ -112,7 +124,13 @@ class JobController extends ControllerBase
             $objJob = new Job ($id);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => $ex->getMessage ()]
+                            ]
+            );
         }
 
         $this->view->partial ("job/addJob", ["objJob" => $objJob, "addType" => "edit", "pageId" => $objJob->getPageId ()]);
@@ -154,7 +172,13 @@ class JobController extends ControllerBase
 
         if ( trim ($pageId) === "" )
         {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Invalid page id"]
+                            ]
+            );
         }
 
         $this->view->pageId = $pageId;
@@ -236,9 +260,22 @@ class JobController extends ControllerBase
 
         try {
             $objJobFactory = new JobFactory();
+            $objPage = new Page ($_POST['pageId']);
+            $objUser = new User ($_SESSION['user']['user_id']);
             $objJob = $objJobFactory->createJob (
-                    new User ($_SESSION['user']['user_id']), new Page ('test_tamara'), $_POST['title'], $_POST['description'], $_POST['salary_min'], $_POST['salary_max'], $_POST['location'], $_POST['responsibilities'], $_POST['perks'], $_POST['duration'], $_POST['expires'], $_POST['skills']
+                    $objUser, $objPage, $_POST['title'], $_POST['description'], $_POST['salary_min'], $_POST['salary_max'], $_POST['location'], $_POST['responsibilities'], $_POST['perks'], $_POST['duration'], $_POST['expires'], $_POST['skills']
             );
+
+            $objPost = (
+                    new PagePost (
+                    $objPage, new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ()
+                    )
+                    )->createComment ($_POST['title'] . "<br/>" . $_POST['description'] . "<a href='/blab/job/view/{$objJob->getId ()}'>View</a>", $objUser, new \JCrowe\BadWordFilter\BadWordFilter ());
+
+            if ( $objPost === false )
+            {
+                $this->ajaxresponse ("error", "Unable to create post on news feed");
+            }
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -270,27 +307,112 @@ class JobController extends ControllerBase
             $objUser = new User ($_SESSION['user']['user_id']);
             $objJob = new Job ($_POST['applicationId']);
             $objJobApplication = new JobApplicationFactory();
-            $objPage = (new PageFactory())->getPageById ($objJob->getPageId());
-            $objOwner = new User($objPage->getUserId());
-            $objEmailNotification = new EmailNotification($objOwner, "Someone just responded to your job post {$objJob->getTitle()}", "{$objUser->getUsername()} just applied for your job post");
+            $objPage = (new PageFactory())->getPageById ($objJob->getPageId ());
+            $objOwner = new User ($objPage->getUserId ());
+            $objBadWordFilter = new \JCrowe\BadWordFilter\BadWordFilter();
             $objNotificationFactory = new NotificationFactory();
+            $objEmailFactory = new EmailNotificationFactory();
+            $objMessageFactory = new MessageFactory();
+            $objPageInboxFactory = new PageInboxFactory();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
+        // save application
         $blResponse = $objJobApplication->sendJobApplication ($objJob, $objUser, $_POST['applicationText']);
 
         if ( $blResponse === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
-        $objEmailNotification->sendEmail();
-        
-        $objNotificationFactory->createNotification($objOwner, "{$objUser->getUsername()} just applied for your job {$objJob->getTitle()}");
-        
-        $this->ajaxresponse("success", "success");
+
+        // send email
+        $blEmailResponse = $objEmailFactory->createNotification ($objOwner, "Someone just responded to your job post {$objJob->getTitle ()}", "{$objUser->getUsername ()} just applied for your job {$objJob->getTitle ()}");
+
+        if ( $blEmailResponse === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        // send to messenger
+        $objMessage = $objMessageFactory->sendMessage ("{$objUser->getUsername ()} just applied for your job {$objJob->getTitle ()}", $objBadWordFilter, $objEmailFactory, $objOwner, $objUser, "", "page");
+
+        if ( $objMessage === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $blInboxResponse = $objPageInboxFactory->createMessage ($objPage, $objUser, $objMessage, "IN");
+
+        if ( $blInboxResponse === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        //create notification
+        $objNotificationFactory->createNotification ($objOwner, "{$objUser->getUsername ()} just applied for your job {$objJob->getTitle ()}");
+
+        $this->ajaxresponse ("success", "success");
+    }
+
+    /**
+     * 
+     * @param type $jobId
+     */
+    public function getApplicationsForJobAction ($jobId)
+    {
+
+
+        try {
+            $objJob = new Job ($jobId);
+            $arrApplications = (new JobApplicationFactory())->getJobApplications ($objJob);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        if ( $arrApplications === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unable to get applications"]
+                            ]
+            );
+        }
+
+        $this->view->arrApplications = $arrApplications;
+    }
+
+    public function updateApplicationStatusAction ()
+    {
+        $this->view->disable ();
+
+        if ( empty ($_POST['jobId']) || empty ($_POST['status']) || empty ($_POST['applicationId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objJob = new Job ($_POST['jobId']);
+            $objJobApplication = new JobApplication ($_POST['applicationId']);
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $status = trim ($_POST['status']) === "reject" ? 2 : 1;
+        $objJobApplication->setStatus ($status);
+        $blResult = $objJobApplication->updateJobApplicationStatus ();
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
     }
 
 }

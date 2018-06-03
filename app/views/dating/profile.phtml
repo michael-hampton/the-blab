@@ -1,0 +1,171 @@
+<!-- some CSS styling changes and overrides -->
+
+<link rel="stylesheet" type="text/css" href="/blab/public/css/fileinput.css">
+
+<style>
+    .kv-avatar .krajee-default.file-preview-frame,.kv-avatar .krajee-default.file-preview-frame:hover {
+        margin: 0;
+        padding: 0;
+        border: none;
+        box-shadow: none;
+        text-align: center;
+    }
+    .kv-avatar {
+        display: inline-block;
+    }
+    .kv-avatar .file-input {
+        display: table-cell;
+        width: 213px;
+    }
+    .kv-reqd {
+        color: red;
+        font-family: monospace;
+        font-weight: normal;
+    }
+</style>
+
+<script src="/blab/public/js/fileinput.js"></script>
+
+<!-- markup -->
+<!-- note: your server code `avatar_upload.php` will receive `$_FILES['avatar']` on form submission -->
+<!-- the avatar markup -->
+<div id="kv-avatar-errors-2" class="center-block" style="width:800px;display:none"></div>
+<form class="form form-vertical" action="/blab/dating/saveProfile" method="post" enctype="multipart/form-data">
+
+    <input type="hidden" id="userId" name="userId" value="<?= $_SESSION['user']['user_id'] ?>">
+
+    <div class="row">
+        <div class="col-sm-4 text-center">
+            <div class="kv-avatar">
+                <div class="file-loading">
+                    <input id="avatar-2" name="avatar-2" type="file" required>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="interested">Gender<span class="kv-reqd">*</span></label>
+                        <select class="form-control" name="gender" required>
+                            <option value="">Select Option</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="pwd">About You<span class="kv-reqd">*</span></label>
+                        <textarea class="form-control" name="about-you" required><?= ($objDating !== null ? $objDating->getAbout () : '') ?></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="fname">Your Interests</label>
+                        <textarea class="form-control" name="your-interests" required><?= ($objDating !== null ? $objDating->getInterests () : '') ?></textarea>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="lname">Nickname</label>
+                        <input type="text" class="form-control" name="nickname" required value="<?= ($objDating !== null ? $objDating->getNickname () : '') ?>">
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="lname">Location</label>
+                        <input type="text" class="form-control" name="location" required value="<?= ($objDating !== null ? $objDating->getLocation () : '') ?>">
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="lname">Age Range</label>
+                        <input type="text" class="form-control" name="age" required value="<?= ($objDating !== null ? $objDating->getAge () : '') ?>">
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="lname">Maximum Distance</label>
+                        <input type="text" class="form-control" name="distance" required value='<?= ($objDating !== null ? $objDating->getDistance () : '') ?>'>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <hr>
+                <div class="text-right"> 
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- the fileinput plugin initialization -->
+<script>
+    var btnCust = '<button type="button" class="btn btn-secondary" title="Add picture tags" ' +
+            'onclick="alert(\'Call your custom code here.\')">' +
+            '<i class="glyphicon glyphicon-tag"></i>' +
+            '</button>';
+    $ ("#avatar-2").fileinput ({
+        overwriteInitial: true,
+        maxFileSize: 1500,
+        showClose: false,
+        showCaption: false,
+        showBrowse: false,
+        browseOnZoneClick: true,
+        removeLabel: '',
+        removeIcon: '<i class="glyphicon glyphicon-remove"></i>',
+        removeTitle: 'Cancel or reset changes',
+        elErrorContainer: '#kv-avatar-errors-2',
+        msgErrorClass: 'alert alert-block alert-danger',
+        defaultPreviewContent: '<img src="/blab/public/img/default_avatar_male.jpg" alt="Your Avatar"><h6 class="text-muted">Click to select</h6>',
+        layoutTemplates: {main2: '{preview} ' + btnCust + ' {remove} {browse}'},
+        allowedFileExtensions: ["jpg", "png", "gif", "jpeg"],
+        uploadUrl: '/blab/dating/saveProfile',
+        uploadAsync: false
+    });
+
+    $ (".form-vertical").on ("submit", function ()
+    {
+        var strUrl = $ (this).attr ("action");
+        var form = $ (this)[0]; // You need to use standard javascript object here
+        var formData = new FormData (form);
+
+        $.ajax ({
+            url: strUrl,
+            type: 'POST',
+            data: formData,
+            processData: false, // tell jQuery not to process the data
+            contentType: false, // tell jQuery not to set contentType
+            success: function (response)
+            {
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 1)
+                    {
+                        alert ("Dating profile has been updated successfully");
+                    }
+                    else
+                    {
+                        $ ("#v-wall-message").html (response);
+                        $ ("#v-wall-alert-box").click ();
+                        return false;
+                    }
+                } catch (error) {
+                    $ ("#v-wall-message").html (response);
+                    $ ("#v-wall-alert-box").click ();
+                    return false;
+                }
+            }
+        });
+        return false;
+    });
+</script>
