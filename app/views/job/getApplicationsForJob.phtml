@@ -52,15 +52,15 @@
                                         if ( (int) $objApplication->getStatus () === 0 )
                                         {
                                             ?>
-                                            <td class="client-status"><span applicationid="<?= $objApplication->getId () ?>" jobid="<?= $objApplication->getJobId () ?>" statusType="accept" class="label label-primary acceptApplication">Accept</span></td>
-                                            <td class="client-status"><span applicationid="<?= $objApplication->getId () ?>" jobid="<?= $objApplication->getJobId () ?>" statusType="reject" class="label label-danger rejectApplication">Reject</span></td>
+                                            <td class="client-status status-a1"><span applicationid="<?= $objApplication->getId () ?>" jobid="<?= $objApplication->getJobId () ?>" statusType="accept" class="label label-primary acceptApplication">Accept</span></td>
+                                            <td class="client-status status-a2"><span applicationid="<?= $objApplication->getId () ?>" jobid="<?= $objApplication->getJobId () ?>" statusType="reject" class="label label-danger rejectApplication">Reject</span></td>
                                             <?php
                                         }
                                         else
                                         {
                                             ?>
-                                            <td><?= ((int) $objApplication->getStatus () === 1 ? 'Accepted' : 'Rejected') ?></td>
-                                            <td></td>
+                                            <td class="status-a1"><?= ((int) $objApplication->getStatus () === 1 ? 'Accepted' : 'Rejected') ?></td>
+                                            <td class="status-a2"></td>
                                             <?php
                                         }
                                         ?>
@@ -120,6 +120,9 @@
             return false;
         }
 
+        $ ('.acceptApplication[applicationid=' + applicationId + ']').prop ('disabled', true);
+        $ ('.rejectApplication[applicationid=' + applicationId + ']').prop ('disabled', true);
+
         var dataString = {"jobId": jobId, "status": status, "applicationId": applicationId};
 
         $.post ('/blab/job/updateApplicationStatus', dataString, function (response)
@@ -130,16 +133,27 @@
                 if (objResponse.sucess == 1)
                 {
                     alert ("Job application status has been updated successfully");
+                    $ (".acceptApplication[applicationid=" + applicationId + "]").remove ();
+                    $ (".rejectApplication[applicationid=" + applicationId + "]").remove ();
+                    var label = $.trim (status) === "reject" ? "Rejected" : "Accepted";
+
+                    alert (applicationId);
+
+                    $ ("[applicationid=" + applicationId + "]").parent (".status-a1").html (label);
                 }
                 else
                 {
                     $ ("#v-wall-message").html ($ ("#general_system_error").val ());
                     $ ("#v-wall-alert-box").click ();
+                    $ ('.acceptApplication[applicationid=' + applicationId + ']').prop ('disabled', false);
+                    $ ('.rejectApplication[applicationid=' + applicationId + ']').prop ('disabled', false);
                     return false;
                 }
             } catch (error) {
                 $ ("#v-wall-message").html ('Ajax request ended unexpectedly');
                 $ ("#v-wall-alert-box").click ();
+                $ ('.acceptApplication[applicationid=' + applicationId + ']').prop ('disabled', false);
+                $ ('.rejectApplication[applicationid=' + applicationId + ']').prop ('disabled', false);
             }
 
         }).fail (function (error_response)

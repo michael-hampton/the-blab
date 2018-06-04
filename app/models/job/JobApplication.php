@@ -59,6 +59,11 @@ class JobApplication
         $this->db = new Database();
         $this->db->connect ();
         $this->id = $id;
+
+        if ( $this->populateObject () === false )
+        {
+            throw new Exception ("Unable to populate object");
+        }
     }
 
     /**
@@ -182,6 +187,25 @@ class JobApplication
             trigger_error ("Db query failed", E_USER_WARNING);
             return false;
         }
+
+        return true;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    private function populateObject ()
+    {
+        $result = $this->db->_select ("job_application", "id = :id", [":id" => $this->id]);
+
+        if ( $result === false || empty ($result) )
+        {
+            trigger_error ("Db query failed", E_USER_WARNING);
+            return false;
+        }
+
+        $this->user = $result[0]['user_id'];
 
         return true;
     }

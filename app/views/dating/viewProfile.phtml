@@ -41,9 +41,23 @@
                                 <div class="col-md-6">
                                     <button type="button" class="btn btn-primary btn-sm btn-block"><i class="fa fa-envelope"></i> Send Message</button>
                                 </div>
-                                <div class="col-md-6">
+
+                                <?php
+                                if ( $blLiked === true )
+                                {
+                                    echo ' <div class="col-md-6">
                                     <button type="button" class="btn btn-success btn-sm btn-block"><i class="fa fa-coffee"></i> Interested</button>
-                                </div>
+                                </div>';
+                                }
+                                else
+                                {
+                                    $objUser = $objProfile->getUser ();
+                                    echo ' <div class="col-md-6">
+                                    <button userid="' . $objUser->getId () . '" type="button" class="btn btn-success btn-sm btn-block likeProfile"><i class="fa fa-coffee"></i> Show your interested</button>
+                                </div>';
+                                }
+                                ?>
+
                             </div>
                         </div>
                     </div>
@@ -54,4 +68,48 @@
 
     </div>
 </div>
-</div>
+
+<script>
+    $ (document).ready (function ()
+    {
+        $ (".likeProfile").off ();
+        $ (".likeProfile").on ("click", function ()
+        {
+            var userId = $ (this).attr ("userid");
+
+            if (!userId)
+            {
+                alert ("Invalid user id");
+                return false;
+            }
+
+            $.post ('/blab/dating/likeProfile', {'userId': userId}, function (response)
+            {
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 1)
+                    {
+                        alert ("You have liked this profile. The user will be notified");
+                        $ (".likeProfile").parent ().html ('<button type="button" class="btn btn-success btn-sm btn-block"><i class="fa fa-coffee"></i> Interested</button>');
+                    }
+                    else
+                    {
+                        $ ("#v-wall-message").html (objResponse.message);
+                        $ ("#v-wall-alert-box").click ();
+                        return false;
+                    }
+                } catch (error) {
+                    $ ("#v-wall-message").html ('Ajax request failed unexpectedly');
+                    $ ("#v-wall-alert-box").click ();
+                    return false;
+                }
+            }).fail (function (xhr, ajaxOptions, theError)
+            {
+                $ ("#v-wall-message").html ('Ajax request failed unexpectedly');
+                $ ("#v-wall-alert-box").click ();
+                //return false;
+            });
+        });
+    });
+</script>

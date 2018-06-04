@@ -376,6 +376,21 @@ class UserFactory
 
         return $arrUsers;
     }
+    
+    /**
+     * 
+     * @param User $objUser
+     * @return type
+     */
+    public function getUsersLikedDatingProfile(User $objUser)
+    {
+        $arrResults = $this->db->_query("SELECT u.* FROM `dating_reaction` r
+                                        INNER JOIN users u ON u.uid = r.user_id
+                                        WHERE r.recipient_id = :userId
+                                        ORDER BY u.username", [":userId" => $objUser->getId()]);
+        
+        return $this->loadObject($arrResults);
+    }
 
     /**
      * 

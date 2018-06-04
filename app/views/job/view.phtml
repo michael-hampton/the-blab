@@ -43,6 +43,7 @@
                     else
                     {
                         alert ("The application has been sent successfully");
+                        location.reload ();
                     }
                 } catch (error) {
                     $ ("#v-wall-message").html ('The ajax request ended unexpectedly');
@@ -125,7 +126,7 @@
                         {
                             ?>		
                             <div style='margin: -5vh;float: right;position: relative;'>
-                                <a href="/blab/job/getApplicationsForJob/<?= $objJob->getId()?>">View Applications</a>
+                                <a href="/blab/job/getApplicationsForJob/<?= $objJob->getId () ?>">View Applications</a>
                                 <i class='fa1 fa fa-pencil actions edit-job' title='Edit this job'></i>
                                 <i class='fa1 fa fa-trash actions delete-job'  title='Delete this job'></i>
                             </div>
@@ -171,8 +172,15 @@
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-primary btn-sm ApplyForJob">Apply</button>
                     <?php
+                    if ( $blApplied === true )
+                    {
+                        echo '<button type="button" class="btn btn-success btn-sm">Applied</button>';
+                    }
+                    else
+                    {
+                        echo '<button type="button" class="btn btn-primary btn-sm ApplyForJob">Apply</button>';
+                    }
                 }
                 else
                 {

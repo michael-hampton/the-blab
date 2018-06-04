@@ -131,8 +131,16 @@ class DatingController extends ControllerBase
      */
     public function viewProfileAction ($nickname)
     {
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
         try {
             $objProfile = (new DatingFactory())->getProfileByNickname (new UserFactory (), $nickname);
+            $objProfileUser = $objProfile->getUser ();
+            $objUser = new User($_SESSION['user']['user_id']);
+            $this->view->blLiked = (new DatingReaction())->checkIfUserReacted($objUser, $objProfileUser);     
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             return $this->dispatcher->forward (
@@ -154,8 +162,39 @@ class DatingController extends ControllerBase
                             ]
             );
         }
-        
+
         $this->view->objProfile = $objProfile;
+    }
+
+    public function likeProfileAction ()
+    {
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
+        if ( empty ($_POST['userId']) )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        try {
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objRecipient = new User ($_POST['userId']);
+            $objDatingReaction = new DatingReaction();
+        } catch (Exception $ex) {
+            trigger_error ($ex->getMessage (), E_USER_WARNING);
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $blResult = $objDatingReaction->saveReaction ($objUser, $objRecipient);
+
+        if ( $blResult === false )
+        {
+            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $this->ajaxresponse ("success", "success");
     }
 
 }

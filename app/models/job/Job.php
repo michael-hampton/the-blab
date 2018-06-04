@@ -524,4 +524,22 @@ class Job
         return true;
     }
 
+    /**
+     * 
+     * @param User $objUser
+     * @return type
+     * @throws Exception
+     */
+    public function checkUserHasAppliedForJob (User $objUser)
+    {
+        $result = $this->db->_select ("job_application", "user_id = :userId AND job_id = :jobId", [":jobId" => $this->id, ":userId" => $objUser->getId ()]);
+
+        if ( $result === false )
+        {
+            throw new Exception ("Db query failed");
+        }
+        
+        return !empty($result);
+    }
+
 }

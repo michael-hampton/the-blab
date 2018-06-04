@@ -2,7 +2,8 @@
 
 
 <div class="row">
-    <div class="col-lg-12" style="height:800px;">
+    
+    <div class="col-lg-8 col-md-offset-2" style="height:800px;">
         <!-- start padding container -->
         <div class="wrap">
 
@@ -110,10 +111,41 @@
         // like callback
         onLike: function (item)
         {
-            // set the status text
-            $ ('#status').html ('Like image ' + (item.index () + 1));
+            var userId = item.attr ("userid");
 
-            alert ("LIKED");
+            if (!userId)
+            {
+                alert ("Invalid user id");
+                return false;
+            }
+
+            $.post ('/blab/dating/likeProfile', {'userId': userId}, function (response)
+            {
+                try {
+                    var objResponse = $.parseJSON (response);
+
+                    if (objResponse.sucess == 1)
+                    {
+                        // set the status text
+                        $ ('#status').html ('Like image ' + (item.index () + 1));
+                    }
+                    else
+                    {
+                        $ ("#v-wall-message").html (objResponse.message);
+                        $ ("#v-wall-alert-box").click ();
+                        return false;
+                    }
+                } catch (error) {
+                    $ ("#v-wall-message").html ('Ajax request failed unexpectedly');
+                    $ ("#v-wall-alert-box").click ();
+                    return false;
+                }
+            }).fail (function (xhr, ajaxOptions, theError)
+            {
+                $ ("#v-wall-message").html ('Ajax request failed unexpectedly');
+                $ ("#v-wall-alert-box").click ();
+                //return false;
+            });
         },
         animationRevertSpeed: 200,
         animationSpeed: 400,

@@ -919,10 +919,16 @@ class IndexController extends ControllerBase
 
             $objUser = new User ($_SESSION['user']['user_id']);
             $objUserSettings = new UserSettings ($objUser);
+            $objPostUpload = new PostUpload();
 
-            $arrIds = $this->multipleUploadValidation (
-                    "pictures", $_FILES, $target_dir, $objUser, new UploadFactory (), new AdvertFactory (), new BannerFactory (), $blAddToStory
+            $arrIds = $objPostUpload->multipleUploadValidation (
+                    $this->rootPath, $_FILES, $target_dir, $objUser, new UploadFactory (), new AdvertFactory (), new BannerFactory (), $blAddToStory
             );
+
+            if ( $arrIds === false )
+            {
+                $this->ajaxresponse ("error", implode ("<br/>", $objPostUpload->getValidationFailures ()));
+            }
 
             switch ($uploadType) {
                 case "page":

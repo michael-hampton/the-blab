@@ -93,8 +93,21 @@ class JobController extends ControllerBase
     public function viewAction ($id)
     {
 
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Invalid user"]
+                            ]
+            );
+        }
+
         try {
             $objJob = new Job ($id);
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $this->view->blApplied = $objJob->checkUserHasAppliedForJob ($objUser);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             return $this->dispatcher->forward (
@@ -398,6 +411,9 @@ class JobController extends ControllerBase
         try {
             $objJob = new Job ($_POST['jobId']);
             $objJobApplication = new JobApplication ($_POST['applicationId']);
+            $objUser = new User ($objJobApplication->getUser ());
+            $objNotificationFactory = new NotificationFactory();
+            $objEmailFactory = new EmailNotificationFactory();
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -410,6 +426,21 @@ class JobController extends ControllerBase
         if ( $blResult === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $label = trim ($_POST['status']) === "reject" ? "rejected" : "accepted";
+        $blNotificationResponse = $objNotificationFactory->createNotification ($objUser, "Your application for the job {$objJob->getTitle ()} has been {$label}");
+
+        if ( $blNotificationResponse === false )
+        {
+            trigger_error ("Unable to create notification", E_USER_WARNING);
+        }
+
+        $blEmailNotificationResponse = $objEmailFactory->createNotification ($objUser, "Job application {$label}", "Your application for the job {$objJob->getTitle ()} has been {$label}");
+
+        if ( $blEmailNotificationResponse === false )
+        {
+            trigger_error ("Unable to send email", E_USER_WARNING);
         }
 
         $this->ajaxresponse ("success", "success");
