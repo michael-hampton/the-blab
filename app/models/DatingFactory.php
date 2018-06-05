@@ -191,16 +191,34 @@ class DatingFactory
      * @param UserFactory $objUserFactory
      * @return \Dating|boolean
      */
-    public function getDatingProfiles (UserFactory $objUserFactory, $nickname = null)
+    public function getDatingProfiles (UserFactory $objUserFactory, $nickname = null, $gender = null, $age = null, $location = null)
     {
 
-        $sqlWhere = '';
+        $sqlWhere = 'WHERE 1=1';
         $arrWhere = [];
 
         if ( $nickname !== null )
         {
-            $sqlWhere .= " nickname = :nickname";
+            $sqlWhere .= " AND nickname = :nickname";
             $arrWhere[":nickname"] = $nickname;
+        }
+        
+        if ( $gender !== null )
+        {
+            $sqlWhere .= " AND gender = :gender";
+            $arrWhere[":gender"] = $gender;
+        }
+        
+        if ( $age !== null )
+        {
+            $sqlWhere .= " AND age = :age";
+            $arrWhere[":age"] = $age;
+        }
+        
+        if ( $location !== null )
+        {
+            $sqlWhere .= " AND location = :location";
+            $arrWhere[":location"] = $location;
         }
 
         $arrResults = $this->db->_select ("dating_profile", $sqlWhere, $arrWhere);
