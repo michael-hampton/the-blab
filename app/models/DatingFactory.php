@@ -113,6 +113,18 @@ class DatingFactory
 
         return !empty ($arrResult);
     }
+    
+    private function checkIfNicknameExists ($nickname)
+    {
+        $arrResult = $this->db->_select ("dating_profile", "nickname = :nickname", [":nickname" => $nickname]);
+
+        if ( $arrResult === false )
+        {
+            throw new Exception ("Db query failed");
+        }
+
+        return !empty ($arrResult);
+    }
 
     /**
      * 
