@@ -67,6 +67,10 @@ class DatingFactory
         {
             $this->validationFailures[] = "Nickname is a mandatory field";
         }
+        
+        if($this->checkIfNicknameExists($nickname) === true) {
+            $this->validationFailures[] = "The nickname is already being used";
+        }
 
         if ( trim ($location) === "" || !is_string ($location) )
         {
