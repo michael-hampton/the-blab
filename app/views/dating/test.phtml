@@ -1,8 +1,18 @@
 <link rel="stylesheet" type="text/css" href="/blab/public/css/jTinder.css">
 
 
+<?php
+$arrLikedIds = [];
+if ( !empty ($arrLikedProfiles) )
+{
+    foreach ($arrLikedProfiles as $objLikedProfile) {
+        $arrLikedIds[] = $objLikedProfile->getId ();
+    }
+}
+?>
+
 <div class="row">
-    
+
     <div class="col-lg-8 col-md-offset-2" style="height:800px;">
         <!-- start padding container -->
         <div class="wrap">
@@ -22,10 +32,27 @@
                         $count = 1;
                         foreach ($arrProfiles as $key => $objProfile) {
 
+
                             $objUser = $objProfile->getUser ();
-                            echo '<li class="pane' . $count . '"  userid=\'' . $objUser->getId () . '\'>
+
+                            $alreadyLiked = in_array ($objUser->getId (), $arrLikedIds) ? 'liked' : '';
+
+                            echo '<li class="pane' . $count . '  ' . $alreadyLiked . '"  userid=\'' . $objUser->getId () . '\'>
                         <div class="img" style=" background: url(\'' . str_replace ($rootPath, "", $objProfile->getImageLocation ()) . '\') no-repeat scroll center center; background-size: cover; "></div>
-                        <div><a href="/blab/dating/viewProfile/' . $objProfile->getNickname () . '">' . $objProfile->getNickname () . '</a></div>
+                        <div style="float: left;
+                                    position: absolute;
+                                    top: 0PX;
+                                    left: 0px;
+                                    background-color:#EEE;
+                                    color: #000 !important;
+                                    font-size:14px;
+                                    padding:10px;
+                                    z-index: 100000;"><a style="color: #000 !important;
+                                    font-size:14px;" href="/blab/dating/viewProfile/' . $objProfile->getNickname () . '">' . $objProfile->getNickname () . '</a>
+                        <br> Location: ' . $objProfile->getLocation () . '
+                         <br> Interested in ' . $objProfile->getGender () . '
+                             <br> Age ' . $objProfile->getAge () . '
+                        </div>
                         <div class="like"></div>
                         <div class="dislike"></div>
                     </li>';
@@ -146,6 +173,7 @@
                 $ ("#v-wall-alert-box").click ();
                 //return false;
             });
+            at
         },
         animationRevertSpeed: 200,
         animationSpeed: 400,

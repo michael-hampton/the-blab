@@ -69,7 +69,7 @@ class DatingFactory
         }
         
         if($this->checkIfNicknameExists($nickname) === true) {
-            $this->validationFailures[] = "The nickname is already being used";
+            $this->validationFailures[] = "The nickname is already being used";            
         }
 
         if ( trim ($location) === "" || !is_string ($location) )
@@ -119,8 +119,8 @@ class DatingFactory
     }
     
     private function checkIfNicknameExists ($nickname)
-    {
-        $arrResult = $this->db->_select ("dating_profile", "nickname = :nickname", [":nickname" => $nickname]);
+    {        
+        $arrResult = $this->db->_query ("SELECT * FROM dating_profile WHERE LOWER(nickname) = :nickname", [":nickname" => strtolower ($nickname)]);
 
         if ( $arrResult === false )
         {
@@ -210,7 +210,7 @@ class DatingFactory
     public function getDatingProfiles (UserFactory $objUserFactory, $nickname = null, $gender = null, $age = null, $location = null)
     {
 
-        $sqlWhere = 'WHERE 1=1';
+        $sqlWhere = ' is_active = 1';
         $arrWhere = [];
 
         if ( $nickname !== null )
@@ -295,6 +295,7 @@ class DatingFactory
     private function saveNewProfile (User $objUser, $gender, $about, $interests, $nickname, $location, $age, $distance, $imageLocation)
     {
         $result = $this->db->create ("dating_profile", [
+            "is_active" => 1,
             "user_id" => $objUser->getId (),
             "gender" => $gender,
             "about" => $about,

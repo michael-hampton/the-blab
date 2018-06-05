@@ -12,18 +12,29 @@ class DatingController extends ControllerBase
 
     public function testAction ()
     {
+        if ( empty ($_SESSION['user']['user_id']) )
+        {
+            $this->ajaxresponse ("error", "Invalid User");
+        }
+
         try {
-            $arrProfiles = (new DatingFactory())->getDatingProfiles (new UserFactory ());
+            $objDatingFactory = new DatingFactory();
+            $objUserFactory = new UserFactory();
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $objUserProfile = new Dating ($objUser);
+            
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             return $this->dispatcher->forward (
                             [
                                 "controller" => "issue",
                                 "action" => "handler",
-                                "params" => ["message" => $ex->getMessage ()]
+                                "params" => ["message" => "You have not yet saet up dating. Please create a new Profile"]
                             ]
             );
         }
+
+        $arrProfiles = $objDatingFactory->getDatingProfiles ($objUserFactory);
 
         if ( $arrProfiles === false )
         {
@@ -35,8 +46,23 @@ class DatingController extends ControllerBase
                             ]
             );
         }
-
+        
+        $arrLikedProfiles = $objUserFactory->getUsersLikedDatingProfile($objUser);
+        
+        if ( $arrLikedProfiles === false )
+        {
+            return $this->dispatcher->forward (
+                            [
+                                "controller" => "issue",
+                                "action" => "handler",
+                                "params" => ["message" => "Unable to get profiles"]
+                            ]
+            );
+        }
+        
+        $this->view->arrLikedProfiles = $arrLikedProfiles;
         $this->view->arrProfiles = $arrProfiles;
+        $this->view->objUserProfile = $objUserProfile;
     }
 
     public function profileAction ($userId = null)
@@ -95,11 +121,11 @@ class DatingController extends ControllerBase
             $shortPath = "/blab/public/uploads/dating/";
 
             $objFileUpload = new FileUpload ($longPath);
-        } catch (Exception $ex) {
+        } catch (Exception $ex) {            
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
+        
         $objFileUpload->prepareUpload ($_FILES['avatar-2']);
         $blUploadValidationResponse = $objFileUpload->validateUpload ();
 
@@ -119,7 +145,7 @@ class DatingController extends ControllerBase
 
         if ( $blResult === false )
         {
-            $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+            $this->ajaxresponse ("error", implode ("<br/>", $objDatingFactory->getValidationFailures ()));
         }
 
         $this->ajaxresponse ("success", "success");
@@ -139,8 +165,8 @@ class DatingController extends ControllerBase
         try {
             $objProfile = (new DatingFactory())->getProfileByNickname (new UserFactory (), $nickname);
             $objProfileUser = $objProfile->getUser ();
-            $objUser = new User($_SESSION['user']['user_id']);
-            $this->view->blLiked = (new DatingReaction())->checkIfUserReacted($objUser, $objProfileUser);     
+            $objUser = new User ($_SESSION['user']['user_id']);
+            $this->view->blLiked = (new DatingReaction())->checkIfUserReacted ($objUser, $objProfileUser);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             return $this->dispatcher->forward (
