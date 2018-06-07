@@ -20,7 +20,8 @@ foreach ($arrFriendList as $objFriend) {
     $arrPageFriendIds[] = $objFriend->getId ();
 }
 
-$postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true : false;
+
+$postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) || $objCurrentUser->getId() === (int) $_SESSION['user']['user_id'] ? true : false;
 ?>
 
 <input type="hidden" id="userId" name="userId" value="<?= $arrUser->getId () ?>">
@@ -438,4 +439,4 @@ $postPermission = in_array ($objCurrentUser->getId (), $arrPageFriendIds) ? true
     <script src="/blab/public/js/geocomplete.js"></script>
 
     <script src="/blab/public/js/profile.js" type="text/javascript"></script>
-    <script src="/blab/public/js/chatModal.js" type="text/javascript"></script>
+<!--    <script src="/blab/public/js/chatModal.js" type="text/javascript"></script>-->

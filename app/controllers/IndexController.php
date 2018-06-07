@@ -87,6 +87,7 @@ class IndexController extends ControllerBase
             }
 
             $objUser = reset ($objUser);
+
             $arrUserSettings = (new UserSettings ($objUser));
             $arrPhotos = (new UploadFactory())->getUploadaForUser ($objUser, 4);
             $arrBanners = (new AdvertFactory())->getProfileBannerForUser ($objUser, new BannerFactory ());
@@ -886,7 +887,7 @@ class IndexController extends ControllerBase
     public function uploadAction ()
     {
         $this->view->disable ();
-
+        
         if ( empty ($_POST['uploadComment']) || empty ($_POST['privacy']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -896,13 +897,13 @@ class IndexController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-
+        
         if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( empty ($_POST['addToStory']) )
+        if ( !isset ($_POST['addToStory']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
@@ -912,98 +913,46 @@ class IndexController extends ControllerBase
         $uploadType = $_POST['selectedImageType'];
         $uploadId = $_POST['selectedImageId'];
         $comment = $_POST['uploadComment'];
+        $privacy = $_POST['privacy'];
 
         $target_dir = $this->rootPath . "/blab/public/uploads/" . $_SESSION['user']['username'] . '/';
-
+        
         try {
 
             $objUser = new User ($_SESSION['user']['user_id']);
             $objUserSettings = new UserSettings ($objUser);
-            $objPostUpload = new PostUpload();
-
-            $arrIds = $objPostUpload->multipleUploadValidation (
-                    $this->rootPath, $_FILES, $target_dir, $objUser, new UploadFactory (), new AdvertFactory (), new BannerFactory (), $blAddToStory
-            );
-
-            if ( $arrIds === false )
-            {
-                $this->ajaxresponse ("error", implode ("<br/>", $objPostUpload->getValidationFailures ()));
-            }
-
-            switch ($uploadType) {
-                case "page":
-                    $objPostFactory = new PagePost (new Page ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter (), $arrIds);
-                    break;
-
-                case "group":
-                    $objPostFactory = new GroupPost (new Group ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter (), $arrIds);
-                    break;
-                case "event":
-                    $objPostFactory = new EventPost (new Event ($uploadId), new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createComment ($comment, $objUser, new \JCrowe\BadWordFilter\BadWordFilter (), $arrIds);
-                    break;
-
-                default:
-                    $objPostFactory = new UserPost (new PostActionFactory (), new UploadFactory (), new CommentFactory (), new ReviewFactory (), new TagUserFactory (), new CommentReplyFactory ());
-                    $objPost = $objPostFactory->createPost ($comment, $objUser, new JCrowe\BadWordFilter\BadWordFilter (), $arrIds, null, 3, $_POST['privacy']);
-                    break;
-            }
+            $objUploadFactory = new UploadFactory();
+            $objTagUserFactory = new TagUserFactory();
+            $objPostUpload = new PostUpload (
+                    new PostActionFactory (), $objUploadFactory, new CommentFactory (), new ReviewFactory (), $objTagUserFactory, new CommentReplyFactory (), new JCrowe\BadWordFilter\BadWordFilter (), $objUser, new BannerFactory (), new AdvertFactory (), new NotificationFactory(), new EmailNotificationFactory(), $uploadType, $uploadId);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( $objPost === false )
+        $arrTags = !empty ($_POST['tags']) ? $_POST['tags'] : null;
+
+        $blResult = $objPostUpload->multipleUploadValidation($this->rootPath, $_FILES, $target_dir, $comment, $arrTags, $objUserSettings, $privacy, $blAddToStory);
+
+        if ( $blResult === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        if ( !empty ($_POST['tags']) )
-        {
-
-            $objNotification = new NotificationFactory();
-
-            $tags = explode (",", $_POST['tags']);
-
-            $username = $_SESSION['user']['username'];
-
-            $message = $username . " Tagged you in a photo";
-
-            foreach ($tags as $taggedUser) {
-
-                $objNewUser = new User ($taggedUser);
-
-                $blTagResult = (new TagUserFactory())->createTagForPost ($objNewUser, $objPost);
-
-                if ( $blTagResult === false )
-                {
-                    $this->ajaxresponse ("error", $this->defaultErrrorMessage);
-                }
-
-                $blResult = $objNotification->createNotification ($objNewUser, $message);
-
-                if ( $objUserSettings->getEmailSetting ('tag') === true )
-                {
-                    $objEmail = new EmailNotification ($objNewUser, $message, $comment);
-                    $objEmail->sendEmail ();
-                }
-            }
-
-            $arrTags = (new TagUserFactory())->getTaggedUsersForPost ($objPost);
-
-            if ( !empty ($arrTags) )
-            {
-                $objPost->setArrTags ($arrTags);
-            }
-        }
-
-        $arrImges = (new UploadFactory())->getImagesForPost ($objPost);
+        $objPost = $objPostUpload->getObjPost();
+        
+        $arrImges = $objUploadFactory->getImagesForPost ($objPost);
 
         if ( empty ($arrImges) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
+        }
+
+        $arrTags = $objTagUserFactory->getTaggedUsersForPost ($objPost);
+        
+        if ( !empty ($arrTags) )
+        {
+            $objPost->setArrTags ($arrTags);
         }
 
         $objPost->setArrImages ($arrImges);
