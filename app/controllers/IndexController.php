@@ -887,7 +887,7 @@ class IndexController extends ControllerBase
     public function uploadAction ()
     {
         $this->view->disable ();
-        
+
         if ( empty ($_POST['uploadComment']) || empty ($_POST['privacy']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -897,7 +897,7 @@ class IndexController extends ControllerBase
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
-        
+
         if ( empty ($_SESSION['user']['user_id']) )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -916,7 +916,7 @@ class IndexController extends ControllerBase
         $privacy = $_POST['privacy'];
 
         $target_dir = $this->rootPath . "/blab/public/uploads/" . $_SESSION['user']['username'] . '/';
-        
+
         try {
 
             $objUser = new User ($_SESSION['user']['user_id']);
@@ -924,7 +924,7 @@ class IndexController extends ControllerBase
             $objUploadFactory = new UploadFactory();
             $objTagUserFactory = new TagUserFactory();
             $objPostUpload = new PostUpload (
-                    new PostActionFactory (), $objUploadFactory, new CommentFactory (), new ReviewFactory (), $objTagUserFactory, new CommentReplyFactory (), new JCrowe\BadWordFilter\BadWordFilter (), $objUser, new BannerFactory (), new AdvertFactory (), new NotificationFactory(), new EmailNotificationFactory(), $uploadType, $uploadId);
+                    new PostActionFactory (), $objUploadFactory, new CommentFactory (), new ReviewFactory (), $objTagUserFactory, new CommentReplyFactory (), new JCrowe\BadWordFilter\BadWordFilter (), $objUser, new BannerFactory (), new AdvertFactory (), new NotificationFactory (), new EmailNotificationFactory (), $uploadType, $uploadId);
         } catch (Exception $ex) {
             trigger_error ($ex->getMessage (), E_USER_WARNING);
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
@@ -932,15 +932,15 @@ class IndexController extends ControllerBase
 
         $arrTags = !empty ($_POST['tags']) ? $_POST['tags'] : null;
 
-        $blResult = $objPostUpload->multipleUploadValidation($this->rootPath, $_FILES, $target_dir, $comment, $arrTags, $objUserSettings, $privacy, $blAddToStory);
+        $blResult = $objPostUpload->multipleUploadValidation ($this->rootPath, $_FILES, $target_dir, $comment, $arrTags, $objUserSettings, $privacy, $blAddToStory);
 
         if ( $blResult === false )
         {
             $this->ajaxresponse ("error", $this->defaultErrrorMessage);
         }
 
-        $objPost = $objPostUpload->getObjPost();
-        
+        $objPost = $objPostUpload->getObjPost ();
+
         $arrImges = $objUploadFactory->getImagesForPost ($objPost);
 
         if ( empty ($arrImges) )
@@ -949,7 +949,7 @@ class IndexController extends ControllerBase
         }
 
         $arrTags = $objTagUserFactory->getTaggedUsersForPost ($objPost);
-        
+
         if ( !empty ($arrTags) )
         {
             $objPost->setArrTags ($arrTags);
@@ -1047,6 +1047,47 @@ class IndexController extends ControllerBase
     public function testAction ()
     {
         
+    }
+
+    public function testPostAction ()
+    {
+        $this->view->disable ();
+
+        if ( !empty ($_FILES) )
+        {
+            $arrFiles = $_FILES;
+
+            foreach ($arrFiles['files']['name'] as $key => $name) {
+
+                if ( trim ($name) === "" )
+                {
+                    continue;
+                }
+
+                $type = $arrFiles['files']['type'][$key];
+                $tempName = $arrFiles['files']['tmp_name'][$key];
+                $error = $arrFiles['files']['error'][$key];
+                $size = $arrFiles['files']['size'][$key];
+
+                $objFileUpload = new FileUploadTest ($target_dir, 50000, array("gif", "jpeg", "jpg", "png"));
+                $objFileUpload->setName($name);
+                $objFileUpload->setSize($size);
+                $objFileUpload->setTempName($tempName);
+                $objFileUpload->setType($type);
+
+                if ( $objFileUpload->validateUpload () === false )
+                {
+                    print_r ($objFileUpload->getValidationFailures ());
+                    die;
+                }
+            }
+        }
+
+        echo '<pre>';
+        print_r ($_POST);
+        print_r ($_FILES);
+        print_r (json_decode ($_POST['attendees'], true));
+        die;
     }
 
     public function getRssAction ()
