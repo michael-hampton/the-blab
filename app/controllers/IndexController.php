@@ -1049,6 +1049,50 @@ class IndexController extends ControllerBase
         
     }
 
+    /**
+     * 
+     */
+    public function testPost2Action ()
+    {
+        $this->view->disable ();
+
+        if ( $_SERVER['REQUEST_METHOD'] == "POST" )
+        {
+            
+            $error = '';
+            $img = '';
+            $dir = $this->rootPath . '/blab/public/uploads/testupload/';
+            $extensions = array("jpeg", "jpg", "png");
+            
+            foreach ($_FILES['img_file']['tmp_name'] as $key => $tmp_name) {
+                $file_name = $_FILES['img_file']['name'][$key];
+                $file_size = $_FILES['img_file']['size'][$key];
+                $file_tmp = $_FILES['img_file']['tmp_name'][$key];
+                $file_type = $_FILES['img_file']['type'][$key];
+                $file_ext = strtolower (end (explode ('.', $file_name)));
+                
+                if ( in_array ($file_ext, $extensions) === true )
+                {
+                    if ( move_uploaded_file ($file_tmp, $dir . $file_name) )
+                    {
+                        $img .= '<div class="col-sm-2"><div class="thumbnail">';
+                        $img .= '<img style="height: 100px;" src="/blab/public/uploads/testupload/' . $file_name . '" />';
+                        $img .= '</div></div>';
+                    }
+                    else {
+                        $this->ajaxresponse("error", 'Error in uploading few files. Some files couldn\'t be uploaded.');
+                    }
+                }
+                else
+                {
+                    $this->ajaxresponse("error", 'Error in uploading few files. File type is not allowed.');
+                }
+            }
+            
+            $this->ajaxresponse("success", "success", ['img' => $img]);            
+        }
+    }
+
     public function testPostAction ()
     {
         $this->view->disable ();
@@ -1070,10 +1114,10 @@ class IndexController extends ControllerBase
                 $size = $arrFiles['files']['size'][$key];
 
                 $objFileUpload = new FileUploadTest ($target_dir, 50000, array("gif", "jpeg", "jpg", "png"));
-                $objFileUpload->setName($name);
-                $objFileUpload->setSize($size);
-                $objFileUpload->setTempName($tempName);
-                $objFileUpload->setType($type);
+                $objFileUpload->setName ($name);
+                $objFileUpload->setSize ($size);
+                $objFileUpload->setTempName ($tempName);
+                $objFileUpload->setType ($type);
 
                 if ( $objFileUpload->validateUpload () === false )
                 {
